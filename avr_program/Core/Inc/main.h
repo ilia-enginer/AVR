@@ -32,7 +32,18 @@ extern "C" {
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
+#include "defs.h"
+#include "ILI9341_GFX.h"
+#include "fonts.h"
+#include "img.h"
+#include "xpt2046_touch.h"
+#include "init.h"
+#include "work.h"
+#include "menu_main.h"
 /* USER CODE END Includes */
 
 /* Exported types ------------------------------------------------------------*/
@@ -60,6 +71,8 @@ void Error_Handler(void);
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/
+#define LED_ERROR_Pin GPIO_PIN_13
+#define LED_ERROR_GPIO_Port GPIOC
 #define CHECK_EXT_POWER_Pin GPIO_PIN_0
 #define CHECK_EXT_POWER_GPIO_Port GPIOA
 #define CHECK_V_BAT_Pin GPIO_PIN_1
@@ -74,14 +87,17 @@ void Error_Handler(void);
 #define TOUCH_CS_GPIO_Port GPIOB
 #define TFT_CS_Pin GPIO_PIN_1
 #define TFT_CS_GPIO_Port GPIOB
-#define IRQ_Pin GPIO_PIN_2
-#define IRQ_GPIO_Port GPIOB
+#define TOUCH_IRQ_Pin GPIO_PIN_2
+#define TOUCH_IRQ_GPIO_Port GPIOB
+#define TOUCH_IRQ_EXTI_IRQn EXTI2_IRQn
 #define TFT_RST_Pin GPIO_PIN_10
 #define TFT_RST_GPIO_Port GPIOB
 #define TFT_DC_Pin GPIO_PIN_12
 #define TFT_DC_GPIO_Port GPIOB
 #define SD_CS_Pin GPIO_PIN_8
 #define SD_CS_GPIO_Port GPIOA
+#define LED_Pin GPIO_PIN_12
+#define LED_GPIO_Port GPIOA
 #define RELE_OBSH_Pin GPIO_PIN_3
 #define RELE_OBSH_GPIO_Port GPIOB
 #define RELE_ZAJIG_Pin GPIO_PIN_4
@@ -90,13 +106,15 @@ void Error_Handler(void);
 #define RELE_STARTER_GPIO_Port GPIOB
 #define RELE_PODSOS_Pin GPIO_PIN_6
 #define RELE_PODSOS_GPIO_Port GPIOB
-#define RELE_SOST_Pin GPIO_PIN_7
-#define RELE_SOST_GPIO_Port GPIOB
-#define RELE_SOSTB8_Pin GPIO_PIN_8
-#define RELE_SOSTB8_GPIO_Port GPIOB
-#define RELE_SOSTB9_Pin GPIO_PIN_9
-#define RELE_SOSTB9_GPIO_Port GPIOB
+#define RELE_SOST_0_Pin GPIO_PIN_7
+#define RELE_SOST_0_GPIO_Port GPIOB
+#define RELE_SOST_1_Pin GPIO_PIN_8
+#define RELE_SOST_1_GPIO_Port GPIOB
+#define RELE_SOST_2_Pin GPIO_PIN_9
+#define RELE_SOST_2_GPIO_Port GPIOB
 /* USER CODE BEGIN Private defines */
+
+//#define TFT_CHECK
 
 /* USER CODE END Private defines */
 

@@ -48,10 +48,15 @@ RTC_HandleTypeDef hrtc;
 SPI_HandleTypeDef hspi1;
 SPI_HandleTypeDef hspi2;
 
+TIM_HandleTypeDef htim1;
 TIM_HandleTypeDef htim2;
 
 /* USER CODE BEGIN PV */
-
+RTC_TimeTypeDef sTime = {0};
+RTC_DateTypeDef DateToUpdate = {0};
+	
+Device_Type AVR;     // прибор с его характеристиками и параметрами
+struct Device_Type *pAVR = &AVR;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -63,8 +68,11 @@ static void MX_SPI1_Init(void);
 static void MX_SPI2_Init(void);
 static void MX_TIM2_Init(void);
 static void MX_RTC_Init(void);
+static void MX_TIM1_Init(void);
 /* USER CODE BEGIN PFP */
-
+void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef* hadc);
+void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin);
+void HAL_RTC_AlarmAEventCallback(RTC_HandleTypeDef *hrtc);
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -106,17 +114,77 @@ int main(void)
   MX_SPI2_Init();
   MX_TIM2_Init();
   MX_RTC_Init();
+  MX_TIM1_Init();
   /* USER CODE BEGIN 2 */
-
+	
+	initDevice();
+			
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
   {
+		#ifndef TFT_CHECK
+			work();
+		#endif
+		
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
+		#ifdef TFT_CHECK
+			static char buf[64] = {0,};
+			static uint8_t flag_press = 1;
+			static uint32_t time_press = 0;
+			static uint16_t x = 0;
+			static uint16_t y = 0;
+			
+			snprintf(buf, 64, "X = %d, Y = %d", x, y); 
+			ILI9341_WriteString(75, 10, buf, Font_11x18, WHITE, MYFON);
+			
+			while (1)
+			{
+				if(HAL_GPIO_ReadPin(TOUCH_IRQ_GPIO_Port, TOUCH_IRQ_Pin) == GPIO_PIN_RESET && flag_press) // если нажат тачскрин
+				{
+						x = 0;
+						y = 0;
+
+						TOUCH_CS_UNSELECT;
+						DISP_CS_UNSELECT;
+
+						HAL_SPI_DeInit(DISP_SPI_PTR);
+						hspi1.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_32;
+						HAL_SPI_Init(DISP_SPI_PTR);
+
+						if(ILI9341_TouchGetCoordinates(&x, &y))
+						{
+								flag_press = 0;
+								//////// вывод координат в уарт для отладки ////////
+								snprintf(buf, 64, "X = %d, Y = %d", x, y); 
+						}
+
+						HAL_SPI_DeInit(DISP_SPI_PTR);
+						hspi1.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_2;
+						HAL_SPI_Init(DISP_SPI_PTR);
+
+						__HAL_SPI_ENABLE(DISP_SPI_PTR);
+						DISP_CS_SELECT;
+
+						//////// вывод координат на экран для отладки ////////
+						ILI9341_Fill_Screen(MYFON);
+						ILI9341_WriteString(75, 10, buf, Font_11x18, WHITE, MYFON);
+						ILI9341_Draw_Filled_Circle(x, y, 10, WHITE);
+						//////////////////////////////////////////////////////
+						///////////////////////////
+						time_press = HAL_GetTick();
+				}
+
+				if(!flag_press && (HAL_GetTick() - time_press) > 200) // задержка до следующего нажатия
+				{
+						flag_press = 1;
+				}
+			}
+		#endif
   }
   /* USER CODE END 3 */
 }
@@ -143,8 +211,8 @@ void SystemClock_Config(void)
   RCC_OscInitStruct.LSEState = RCC_LSE_ON;
   RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;
   RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSE;
-  RCC_OscInitStruct.PLL.PLLM = 25;
-  RCC_OscInitStruct.PLL.PLLN = 144;
+  RCC_OscInitStruct.PLL.PLLM = 12;
+  RCC_OscInitStruct.PLL.PLLN = 96;
   RCC_OscInitStruct.PLL.PLLP = RCC_PLLP_DIV2;
   RCC_OscInitStruct.PLL.PLLQ = 4;
   if (HAL_RCC_OscConfig(&RCC_OscInitStruct) != HAL_OK)
@@ -160,7 +228,7 @@ void SystemClock_Config(void)
   RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV2;
   RCC_ClkInitStruct.APB2CLKDivider = RCC_HCLK_DIV1;
 
-  if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_2) != HAL_OK)
+  if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_3) != HAL_OK)
   {
     Error_Handler();
   }
@@ -192,7 +260,7 @@ static void MX_ADC1_Init(void)
   /** Configure the global features of the ADC (Clock, Resolution, Data Alignment and number of conversion)
   */
   hadc1.Instance = ADC1;
-  hadc1.Init.ClockPrescaler = ADC_CLOCK_SYNC_PCLK_DIV2;
+  hadc1.Init.ClockPrescaler = ADC_CLOCK_SYNC_PCLK_DIV4;
   hadc1.Init.Resolution = ADC_RESOLUTION_12B;
   hadc1.Init.ScanConvMode = ENABLE;
   hadc1.Init.ContinuousConvMode = DISABLE;
@@ -200,7 +268,7 @@ static void MX_ADC1_Init(void)
   hadc1.Init.ExternalTrigConvEdge = ADC_EXTERNALTRIGCONVEDGE_NONE;
   hadc1.Init.ExternalTrigConv = ADC_SOFTWARE_START;
   hadc1.Init.DataAlign = ADC_DATAALIGN_RIGHT;
-  hadc1.Init.NbrOfConversion = 4;
+  hadc1.Init.NbrOfConversion = 6;
   hadc1.Init.DMAContinuousRequests = DISABLE;
   hadc1.Init.EOCSelection = ADC_EOC_SINGLE_CONV;
   if (HAL_ADC_Init(&hadc1) != HAL_OK)
@@ -236,6 +304,23 @@ static void MX_ADC1_Init(void)
   */
   sConfig.Channel = ADC_CHANNEL_3;
   sConfig.Rank = 4;
+  if (HAL_ADC_ConfigChannel(&hadc1, &sConfig) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /** Configure for the selected ADC regular channel its corresponding rank in the sequencer and its sample time.
+  */
+  sConfig.Channel = ADC_CHANNEL_TEMPSENSOR;
+  sConfig.Rank = 5;
+  sConfig.SamplingTime = ADC_SAMPLETIME_3CYCLES;
+  if (HAL_ADC_ConfigChannel(&hadc1, &sConfig) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /** Configure for the selected ADC regular channel its corresponding rank in the sequencer and its sample time.
+  */
+  sConfig.Channel = ADC_CHANNEL_VREFINT;
+  sConfig.Rank = 6;
   if (HAL_ADC_ConfigChannel(&hadc1, &sConfig) != HAL_OK)
   {
     Error_Handler();
@@ -290,19 +375,19 @@ static void MX_RTC_Init(void)
   sTime.Seconds = 0;
   sTime.DayLightSaving = RTC_DAYLIGHTSAVING_NONE;
   sTime.StoreOperation = RTC_STOREOPERATION_RESET;
-  if (HAL_RTC_SetTime(&hrtc, &sTime, RTC_FORMAT_BIN) != HAL_OK)
-  {
-    Error_Handler();
-  }
+//  if (HAL_RTC_SetTime(&hrtc, &sTime, RTC_FORMAT_BIN) != HAL_OK)
+//  {
+//    Error_Handler();
+//  }
   sDate.WeekDay = RTC_WEEKDAY_TUESDAY;
   sDate.Month = RTC_MONTH_SEPTEMBER;
   sDate.Date = 1;
   sDate.Year = 26;
 
-  if (HAL_RTC_SetDate(&hrtc, &sDate, RTC_FORMAT_BIN) != HAL_OK)
-  {
-    Error_Handler();
-  }
+//  if (HAL_RTC_SetDate(&hrtc, &sDate, RTC_FORMAT_BIN) != HAL_OK)
+//  {
+//    Error_Handler();
+//  }
   /** Enable the Alarm A
   */
   sAlarm.AlarmTime.Hours = 0;
@@ -349,7 +434,7 @@ static void MX_SPI1_Init(void)
   hspi1.Init.CLKPolarity = SPI_POLARITY_LOW;
   hspi1.Init.CLKPhase = SPI_PHASE_1EDGE;
   hspi1.Init.NSS = SPI_NSS_SOFT;
-  hspi1.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_4;
+  hspi1.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_2;
   hspi1.Init.FirstBit = SPI_FIRSTBIT_MSB;
   hspi1.Init.TIMode = SPI_TIMODE_DISABLE;
   hspi1.Init.CRCCalculation = SPI_CRCCALCULATION_DISABLE;
@@ -403,6 +488,70 @@ static void MX_SPI2_Init(void)
 }
 
 /**
+  * @brief TIM1 Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_TIM1_Init(void)
+{
+
+  /* USER CODE BEGIN TIM1_Init 0 */
+
+  /* USER CODE END TIM1_Init 0 */
+
+  TIM_MasterConfigTypeDef sMasterConfig = {0};
+  TIM_OC_InitTypeDef sConfigOC = {0};
+  TIM_BreakDeadTimeConfigTypeDef sBreakDeadTimeConfig = {0};
+
+  /* USER CODE BEGIN TIM1_Init 1 */
+
+  /* USER CODE END TIM1_Init 1 */
+  htim1.Instance = TIM1;
+  htim1.Init.Prescaler = 0;
+  htim1.Init.CounterMode = TIM_COUNTERMODE_UP;
+  htim1.Init.Period = 65535;
+  htim1.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
+  htim1.Init.RepetitionCounter = 0;
+  htim1.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
+  if (HAL_TIM_PWM_Init(&htim1) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  sMasterConfig.MasterOutputTrigger = TIM_TRGO_RESET;
+  sMasterConfig.MasterSlaveMode = TIM_MASTERSLAVEMODE_DISABLE;
+  if (HAL_TIMEx_MasterConfigSynchronization(&htim1, &sMasterConfig) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  sConfigOC.OCMode = TIM_OCMODE_PWM1;
+  sConfigOC.Pulse = 0;
+  sConfigOC.OCPolarity = TIM_OCPOLARITY_HIGH;
+  sConfigOC.OCFastMode = TIM_OCFAST_DISABLE;
+  sConfigOC.OCIdleState = TIM_OCIDLESTATE_RESET;
+  sConfigOC.OCNIdleState = TIM_OCNIDLESTATE_RESET;
+  if (HAL_TIM_PWM_ConfigChannel(&htim1, &sConfigOC, TIM_CHANNEL_4) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  sBreakDeadTimeConfig.OffStateRunMode = TIM_OSSR_DISABLE;
+  sBreakDeadTimeConfig.OffStateIDLEMode = TIM_OSSI_DISABLE;
+  sBreakDeadTimeConfig.LockLevel = TIM_LOCKLEVEL_OFF;
+  sBreakDeadTimeConfig.DeadTime = 0;
+  sBreakDeadTimeConfig.BreakState = TIM_BREAK_DISABLE;
+  sBreakDeadTimeConfig.BreakPolarity = TIM_BREAKPOLARITY_HIGH;
+  sBreakDeadTimeConfig.AutomaticOutput = TIM_AUTOMATICOUTPUT_DISABLE;
+  if (HAL_TIMEx_ConfigBreakDeadTime(&htim1, &sBreakDeadTimeConfig) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN TIM1_Init 2 */
+
+  /* USER CODE END TIM1_Init 2 */
+  HAL_TIM_MspPostInit(&htim1);
+
+}
+
+/**
   * @brief TIM2 Initialization Function
   * @param None
   * @retval None
@@ -421,9 +570,9 @@ static void MX_TIM2_Init(void)
 
   /* USER CODE END TIM2_Init 1 */
   htim2.Instance = TIM2;
-  htim2.Init.Prescaler = 0;
+  htim2.Init.Prescaler = 50;
   htim2.Init.CounterMode = TIM_COUNTERMODE_UP;
-  htim2.Init.Period = 4294967295;
+  htim2.Init.Period = 1000;
   htim2.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
   htim2.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
   if (HAL_TIM_PWM_Init(&htim2) != HAL_OK)
@@ -438,7 +587,7 @@ static void MX_TIM2_Init(void)
   }
   sConfigOC.OCMode = TIM_OCMODE_PWM1;
   sConfigOC.Pulse = 0;
-  sConfigOC.OCPolarity = TIM_OCPOLARITY_HIGH;
+  sConfigOC.OCPolarity = TIM_OCPOLARITY_LOW;
   sConfigOC.OCFastMode = TIM_OCFAST_DISABLE;
   if (HAL_TIM_PWM_ConfigChannel(&htim2, &sConfigOC, TIM_CHANNEL_1) != HAL_OK)
   {
@@ -483,15 +632,25 @@ static void MX_GPIO_Init(void)
   __HAL_RCC_GPIOB_CLK_ENABLE();
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOA, CHARGE_ON_OFF_Pin|SD_CS_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(LED_ERROR_GPIO_Port, LED_ERROR_Pin, GPIO_PIN_RESET);
+
+  /*Configure GPIO pin Output Level */
+  HAL_GPIO_WritePin(GPIOA, CHARGE_ON_OFF_Pin|SD_CS_Pin|LED_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(GPIOB, TOUCH_CS_Pin|TFT_CS_Pin|TFT_RST_Pin|TFT_DC_Pin
                           |RELE_OBSH_Pin|RELE_ZAJIG_Pin|RELE_STARTER_Pin|RELE_PODSOS_Pin
-                          |RELE_SOST_Pin|RELE_SOSTB8_Pin|RELE_SOSTB9_Pin, GPIO_PIN_RESET);
+                          |RELE_SOST_0_Pin|RELE_SOST_1_Pin|RELE_SOST_2_Pin, GPIO_PIN_RESET);
 
-  /*Configure GPIO pins : CHARGE_ON_OFF_Pin SD_CS_Pin */
-  GPIO_InitStruct.Pin = CHARGE_ON_OFF_Pin|SD_CS_Pin;
+  /*Configure GPIO pin : LED_ERROR_Pin */
+  GPIO_InitStruct.Pin = LED_ERROR_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+  HAL_GPIO_Init(LED_ERROR_GPIO_Port, &GPIO_InitStruct);
+
+  /*Configure GPIO pins : CHARGE_ON_OFF_Pin SD_CS_Pin LED_Pin */
+  GPIO_InitStruct.Pin = CHARGE_ON_OFF_Pin|SD_CS_Pin|LED_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
@@ -499,24 +658,62 @@ static void MX_GPIO_Init(void)
 
   /*Configure GPIO pins : TOUCH_CS_Pin TFT_CS_Pin TFT_RST_Pin TFT_DC_Pin
                            RELE_OBSH_Pin RELE_ZAJIG_Pin RELE_STARTER_Pin RELE_PODSOS_Pin
-                           RELE_SOST_Pin RELE_SOSTB8_Pin RELE_SOSTB9_Pin */
+                           RELE_SOST_0_Pin RELE_SOST_1_Pin RELE_SOST_2_Pin */
   GPIO_InitStruct.Pin = TOUCH_CS_Pin|TFT_CS_Pin|TFT_RST_Pin|TFT_DC_Pin
                           |RELE_OBSH_Pin|RELE_ZAJIG_Pin|RELE_STARTER_Pin|RELE_PODSOS_Pin
-                          |RELE_SOST_Pin|RELE_SOSTB8_Pin|RELE_SOSTB9_Pin;
+                          |RELE_SOST_0_Pin|RELE_SOST_1_Pin|RELE_SOST_2_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 
-  /*Configure GPIO pin : IRQ_Pin */
-  GPIO_InitStruct.Pin = IRQ_Pin;
-  GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+  /*Configure GPIO pin : TOUCH_IRQ_Pin */
+  GPIO_InitStruct.Pin = TOUCH_IRQ_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING_FALLING;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
-  HAL_GPIO_Init(IRQ_GPIO_Port, &GPIO_InitStruct);
+  HAL_GPIO_Init(TOUCH_IRQ_GPIO_Port, &GPIO_InitStruct);
+
+  /*Configure GPIO pins : PA9 PA10 */
+  GPIO_InitStruct.Pin = GPIO_PIN_9|GPIO_PIN_10;
+  GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
+  GPIO_InitStruct.Alternate = GPIO_AF7_USART1;
+  HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+
+  /* EXTI interrupt init*/
+  HAL_NVIC_SetPriority(EXTI2_IRQn, 10, 0);
+  HAL_NVIC_EnableIRQ(EXTI2_IRQn);
 
 }
 
 /* USER CODE BEGIN 4 */
+void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef* hadc)
+{
+	if(hadc->Instance == ADC1)
+	{
+			HAL_ADC_Stop_DMA(&hadc1); 
+//			HAL_ADC_Start_DMA(&hadc1, (uint32_t*)&AVR.adc, ADC_chanels);
+	}
+}
+
+void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
+{
+	// прерывание при нажатии/отпускании экрана
+	if (GPIO_Pin == TOUCH_IRQ_Pin) { 
+			// если нажато на экран
+			if((TOUCH_IRQ_GPIO_Port->IDR & GPIO_Pin) != (uint32_t)GPIO_PIN_RESET)
+				pAVR->touch.flag_release = SET;			// отпущен
+			else
+				pAVR->touch.flag_press = SET;				// нажат
+	}
+}
+
+// будильник, срабатывает в 00:00
+void HAL_RTC_AlarmAEventCallback(RTC_HandleTypeDef *hrtc)
+{
+        
+}
 
 /* USER CODE END 4 */
 

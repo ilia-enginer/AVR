@@ -1,0 +1,55 @@
+
+#ifndef INIT_H_
+#define INIT_H_
+
+#include "main.h"
+
+
+// таймер подсветки экрана
+#define TIM_LED_TFT     			(&htim2)
+#define	TIM_CHANEL_LED_TFT		(TIM_CHANNEL_1)
+#define BRIGHTNESS_TFT(x)			(__HAL_TIM_SET_COMPARE(TIM_LED_TFT, TIM_CHANEL_LED_TFT, x))	
+
+
+
+#define RELE_OBSH_ON()				HAL_GPIO_WritePin(RELE_OBSH_GPIO_Port, RELE_OBSH_Pin, GPIO_PIN_RESET);
+#define RELE_OBSH_OFF()				HAL_GPIO_WritePin(RELE_OBSH_GPIO_Port, RELE_OBSH_Pin, GPIO_PIN_SET);
+
+#define RELE_ZAJIG_ON()				HAL_GPIO_WritePin(RELE_OBSH_GPIO_Port, RELE_ZAJIG_Pin, GPIO_PIN_SET);
+#define RELE_ZAJIG_OFF()			HAL_GPIO_WritePin(RELE_OBSH_GPIO_Port, RELE_ZAJIG_Pin, GPIO_PIN_RESET);
+
+#define RELE_STARTER_ON()			HAL_GPIO_WritePin(RELE_STARTER_GPIO_Port, RELE_STARTER_Pin, GPIO_PIN_SET);
+#define RELE_STARTER_OFF()		HAL_GPIO_WritePin(RELE_STARTER_GPIO_Port, RELE_STARTER_Pin, GPIO_PIN_RESET);
+
+#define RELE_PODSOS_ON()			HAL_GPIO_WritePin(RELE_PODSOS_GPIO_Port, RELE_PODSOS_Pin, GPIO_PIN_SET);
+#define RELE_PODSOS_OFF()			HAL_GPIO_WritePin(RELE_PODSOS_GPIO_Port, RELE_PODSOS_Pin, GPIO_PIN_RESET);
+
+#define RELE_SOST_0_ON()			HAL_GPIO_WritePin(RELE_SOST_0_GPIO_Port, RELE_SOST_0_Pin, GPIO_PIN_SET);
+#define RELE_SOST_0_OFF()			HAL_GPIO_WritePin(RELE_SOST_0_GPIO_Port, RELE_SOST_0_Pin, GPIO_PIN_RESET);
+
+#define RELE_SOST_1_ON()			HAL_GPIO_WritePin(RELE_SOST_1_GPIO_Port, RELE_SOST_1_Pin, GPIO_PIN_SET);
+#define RELE_SOST_1_OFF()			HAL_GPIO_WritePin(RELE_SOST_1_GPIO_Port, RELE_SOST_1_Pin, GPIO_PIN_RESET);
+
+#define RELE_SOST_2_ON()			HAL_GPIO_WritePin(RELE_SOST_2_GPIO_Port, RELE_SOST_2_Pin, GPIO_PIN_SET);
+#define RELE_SOST_2_OFF()			HAL_GPIO_WritePin(RELE_SOST_2_GPIO_Port, RELE_SOST_2_Pin, GPIO_PIN_RESET);
+
+#define LED_ON()							HAL_GPIO_WritePin(LED_GPIO_Port, LED_Pin, GPIO_PIN_RESET);
+#define LED_OFF()							HAL_GPIO_WritePin(LED_GPIO_Port, LED_Pin, GPIO_PIN_SET);
+#define LED_TOGGLE()					HAL_GPIO_TogglePin(LED_GPIO_Port, LED_Pin);
+
+#define LED_ERROR_ON()				HAL_GPIO_WritePin(LED_ERROR_GPIO_Port, LED_ERROR_Pin, GPIO_PIN_RESET);
+#define LED_ERROR_OFF()				HAL_GPIO_WritePin(LED_ERROR_GPIO_Port, LED_ERROR_Pin, GPIO_PIN_SET);
+#define LED_ERROR_TOGGLE()		HAL_GPIO_TogglePin(LED_ERROR_GPIO_Port, LED_ERROR_Pin);
+
+#define CHARGE_ON()						HAL_GPIO_WritePin(CHARGE_ON_OFF_GPIO_Port, CHARGE_ON_OFF_Pin, GPIO_PIN_SET);
+#define CHARGE_OFF()					HAL_GPIO_WritePin(CHARGE_ON_OFF_GPIO_Port, CHARGE_ON_OFF_Pin, GPIO_PIN_RESET);
+
+
+
+uint8_t initDevice(void);
+uint8_t initTFT(void);
+uint8_t ledTFTInit(void);
+uint8_t outputInit(void);
+
+
+#endif /* INIT_H_ */
