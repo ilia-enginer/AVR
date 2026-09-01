@@ -14,35 +14,27 @@ uint8_t initDevice(void)
 		
 	outputInit();	// выхода (светодиоды, реле и.т.д.)
 	
-	pAVR->avr_states.power_grid_mode = POWER_IS_OFF;	// флаг о питании дома
-	pAVR->avr_states.flagCharge = RESET;							// флаг что заряжка откл
+	pAVR->avr_states.power_grid_mode 	= POWER_IS_OFF;		// флаг о питании дома
+	pAVR->avr_states.flagCharge 			= RESET;					// флаг что заряжка откл
+	pAVR->avr_states.powerAutoManual 	= AVR_AUTO;				// автоматический режим
+	pAVR->avr_states.statusEngine 		= RESET;					// остановлен
+	pAVR->avr_states.extPowerSupply 	= EXT_POWER_OFF;	// нет
+	
 	pAVR->err.counter = 0;
 	pAVR->warn.counter = 0;
 	
 	HAL_ADC_Start_DMA(&hadc1, (uint32_t*)&AVR.adc, ADC_CHANELS);	// запуск ацп
 	
-	// настройка даты, времени(если необходимо)
-	HAL_RTC_GetDate(&hrtc, &DateToUpdate, RTC_FORMAT_BIN);
-	if((DateToUpdate.Date == 1) && (DateToUpdate.Month == 1) && (DateToUpdate.Year == 0))
-	{
-		DateToUpdate.WeekDay = RTC_WEEKDAY_TUESDAY;
-		DateToUpdate.Month = RTC_MONTH_SEPTEMBER;
-		DateToUpdate.Date = 1;
-		DateToUpdate.Year = 26;
-		
-		sTime.Hours = 12;
-		sTime.Minutes = 0;
-		sTime.Seconds = 0;
-		sTime.DayLightSaving = RTC_DAYLIGHTSAVING_NONE;
-		sTime.StoreOperation = RTC_STOREOPERATION_RESET;
-		
-		if (HAL_RTC_SetTime(&hrtc, &sTime, RTC_FORMAT_BIN) != HAL_OK)	Error_Handler();
-		if (HAL_RTC_SetDate(&hrtc, &DateToUpdate, RTC_FORMAT_BIN) != HAL_OK)	Error_Handler();
-	}
-	
-	
 	menuChangeState(MAIN_MENU);
 	
+	//??? delete
+	for(uint8_t i = 0; i < 32; i++)
+	{
+		pAVR->warn.counter++;
+		pAVR->warn.array_flags[i] = 1;
+	}
+	//??? delete
+		
 	return 1;
 }
 

@@ -16,33 +16,61 @@
 
 /* Exported types ------------------------------------------------------------*/
 
-// вариатны тача
-enum TUCH_WARIANTS {
-    NONE = 0,				// ничего
-		PRESS,					// нажат
-		NO_PRESS,				// отпущен
-		LONG_PRESS,			// длительное нажатие
-		NO_LONG_PRESS,	// отпущен после длительного нажатия
-};
+// виды меню
+typedef enum {
+    MAIN_MENU = 0,				// главное меню
+		SERVISE_TOUCH,				// сервисное меню тача
+		SET_TIME,							// настройка времени
+		SET_DATA,							// настройка даты
+		GET_ERROR,						// меню просмотра ошибок
+		GET_WARNING,					// меню просмотра предупреждений
+		
+} MENU_STATE;
+
 
 // вариатны питания дома
-enum POWER_GRID_MODE {
+typedef enum  {
     POWER_IS_OFF = 0,				// питание откл
 		EXTERNAL_POWER,					// питание от внешней сети
 		POWERED_BY_GENERATOR,		// питание от генератора
-};
+		
+}POWER_GRID_MODE;
 
 // вариатны ошибок
-enum ERR_WARIANTS {
-    XX = 0,				// 
+typedef enum  {
+    ERR_MAX_LAUNCH_ATTEMP = 0,				// превышено максимальное кол-во попыток запуска
+		ERR_STARTER_RELE_SHUTDOWN,				// ошибка отключения реле стартера
+		ERR_STARTER_RELE_ACTIVATION,			// ошибка включения реле стартера
+		ERR_LOW_VOLTAGE_AKB,							// низкое напряжение акб
+		ERR_HIGHT_VOLTAGE_AKB,						// высокое напряжение акб
+		ERR_CHARG_CIRCUIT,								// неисправность цепи зарядки
+		ERR_HARD_RESET,										// был хард ресет
+		ERR_WATCH_DOG,										// был сброс по вачдогу
 
-};
+}ERR_WARIANTS;
 
 // вариатны предупреждений
-enum WARN_WARIANTS {
-    YY = 0,				// 
+typedef enum  {
+    WARN_MANUAL_CONTROL_EN = 0,				// включен ручной режим работы
+		WARN_NECESSITY_TECH_INSP,					// необходимо провести тех. осмотр
+		WARN_CHARGE_AKB,									// необходимо зарядить акб
 
-};
+}WARN_WARIANTS;
+
+// вариатны работы устройства(мозгов) 
+typedef enum  {
+    AVR_AUTO = 0,				// автоматический режим
+		AVR_MANUAL,					// ручной режим	
+		
+}MANAGEMENT_WORK;
+
+
+// внешнее питание есть / нет
+typedef enum  {
+    EXT_POWER_OFF = 0,				// нет
+		EXT_POWER_ON,							// есть
+		
+}STATUS_EXT_POWER;
 
 /* variables ---------------------------------------------------------*/
 
@@ -96,13 +124,16 @@ typedef struct Vparam_Type {
 } Vparam_Type;
 
 
-// автоматы прибора
+// автоматы и флаги прибора
 typedef struct automats_devices {
 
-		uint8_t					menu_state;					// автомат менюшки на экране
-		uint8_t					program_state;			// програмный автомат
-		uint8_t					power_grid_mode;		// режим работы (сеть / генератор / начего)
-		uint8_t					flagCharge;					// режим заряжки вкл / выкл
+		MENU_STATE				menu_state;					// автомат менюшки на экране
+		uint8_t						program_state;			// програмный автомат
+		POWER_GRID_MODE		power_grid_mode;		// режим работы (нечего / сеть / генератор)
+		uint8_t						flagCharge;					// заряжка акб выкл /  вкл
+		MANAGEMENT_WORK		powerAutoManual;		// режим работы управления авто / ручной
+		uint8_t						statusEngine;				// работа ДВС генератора выключен / включен
+		STATUS_EXT_POWER	extPowerSupply;			// наличие внешнего питания
 		
 } automats_devices;
 

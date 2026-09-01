@@ -1,3 +1,45 @@
+01.09.26
+
+- перезагрузка проца при очень длительном нажатии на экран
+- если в течении 5 минут не было нажатия на экран - перейти в главное меню
+- криво выводит сообщения в меню подтверждения
+- включение в главном меню
+	меню предупреждений
+- сделать второслепенное меню
+	моточасы
+		кол-во моточасов
+		кол-во моточасов после то
+	
+	ТО
+		дата последнего то
+		дата следующего то
+		через сколько моточасов следующее то
+		кнопка "то проведено"
+	
+	отключение эл-ва
+		дата последнего отключения
+		время на которое отключали
+		всего без эл-ва
+	
+	запуск двигателя
+		кол-во удачных запусков
+		кол-во попыток запуска
+		
+	сервис тачскрина
+		
+	
+Проц	
+STM32F411CEU6
+Корпус								UFQFPN48
+Data Bus Width						32bit	
+Data Rate							50Mbps	
+Device Core	ARM 					Cortex M4
+Maximum Frequency					100MHz	
+Maximum Operating Temperature		+85 °C	
+Minimum Operating Temperature		-40 °C
+Program Memory Size					512 kB
+RAM Size							128 kB
+Typical Operating Supply Voltage	1.7 → 3.6 V
 
 
 
@@ -9,15 +51,3 @@
 
 
 
-
-
-важно!!!!!!
-- в функции static void MX_RTC_Init(void) закомментировать установку времени и даты…
-//if (HAL_RTC_SetTime(&hrtc, &sTime, RTC_FORMAT_BIN) != HAL_OK)
-//{
-//  Error_Handler();
-//}
-//if (HAL_RTC_SetDate(&hrtc, &DateToUpdate, RTC_FORMAT_BIN) != HAL_OK)
-//{
-//  Error_Handler();
-//}

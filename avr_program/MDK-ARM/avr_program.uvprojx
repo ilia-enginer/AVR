@@ -338,7 +338,7 @@
               <MiscControls></MiscControls>
               <Define>USE_HAL_DRIVER,STM32F411xE</Define>
               <Undefine></Undefine>
-              <IncludePath>../Core/Inc;      ../Drivers/STM32F4xx_HAL_Driver/Inc;      ../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy;      ../Drivers/CMSIS/Device/ST/STM32F4xx/Include;      ../Drivers/CMSIS/Include;      .\Inc;      .\Src</IncludePath>
+              <IncludePath>../Core/Inc;../Drivers/STM32F4xx_HAL_Driver/Inc;../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy;../Drivers/CMSIS/Device/ST/STM32F4xx/Include;../Drivers/CMSIS/Include;.\Inc;.\Src;.\menu</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -543,11 +543,6 @@
               <FilePath>.\Inc\fonts.h</FilePath>
             </File>
             <File>
-              <FileName>img.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>.\Inc\img.h</FilePath>
-            </File>
-            <File>
               <FileName>defs.h</FileName>
               <FileType>5</FileType>
               <FilePath>.\Inc\defs.h</FilePath>
@@ -561,11 +556,6 @@
               <FileName>work.h</FileName>
               <FileType>5</FileType>
               <FilePath>.\Inc\work.h</FilePath>
-            </File>
-            <File>
-              <FileName>menu_main.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>.\Inc\menu_main.h</FilePath>
             </File>
             <File>
               <FileName>bitmap.h</FileName>
@@ -582,16 +572,16 @@
               <FileType>5</FileType>
               <FilePath>.\Inc\xpt2046_touch.h</FilePath>
             </File>
+            <File>
+              <FileName>warn_err.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\Inc\warn_err.h</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
           <GroupName>Src</GroupName>
           <Files>
-            <File>
-              <FileName>img.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\Src\img.c</FilePath>
-            </File>
             <File>
               <FileName>init.c</FileName>
               <FileType>1</FileType>
@@ -601,11 +591,6 @@
               <FileName>work.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\Src\work.c</FilePath>
-            </File>
-            <File>
-              <FileName>menu_main.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\Src\menu_main.c</FilePath>
             </File>
             <File>
               <FileName>ILI9341_GFX.c</FileName>
@@ -621,6 +606,86 @@
               <FileName>fonts.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\Src\fonts.c</FilePath>
+            </File>
+            <File>
+              <FileName>warn_err.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Src\warn_err.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>menu</GroupName>
+          <Files>
+            <File>
+              <FileName>img.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\menu\img.c</FilePath>
+            </File>
+            <File>
+              <FileName>img.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\menu\img.h</FilePath>
+            </File>
+            <File>
+              <FileName>menu_main.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\menu\menu_main.c</FilePath>
+            </File>
+            <File>
+              <FileName>menu_main.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\menu\menu_main.h</FilePath>
+            </File>
+            <File>
+              <FileName>menu_servise.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\menu\menu_servise.c</FilePath>
+            </File>
+            <File>
+              <FileName>menu_servise.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\menu\menu_servise.h</FilePath>
+            </File>
+            <File>
+              <FileName>touch.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\menu\touch.c</FilePath>
+            </File>
+            <File>
+              <FileName>touch.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\menu\touch.h</FilePath>
+            </File>
+            <File>
+              <FileName>settDataTime.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\menu\settDataTime.c</FilePath>
+            </File>
+            <File>
+              <FileName>settDataTime.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\menu\settDataTime.h</FilePath>
+            </File>
+            <File>
+              <FileName>menu_second.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\menu\menu_second.c</FilePath>
+            </File>
+            <File>
+              <FileName>menu_second.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\menu\menu_second.h</FilePath>
+            </File>
+            <File>
+              <FileName>menu_warn_err.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\menu\menu_warn_err.c</FilePath>
+            </File>
+            <File>
+              <FileName>menu_warn_err.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\menu\menu_warn_err.h</FilePath>
             </File>
           </Files>
         </Group>

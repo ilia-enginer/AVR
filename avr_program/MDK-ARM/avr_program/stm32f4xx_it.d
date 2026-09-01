@@ -39,5 +39,7 @@ avr_program/stm32f4xx_it.o: ../Core/Src/stm32f4xx_it.c ../Core/Inc\main.h \
   C:\Keil_v5\ARM\ARMCLANG\Bin\..\include\stdio.h \
   C:\Keil_v5\ARM\ARMCLANG\Bin\..\include\stdlib.h \
   C:\Keil_v5\ARM\ARMCLANG\Bin\..\include\string.h Inc\defs.h \
-  Inc\ILI9341_GFX.h Inc/fonts.h Inc\img.h Inc\xpt2046_touch.h Inc\init.h \
-  Inc\work.h Inc\menu_main.h ../Core/Inc\stm32f4xx_it.h
+  Inc\ILI9341_GFX.h Inc/fonts.h menu\img.h Inc\xpt2046_touch.h \
+  Inc\init.h Inc\work.h menu\menu_main.h menu/menu_servise.h \
+  menu/touch.h menu/settDataTime.h menu/menu_second.h \
+  menu/menu_warn_err.h Inc\warn_err.h ../Core/Inc\stm32f4xx_it.h

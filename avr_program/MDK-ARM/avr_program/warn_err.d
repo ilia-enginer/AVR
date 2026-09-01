@@ -1,4 +1,4 @@
-avr_program/main.o: ../Core/Src/main.c ../Core/Inc\main.h \
+avr_program/warn_err.o: Src/warn_err.c Inc\warn_err.h ../Core/Inc\main.h \
   ../Drivers/STM32F4xx_HAL_Driver/Inc\stm32f4xx_hal.h \
   ../Core/Inc\stm32f4xx_hal_conf.h \
   ../Drivers/STM32F4xx_HAL_Driver/Inc\stm32f4xx_hal_rcc.h \
@@ -42,4 +42,4 @@ avr_program/main.o: ../Core/Src/main.c ../Core/Inc\main.h \
   Inc\ILI9341_GFX.h Inc/fonts.h menu\img.h Inc\xpt2046_touch.h \
   Inc\init.h Inc\work.h menu\menu_main.h menu/menu_servise.h \
   menu/touch.h menu/settDataTime.h menu/menu_second.h \
-  menu/menu_warn_err.h Inc\warn_err.h
+  menu/menu_warn_err.h

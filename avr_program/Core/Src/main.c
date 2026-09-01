@@ -125,66 +125,12 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-		#ifndef TFT_CHECK
-			work();
-		#endif
+		work();
 		
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-		#ifdef TFT_CHECK
-			static char buf[64] = {0,};
-			static uint8_t flag_press = 1;
-			static uint32_t time_press = 0;
-			static uint16_t x = 0;
-			static uint16_t y = 0;
-			
-			snprintf(buf, 64, "X = %d, Y = %d", x, y); 
-			ILI9341_WriteString(75, 10, buf, Font_11x18, WHITE, MYFON);
-			
-			while (1)
-			{
-				if(HAL_GPIO_ReadPin(TOUCH_IRQ_GPIO_Port, TOUCH_IRQ_Pin) == GPIO_PIN_RESET && flag_press) // если нажат тачскрин
-				{
-						x = 0;
-						y = 0;
 
-						TOUCH_CS_UNSELECT;
-						DISP_CS_UNSELECT;
-
-						HAL_SPI_DeInit(DISP_SPI_PTR);
-						hspi1.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_32;
-						HAL_SPI_Init(DISP_SPI_PTR);
-
-						if(ILI9341_TouchGetCoordinates(&x, &y))
-						{
-								flag_press = 0;
-								//////// вывод координат в уарт для отладки ////////
-								snprintf(buf, 64, "X = %d, Y = %d", x, y); 
-						}
-
-						HAL_SPI_DeInit(DISP_SPI_PTR);
-						hspi1.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_2;
-						HAL_SPI_Init(DISP_SPI_PTR);
-
-						__HAL_SPI_ENABLE(DISP_SPI_PTR);
-						DISP_CS_SELECT;
-
-						//////// вывод координат на экран для отладки ////////
-						ILI9341_Fill_Screen(MYFON);
-						ILI9341_WriteString(75, 10, buf, Font_11x18, WHITE, MYFON);
-						ILI9341_Draw_Filled_Circle(x, y, 10, WHITE);
-						//////////////////////////////////////////////////////
-						///////////////////////////
-						time_press = HAL_GetTick();
-				}
-
-				if(!flag_press && (HAL_GetTick() - time_press) > 200) // задержка до следующего нажатия
-				{
-						flag_press = 1;
-				}
-			}
-		#endif
   }
   /* USER CODE END 3 */
 }
@@ -366,6 +312,45 @@ static void MX_RTC_Init(void)
 
   /* USER CODE BEGIN Check_RTC_BKUP */
 
+	// инициализировать и выйти, чтоб каждый раз не коментить установку даты и времени
+	
+	sAlarm.AlarmTime.Hours = 0;
+  sAlarm.AlarmTime.Minutes = 0;
+  sAlarm.AlarmTime.Seconds = 0;
+  sAlarm.AlarmTime.SubSeconds = 0;
+  sAlarm.AlarmTime.DayLightSaving = RTC_DAYLIGHTSAVING_NONE;
+  sAlarm.AlarmTime.StoreOperation = RTC_STOREOPERATION_RESET;
+  sAlarm.AlarmMask = RTC_ALARMMASK_NONE;
+  sAlarm.AlarmSubSecondMask = RTC_ALARMSUBSECONDMASK_ALL;
+  sAlarm.AlarmDateWeekDaySel = RTC_ALARMDATEWEEKDAYSEL_DATE;
+  sAlarm.AlarmDateWeekDay = 1;
+  sAlarm.Alarm = RTC_ALARM_A;
+  if (HAL_RTC_SetAlarm_IT(&hrtc, &sAlarm, RTC_FORMAT_BIN) != HAL_OK)
+  {
+    Error_Handler();
+  }
+	
+	// настройка даты, времени(если необходимо)
+	HAL_RTC_GetDate(&hrtc, &DateToUpdate, RTC_FORMAT_BIN);
+	if((DateToUpdate.Date == 1) && (DateToUpdate.Month == 1) && (DateToUpdate.Year == 0))
+	{
+		DateToUpdate.WeekDay = RTC_WEEKDAY_TUESDAY;
+		DateToUpdate.Month = RTC_MONTH_SEPTEMBER;
+		DateToUpdate.Date = 1;
+		DateToUpdate.Year = 26;
+		
+		sTime.Hours = 12;
+		sTime.Minutes = 0;
+		sTime.Seconds = 0;
+		sTime.DayLightSaving = RTC_DAYLIGHTSAVING_NONE;
+		sTime.StoreOperation = RTC_STOREOPERATION_RESET;
+		
+		if (HAL_RTC_SetTime(&hrtc, &sTime, RTC_FORMAT_BIN) != HAL_OK)	Error_Handler();
+		if (HAL_RTC_SetDate(&hrtc, &DateToUpdate, RTC_FORMAT_BIN) != HAL_OK)	Error_Handler();
+	}
+	
+	return;
+	
   /* USER CODE END Check_RTC_BKUP */
 
   /** Initialize RTC and set the Time and Date
@@ -375,19 +360,19 @@ static void MX_RTC_Init(void)
   sTime.Seconds = 0;
   sTime.DayLightSaving = RTC_DAYLIGHTSAVING_NONE;
   sTime.StoreOperation = RTC_STOREOPERATION_RESET;
-//  if (HAL_RTC_SetTime(&hrtc, &sTime, RTC_FORMAT_BIN) != HAL_OK)
-//  {
-//    Error_Handler();
-//  }
+  if (HAL_RTC_SetTime(&hrtc, &sTime, RTC_FORMAT_BIN) != HAL_OK)
+  {
+    Error_Handler();
+  }
   sDate.WeekDay = RTC_WEEKDAY_TUESDAY;
   sDate.Month = RTC_MONTH_SEPTEMBER;
   sDate.Date = 1;
   sDate.Year = 26;
 
-//  if (HAL_RTC_SetDate(&hrtc, &sDate, RTC_FORMAT_BIN) != HAL_OK)
-//  {
-//    Error_Handler();
-//  }
+  if (HAL_RTC_SetDate(&hrtc, &sDate, RTC_FORMAT_BIN) != HAL_OK)
+  {
+    Error_Handler();
+  }
   /** Enable the Alarm A
   */
   sAlarm.AlarmTime.Hours = 0;

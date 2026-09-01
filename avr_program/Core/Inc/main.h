@@ -44,6 +44,8 @@ extern "C" {
 #include "init.h"
 #include "work.h"
 #include "menu_main.h"
+#include "warn_err.h"
+
 /* USER CODE END Includes */
 
 /* Exported types ------------------------------------------------------------*/
@@ -114,7 +116,6 @@ void Error_Handler(void);
 #define RELE_SOST_2_GPIO_Port GPIOB
 /* USER CODE BEGIN Private defines */
 
-//#define TFT_CHECK
 
 /* USER CODE END Private defines */
 
