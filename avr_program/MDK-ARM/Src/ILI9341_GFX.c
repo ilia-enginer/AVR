@@ -740,6 +740,26 @@ void ILI9341_WriteString(uint16_t x, uint16_t y, const char* str, FontDef font, 
 		}
 }
 
+// Вывод строки с заданным кол-вом символов
+// возвращает на сколько переместился указатель
+uint16_t ILI9341_WriteStringLen(uint16_t x, uint16_t y, const char* str, uint16_t len, FontDef font, uint16_t color, uint16_t bgcolor)
+{
+	uint16_t lenStr = 0;
+	char buff[BUF_LEN];
+	
+	for(uint16_t i = 0; i < len; i++)
+	{
+		if ( (uint8_t)*str + lenStr >= 0xC0 ){
+			lenStr += 2;
+		}
+		else
+			lenStr++;
+	}
+	strncpy(buff, str, lenStr);
+	ILI9341_WriteString(x, y, buff, font, color, bgcolor);
+	return lenStr;
+}
+
 void ILI9341_Draw_Char(unsigned char ch, uint16_t x, uint16_t y, uint16_t colour, uint16_t background_colour, FontDef font)
 {
 

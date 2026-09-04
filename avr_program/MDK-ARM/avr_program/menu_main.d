@@ -41,5 +41,5 @@ avr_program/menu_main.o: menu/menu_main.c menu/menu_main.h \
   C:\Keil_v5\ARM\ARMCLANG\Bin\..\include\string.h Inc\defs.h \
   Inc\ILI9341_GFX.h Inc/fonts.h menu\img.h Inc\xpt2046_touch.h \
   Inc\init.h Inc\work.h menu\menu_main.h Inc\warn_err.h \
-  menu/menu_servise.h menu/touch.h menu/settDataTime.h \
-  menu/menu_second.h menu/menu_warn_err.h
+  menu\popUpWindow.h menu/menu_servise.h menu/touch.h \
+  menu/settDataTime.h menu/menu_second.h menu/menu_warn_err.h

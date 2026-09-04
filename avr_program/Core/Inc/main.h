@@ -45,6 +45,7 @@ extern "C" {
 #include "work.h"
 #include "menu_main.h"
 #include "warn_err.h"
+#include "popUpWindow.h"
 
 /* USER CODE END Includes */
 

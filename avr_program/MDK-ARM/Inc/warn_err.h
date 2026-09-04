@@ -6,5 +6,6 @@
 
 void resetErrors (void);
 
+void resetWarning (void);
 
 #endif /* WARN_ERR_H_ */

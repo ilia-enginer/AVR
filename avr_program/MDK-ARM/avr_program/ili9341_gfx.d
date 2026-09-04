@@ -41,4 +41,5 @@ avr_program/ili9341_gfx.o: Src/ILI9341_GFX.c Inc\ILI9341_GFX.h \
   C:\Keil_v5\ARM\ARMCLANG\Bin\..\include\string.h Inc\defs.h Inc\fonts.h \
   menu\img.h Inc\xpt2046_touch.h Inc\init.h Inc\work.h menu\menu_main.h \
   menu/menu_servise.h menu/touch.h menu/settDataTime.h \
-  menu/menu_second.h menu/menu_warn_err.h Inc\warn_err.h
+  menu/menu_second.h menu/menu_warn_err.h Inc\warn_err.h \
+  menu\popUpWindow.h

@@ -83,6 +83,7 @@ void ILI9341_Draw_Filled_Rectangle_Size_Text(uint16_t X0, uint16_t Y0, uint16_t 
 void ILI9341_Draw_Image(const uint8_t *image_array, uint16_t x_coordinat, uint16_t y_coordinat, uint16_t img_width, uint16_t img_height, uint32_t s_img);	// ВЫВОД КАРТИНКИ ИЗ МАССИВА
 
 void ILI9341_WriteString(uint16_t x, uint16_t y, const char* str, FontDef font, uint16_t color, uint16_t bgcolor);	// можно передавать непосредственно текст
+uint16_t ILI9341_WriteStringLen(uint16_t x, uint16_t y, const char* str, uint16_t len, FontDef font, uint16_t color, uint16_t bgcolor);	// можно передавать непосредственно текст с указанием длины
 
 void ILI9341_Random_line(int16_t x1, int16_t y1, int16_t x2, int16_t y2, uint16_t color);	// рисует произвольную линию (первые два аргумента это начальные координаты, а третий и четвёртый - конечные)
 

@@ -125,6 +125,14 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
+	//???delete
+	char header[BUF_LEN] = {0,};
+	char buf[BUF_LEN] = {0,};
+	snprintf(header, BUF_LEN, "Моточасы"); 
+	snprintf(buf, BUF_LEN, "Моточасы всего     %d\nМоточасы после ТО  %d", 5, 3);		//??? заменить на реальное время 
+	notification(header, buf, 0, SECOND_MENU);
+	while (1)
+	;
 		work();
 		
     /* USER CODE END WHILE */

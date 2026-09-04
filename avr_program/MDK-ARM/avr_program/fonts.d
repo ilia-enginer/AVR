@@ -42,4 +42,4 @@ avr_program/fonts.o: Src/fonts.c Inc\fonts.h ../Core/Inc\main.h \
   Inc\ILI9341_GFX.h Inc/fonts.h menu\img.h Inc\xpt2046_touch.h \
   Inc\init.h Inc\work.h menu\menu_main.h menu/menu_servise.h \
   menu/touch.h menu/settDataTime.h menu/menu_second.h \
-  menu/menu_warn_err.h Inc\warn_err.h
+  menu/menu_warn_err.h Inc\warn_err.h menu\popUpWindow.h

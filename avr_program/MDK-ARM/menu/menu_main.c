@@ -32,12 +32,25 @@ void menuChangeState (uint32_t state)
 		ILI9341_Fill_Screen(MYFON);	// залить экран
 		pAVR->avr_states.menu_state = GET_WARNING;
 	}
+	// меню переключения состояния авр
+	else if(state == SWICH_AVR)
+		pAVR->avr_states.menu_state = SWICH_AVR;
+	// вторая страница главного меню
+	else if(state == SECOND_MENU)
+	{
+		ILI9341_Fill_Screen(MYFON);	// залить экран
+		pAVR->avr_states.menu_state = SECOND_MENU;
+	}
+	// уведомление
+	else if(state == NOTIFICATION)
+		pAVR->avr_states.menu_state = NOTIFICATION;
 	// если такого состояния нет - перейти в главное меню
 	else
 	{
 		ILI9341_Fill_Screen(MYFON);	// залить экран
 		pAVR->avr_states.menu_state = MAIN_MENU;
 	}
+	
 }
 
 // автомат переключения менюшки
@@ -57,9 +70,16 @@ void menuSwich (void)
 			break;
 		case GET_WARNING:	menuGetWarnings();	// меню просмотра предупреждений
 			break;
+		case SWICH_AVR:	switchAvrAutomatic();	// меню переключения силового автомата авр
+			break;
+		case SECOND_MENU:	secondMain();				// вторая страница главного меню
+			break;
+		case NOTIFICATION:	notification(" ", " ", 0, MAIN_MENU);	// уведомление
+			break;
 		default:	menuMain();
 			break;
 	}
+	
 }
 
 
@@ -82,7 +102,6 @@ void menuMain (void)
 	static uint8_t flagSetData = RESET;						// для перехода в режим настройки даты
 	static uint8_t flagPowerAutoManual = RESET;		// для смены режимы управления ручной / авто
 	static uint8_t flagStatusEngine = RESET;			// для принудительного включения / выключения двс
-	static uint8_t flagPowGridMod = RESET;				// для вызова меню переключения силового рубильника авр
 	static uint8_t flagCharge = RESET;						// для принудительного включения / выключения зарядки
 	
 	
@@ -170,17 +189,6 @@ void menuMain (void)
 		}
 		return;
 	}
-	// вызов меню переключения силового автомата
-	else if(flagPowGridMod)
-	{	
-		status = switchAvrAutomatic();	
-		if(status)
-		{
-			flagPowGridMod = RESET;	
-			menuChangeState(MAIN_MENU);	
-		}
-		return;
-	}
 	// проверка нужно ли включать / выключать зарядку
 	else if(flagCharge)
 	{
@@ -213,7 +221,7 @@ void menuMain (void)
 	{
 		// если нажатие в области кнопки меню
 		if(pAVR->touch.x >= 285 && pAVR->touch.x <= 315 && pAVR->touch.y >= 200 && pAVR->touch.y <= 225) 
-			menuChangeState(SERVISE_TOUCH);	// меню отладки тача
+			menuChangeState(SECOND_MENU);	// следующее меню
 		// если нажатие на время
 		else if(pAVR->touch.x >= 30 && pAVR->touch.x <= 130 && pAVR->touch.y >= 0 && pAVR->touch.y <= yInc) 
 			flagSetTime = SET;
@@ -228,7 +236,7 @@ void menuMain (void)
 			flagStatusEngine = SET;
 		// если нажатие на "питание дома"
 		else if(pAVR->touch.x >= 0 && pAVR->touch.x <= 320 && pAVR->touch.y >= y + 5 + (yInc * 4) && pAVR->touch.y <= y + 5 + (yInc * 5)) 	
-			flagPowGridMod = SET;
+			menuChangeState(SWICH_AVR);
 		// если нажатие на "зарядка акб"
 		else if(pAVR->touch.x >= 0 && pAVR->touch.x <= 320 && pAVR->touch.y >= y + 5 + (yInc * 6) && pAVR->touch.y <= y + 5 + (yInc * 7)) 	
 			flagCharge = SET;
@@ -350,7 +358,7 @@ void menuMain (void)
 	ILI9341_WriteString(x, y, buf, Font_11x18, WHITE, MYFON);
 	y += yInc;
 	
-	//------------ справа снизу иконка входа в меню -----------------------
+	//------------ справа снизу иконка перехода на шаг вперед -----------------------
 	ILI9341_Draw_Rectangle(285, 200, 30, 5, WHITE);
 	ILI9341_Draw_Rectangle(285, 210, 30, 5, WHITE);
 	ILI9341_Draw_Rectangle(285, 220, 30, 5, WHITE);
@@ -366,7 +374,7 @@ uint8_t switchAvrAutomatic (void)
 	uint16_t y = 65;				// начальные координаты
 	uint8_t yInc = 35;			// на сколько опускать каждую строку
 	uint8_t status;
-	static uint8_t yPoint = 75;	// координатынавигационной точки
+	static uint8_t yPoint = 75;	// координаты навигационной точки
 	
 	if(flag_block == RESET)
 	{
@@ -434,12 +442,14 @@ uint8_t switchAvrAutomatic (void)
 			pAVR->avr_states.powerAutoManual = AVR_MANUAL;
 			flag_status_block = RESET;
 			flag_block = RESET;
+			menuChangeState(MAIN_MENU);
 			return 1;
 		}
 		else if(status == NO)
 		{
 			flag_status_block = RESET;
 			flag_block = RESET;
+			menuChangeState(MAIN_MENU);
 			return 1;
 		}
 	}
@@ -502,12 +512,14 @@ uint8_t switchAvrAutomatic (void)
 					pAVR->avr_states.powerAutoManual = AVR_MANUAL;
 					flag_status_block = RESET;
 					flag_block = RESET;
+					menuChangeState(MAIN_MENU);
 					return 1;
 				}
 				else if(status == NO)
 				{
 					flag_status_block = RESET;
 					flag_block = RESET;
+					menuChangeState(MAIN_MENU);
 					return 1;
 				}
 			}
@@ -515,72 +527,11 @@ uint8_t switchAvrAutomatic (void)
 			{
 				flag_block = RESET;
 				flag_status_block = RESET;
+				menuChangeState(MAIN_MENU);
 				return 1;
 			}
 		}
 	}
 	return 0;
 }
-
-
-
-// окно подтверждения действия
-uint8_t confirmClick (const char* text)
-{
-	static uint8_t flag_block = RESET;		// чтоб каждый раз не обновлял окно
-	char buf[BUF_LEN] = {0,};
-	uint16_t y = 60;		// начальные координаты
-	uint8_t yInc = 25;	// на сколько опускать каждую строку
-	uint8_t maxCharLine = 32;	// макс кол-во символов в строке
-	
-	if(flag_block == RESET)
-	{
-		ILI9341_Draw_Filled_Rectangle_Coord(40, 30, 280, 210, NAVY);
-		
-		// не более 19 символов в строке
-		uint8_t len_text = strlen(text);
-		for(uint8_t i = 0; i < len_text; )
-		{
-			snprintf(buf, maxCharLine+1, "%s", text + i);	
-			//strncpy(buf, text + i, maxCharLine);
-			
-			ILI9341_WriteString(60, y, buf, Font_11x18, WHITE, NAVY);
-			i = i + maxCharLine;
-			y = y + yInc;
-		}
-		flag_block = SET;
-		
-		// ------------ кнопка "да" ------------
-		ILI9341_Draw_Filled_Rectangle_Coord(50, 170, 100, 200, MYFON);
-		snprintf(buf, BUF_LEN, "Да"); 
-		ILI9341_WriteString(65, 175, buf, Font_11x18, WHITE, MYFON);
-		
-		// ------------ кнопка "нет" ------------
-		ILI9341_Draw_Filled_Rectangle_Coord(220, 170, 270, 200, MYFON);
-		snprintf(buf, BUF_LEN, "Нет"); 
-		ILI9341_WriteString(230, 175, buf, Font_11x18, WHITE, MYFON);
-	}
-	
-	//------------ обработка тач -----------------------		
-	// если отпущен после короткого нажатия 
-	if(getTouch() == NO_PRESS)
-	{
-		// если нажатие в области кнопки "да"
-		if(pAVR->touch.x >= 50 && pAVR->touch.x <= 100 && pAVR->touch.y >= 170 && pAVR->touch.y <= 200) // если нажатие происходит в области этих координат
-		{
-			flag_block = RESET;
-			return YES;
-		}
-		// если нажатие в области кнопки "нет"
-		else if(pAVR->touch.x >= 220 && pAVR->touch.x <= 270 && pAVR->touch.y >= 170 && pAVR->touch.y <= 200) // если нажатие происходит в области этих координат
-		{
-			flag_block = RESET;
-			return NO;
-		}
-	}
-
-	return NOTHING;
-}
-
-
 

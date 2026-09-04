@@ -20,21 +20,13 @@ uint8_t initDevice(void)
 	pAVR->avr_states.statusEngine 		= RESET;					// остановлен
 	pAVR->avr_states.extPowerSupply 	= EXT_POWER_OFF;	// нет
 	
-	pAVR->err.counter = 0;
-	pAVR->warn.counter = 0;
+	resetErrors();
+	resetWarning();
 	
 	HAL_ADC_Start_DMA(&hadc1, (uint32_t*)&AVR.adc, ADC_CHANELS);	// запуск ацп
 	
 	menuChangeState(MAIN_MENU);
-	
-	//??? delete
-	for(uint8_t i = 0; i < 32; i++)
-	{
-		pAVR->warn.counter++;
-		pAVR->warn.array_flags[i] = 1;
-	}
-	//??? delete
-		
+			
 	return 1;
 }
 
@@ -55,9 +47,9 @@ uint8_t initTFT(void)
 	/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   ILI9341_Fill_Screen(MYFON); // заливка всего экрана цветом (цвета в файле ILI9341_GFX.h)
 	
-	//???
-//	uint16_t size_img = sizeof(img_logo); // размер картинки в байтах (картинка лежит в файле img.h)
-//  ILI9341_Draw_Image(img_logo, (ILI9341_SCREEN_HEIGHT / 3), (ILI9341_SCREEN_WIDTH / 3), (ILI9341_SCREEN_WIDTH / 3), (ILI9341_SCREEN_HEIGHT / 3), size_img); // вывести в центре
+//	//???
+//	uint32_t size_img = sizeof(img_logo); // размер картинки в байтах (картинка лежит в файле img.h)
+//	ILI9341_Draw_Image(img_logo, 60, 7, IMG_WIDTH, IMG_HEIGHT, size_img); // вывести в центре
 //	
 //	// полоса загрузки
 //  for(uint16_t i = 0; i < ILI9341_SCREEN_HEIGHT * 0.8; i++)

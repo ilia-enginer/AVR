@@ -27,7 +27,7 @@ void serviseTouch (void)
 
 		if(status == YES)
 		{
-			menuChangeState(MAIN_MENU);	
+			menuChangeState(SECOND_MENU);
 			flagExit = RESET;	
 			flagFirst = RESET;
 		}

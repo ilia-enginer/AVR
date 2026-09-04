@@ -312,7 +312,7 @@
           </ArmAdsMisc>
           <Cads>
             <interw>1</interw>
-            <Optim>7</Optim>
+            <Optim>1</Optim>
             <oTime>0</oTime>
             <SplitLS>0</SplitLS>
             <OneElfS>1</OneElfS>
@@ -558,11 +558,6 @@
               <FilePath>.\Inc\work.h</FilePath>
             </File>
             <File>
-              <FileName>bitmap.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>.\Inc\bitmap.h</FilePath>
-            </File>
-            <File>
               <FileName>ILI9341_GFX.h</FileName>
               <FileType>5</FileType>
               <FilePath>.\Inc\ILI9341_GFX.h</FilePath>
@@ -686,6 +681,16 @@
               <FileName>menu_warn_err.h</FileName>
               <FileType>5</FileType>
               <FilePath>.\menu\menu_warn_err.h</FilePath>
+            </File>
+            <File>
+              <FileName>popUpWindow.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\menu\popUpWindow.c</FilePath>
+            </File>
+            <File>
+              <FileName>popUpWindow.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\menu\popUpWindow.h</FilePath>
             </File>
           </Files>
         </Group>
