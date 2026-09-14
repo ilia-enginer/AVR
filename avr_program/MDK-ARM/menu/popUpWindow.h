@@ -7,7 +7,7 @@
 
 
 uint8_t confirmClick (const char* text);		// всплывающее окно подтверждения действия
-void notification(const char* header, const char* text, uint32_t time, uint8_t menu);
+void notification(const char* header, const char* text, uint32_t time, uint32_t menu);
 uint16_t lineAlignment(const char* text, char *buf, uint16_t lenLine);
 
 

@@ -5,56 +5,113 @@
 
 void secondMain (void)
 {
+	static uint8_t flagTO = RESET;		// для обновления даты ТО
+	
+	uint8_t status;
 	char buf[BUF_LEN] = {0,};
 	uint16_t y = 5;			// начальные координаты
 	uint16_t x = 20;		// начальные координаты
 	uint8_t yInc = 22;	// на сколько опускать каждую строку
 
+	
+	// проверка перед обновлением даты ТО
+	if(flagTO)
+	{
+		status = confirmClick("Обновить дату ТО?");
+		if(status == YES)
+		{
+			flagTO = RESET;
+			//???
+			// обновить дату ТО
+			delWarn(WARN_NECESSITY_TECH_INSP);
+			notification("ТО", "Дата ТО обновлена", 0, SECOND_MENU);
+		}
+		else if(status == NO)
+		{
+			flagTO = RESET;
+			menuChangeState(SECOND_MENU);
+		}
+		return;
+	}
+	
 	//------------ обработка тач -----------------------		
 	// если отпущен после нажатия или после длительного нажатия
 	if(getTouch() == NO_PRESS || getTouch() == NO_LONG_PRESS)
 	{
 		// если нажатие в области кнопки меню
-		if(pAVR->touch.x >= 5 && pAVR->touch.x <= 35 && pAVR->touch.y >= 200 && pAVR->touch.y <= 225) 
+		if(pAVR->touch.x >= 5 && pAVR->touch.x <= 35 && pAVR->touch.y >= 200 && pAVR->touch.y <= 225) {
 			menuChangeState(MAIN_MENU);	// главное меню 
+			return;
+		}
 		// если нажатие на "моточасы"
-		else if(pAVR->touch.x >= x && pAVR->touch.x <= 320 && pAVR->touch.y >= y + (yInc * 0) && pAVR->touch.y <= y + (yInc * 1)) 
+		else if(pAVR->touch.x >= x && pAVR->touch.x <= 320 && pAVR->touch.y >= y + (yInc * 0) && pAVR->touch.y <= y + (yInc * 1)) {
 			engineHoursGet();	// вывод информации о ТО
+			return;
+		}	
 		// если нажатие на "ТО"
-		else if(pAVR->touch.x >= x && pAVR->touch.x <= 320 && pAVR->touch.y >= y + (yInc * 1) && pAVR->touch.y <= y + (yInc * 2)) 
+		else if(pAVR->touch.x >= x && pAVR->touch.x <= 320 && pAVR->touch.y >= y + (yInc * 1) && pAVR->touch.y <= y + (yInc * 2)) {
 			serviseWorkGet();	// вывод моточасов
+			return;
+		}	
+		// если нажатие на "провести ТО"
+		else if(pAVR->touch.x >= x && pAVR->touch.x <= 320 && pAVR->touch.y >= y + (yInc * 2) && pAVR->touch.y <= y + (yInc * 3)) {
+			flagTO = SET;
+			return;
+		}	
+		// если нажатие на "отключение эл-ва"
+		else if(pAVR->touch.x >= x && pAVR->touch.x <= 320 && pAVR->touch.y >= y + (yInc * 3) && pAVR->touch.y <= y + (yInc * 4)) {
+			powerOutageGet();
+			return;
+		}	
+		// если нажатие на "Запуск ДВС инфо"
+		else if(pAVR->touch.x >= x && pAVR->touch.x <= 320 && pAVR->touch.y >= y + (yInc * 4) && pAVR->touch.y <= y + (yInc * 5)) {
+			startEngineGet();
+			return;
+		}	
+		// если нажатие на "Ручное переключение реле"
+		else if(pAVR->touch.x >= x && pAVR->touch.x <= 320 && pAVR->touch.y >= y + (yInc * 5) && pAVR->touch.y <= y + (yInc * 6)) {
+			menuChangeState(MANUAL_RELE_SWITCH);	// меню "Ручное переключение реле"
+			return;
+		}	
 		// если нажатие на Сервис тачскрина
-		else if(pAVR->touch.x >= x && pAVR->touch.x <= 320 && pAVR->touch.y >= y + (yInc * 6) && pAVR->touch.y <= y + (yInc * 7)) 
+		else if(pAVR->touch.x >= x && pAVR->touch.x <= 320 && pAVR->touch.y >= y + (yInc * 6) && pAVR->touch.y <= y + (yInc * 7)) {
 			menuChangeState(SERVISE_TOUCH);	// меню сервис тачскрина
+			return;
+		}	
+		// если нажатие на Напряжения инфо
+		else if(pAVR->touch.x >= x && pAVR->touch.x <= 320 && pAVR->touch.y >= y + (yInc * 7) && pAVR->touch.y <= y + (yInc * 8)) {
+			menuChangeState(GET_V_MENU);	// Напряжения инфо
+			return;
+		}	
 	}
-	
+
 	// обновлять главное меню не чаще, чем раз в 1с
 	static uint32_t time_update = 0;
 	if(HAL_GetTick() - time_update < 1000)	return;
 	time_update = HAL_GetTick();
 	
 	//------------ Моточасы -----------------------
-	snprintf(buf, BUF_LEN, "Моточасы");
+	snprintf(buf, BUF_LEN, "Моточасы инфо");
 	ILI9341_WriteString(x, y, buf, Font_11x18, WHITE, MYFON);
 	y += yInc;
 	
 	//------------ ТО -----------------------
-	snprintf(buf, BUF_LEN, "ТО");
+	snprintf(buf, BUF_LEN, "ТО инфо");
 	ILI9341_WriteString(x, y, buf, Font_11x18, WHITE, MYFON);
 	y += yInc;
 	
 	//------------ Проведение ТО-----------------------
-	snprintf(buf, BUF_LEN, "Проведение ТО");
+	snprintf(buf, BUF_LEN, "Провести ТО");
 	ILI9341_WriteString(x, y, buf, Font_11x18, WHITE, MYFON);
 	y += yInc;
 	
 	//------------ Отключение эл-ва -----------------------
-	snprintf(buf, BUF_LEN, "Отключение эл-ва");
+	snprintf(buf, BUF_LEN, "Отключение эл-ва инфо");
 	ILI9341_WriteString(x, y, buf, Font_11x18, WHITE, MYFON);
 	y += yInc;
 	
 	//------------ Запуск ДВС -----------------------
-	snprintf(buf, BUF_LEN, "Запуск ДВС");
+	snprintf(buf, BUF_LEN, "Запуск ДВС инфо");
 	ILI9341_WriteString(x, y, buf, Font_11x18, WHITE, MYFON);
 	y += yInc;
 	
@@ -65,6 +122,11 @@ void secondMain (void)
 	
 	//------------ Сервис тачскрина -----------------------
 	snprintf(buf, BUF_LEN, "Сервис тачскрина");
+	ILI9341_WriteString(x, y, buf, Font_11x18, WHITE, MYFON);
+	y += yInc;
+	
+	//------------ Напряжения инфо -----------------------
+	snprintf(buf, BUF_LEN, "Напряжения инфо");
 	ILI9341_WriteString(x, y, buf, Font_11x18, WHITE, MYFON);
 	y += yInc;
 	
@@ -81,7 +143,7 @@ void engineHoursGet (void)
 	char header[BUF_LEN] = {0,};
 	char buf[BUF_LEN] = {0,};
 	
-	snprintf(header, BUF_LEN, "Моточасы"); 
+	snprintf(header, BUF_LEN, "Моточасы инфо"); 
 	snprintf(buf, BUF_LEN, "Моточасы всего     %d\nМоточасы после ТО  %d", 5, 3);		//??? заменить на реальное время 
 	notification(header, buf, 0, SECOND_MENU);
 }
@@ -92,9 +154,317 @@ void serviseWorkGet(void)
 	char header[BUF_LEN] = {0,};
 	char buf[BUF_LEN] = {0,};
 	
-	snprintf(header, BUF_LEN, "ТО"); 
-	snprintf(buf, BUF_LEN, "Последнее ТО    %d.%d.%d\nСлед. ТО %d.%d.%d\nМот. час. до ТО %d", 5, 11, 26, 3, 12, 27, 5);		//??? заменить на реальное время 
+	snprintf(header, BUF_LEN, "ТО инфо"); 
+	snprintf(buf, BUF_LEN, "Последнее ТО    %d.%d.%d\nСлед. ТО        %d.%d.%d\nМот. час. до ТО %d", 5, 11, 26, 3, 12, 27, 5);		//??? заменить на реальное время 
 	notification(header, buf, 0, SECOND_MENU);
+}
+
+// вывод информации о отключении эл-ва
+void powerOutageGet(void)
+{
+	char header[BUF_LEN] = {0,};
+	char buf[BUF_LEN] = {0,};
+	
+	snprintf(header, BUF_LEN, "Откл эл-ва инфо"); 
+	snprintf(buf, BUF_LEN, "Дата посл. откл %d.%d.%d\nБез эл-ва.      %d.%d.%d\nВсего без эл-ва %d", 10, 11, 26, 3, 12, 27, 5);		//??? заменить на реальное время 
+	notification(header, buf, 0, SECOND_MENU);
+}
+
+// вывод информации о запуске двигателя
+void startEngineGet(void)
+{
+	char header[BUF_LEN] = {0,};
+	char buf[BUF_LEN] = {0,};
+	
+	snprintf(header, BUF_LEN, "Запуск ДВС инфо"); 
+	snprintf(buf, BUF_LEN, "Ко-во запусков  %d\nПопытки запуска %d", 10, 11);		//??? заменить на реальные цифры
+	notification(header, buf, 0, SECOND_MENU);
+}
+
+
+void manualRelaySwitchMenu(void)
+{
+	uint16_t y = 5;				// начальные координаты
+	uint16_t x = 5;				// начальные координаты
+	uint8_t yInc = 25;		// на сколько опускать каждую строку
+	char buf[BUF_LEN] = {0,};
+	uint8_t status;
+	
+	static uint8_t flag_exit = RESET;
+	static uint8_t flag_change = RESET;
+	
+	static uint8_t flag_main_rele = RESET;
+	static uint8_t flag_zazhig_rele = RESET;
+	static uint8_t flag_starter_rele = RESET;
+	static uint8_t flag_podsos_rele = RESET;
+	
+	// проверка подтверждения выхода
+	if(flag_exit)
+	{
+		status = confirmClick("Выйти?");
+		if(status == YES)	{
+			flag_main_rele = RESET;
+			flag_zazhig_rele = RESET;
+			flag_starter_rele = RESET;
+			flag_podsos_rele = RESET;
+			flag_exit = RESET;
+			flag_change = RESET;
+			RELE_STARTER_OFF();
+			RELE_PODSOS_OFF();
+			menuChangeState(SECOND_MENU);
+		}
+		else if(status == NO)	{
+			flag_exit = RESET;
+			ILI9341_Fill_Screen(MYFON);	// залить экран
+		}
+		return;
+	}
+	else if(flag_main_rele)
+	{
+		status = confirmClick("Переключить главное реле?");
+		if(status == YES)	{
+			flag_main_rele = RESET;
+			if(!flag_change){
+				flag_change = SET;
+				pAVR->avr_states.powerAutoManual = AVR_MANUAL;
+				setWarn(WARN_MANUAL_CONTROL_EN);
+			}
+			else
+				ILI9341_Fill_Screen(MYFON);	// залить экран
+				
+			if(HAL_GPIO_ReadPin(RELE_OBSH_GPIO_Port, RELE_OBSH_Pin)){
+				RELE_OBSH_ON();
+			}
+			else
+				RELE_OBSH_OFF();
+		}
+		else if(status == NO)	{
+			flag_main_rele = RESET;
+			ILI9341_Fill_Screen(MYFON);	// залить экран
+		}
+		return;
+	}
+	else if(flag_zazhig_rele)
+	{
+		status = confirmClick("Переключить реле зажигания?");
+		if(status == YES)	{
+			flag_zazhig_rele = RESET;
+			if(!flag_change){
+				flag_change = SET;
+				pAVR->avr_states.powerAutoManual = AVR_MANUAL;
+				setWarn(WARN_MANUAL_CONTROL_EN);
+			}
+			else
+				ILI9341_Fill_Screen(MYFON);	// залить экран
+				
+			if(HAL_GPIO_ReadPin(RELE_OBSH_GPIO_Port, RELE_ZAJIG_Pin)){
+				RELE_ZAJIG_OFF();
+			}
+			else
+				RELE_ZAJIG_ON();
+		}
+		else if(status == NO)	{
+			flag_zazhig_rele = RESET;
+			ILI9341_Fill_Screen(MYFON);	// залить экран
+		}
+		return;
+	}
+	else if(flag_starter_rele)
+	{
+		status = confirmClick("Переключить реле стартера?");
+		if(status == YES)	{
+			flag_starter_rele = RESET;
+			if(!flag_change){
+				flag_change = SET;
+				pAVR->avr_states.powerAutoManual = AVR_MANUAL;
+				setWarn(WARN_MANUAL_CONTROL_EN);
+			}
+			else
+				ILI9341_Fill_Screen(MYFON);	// залить экран
+				
+			if(HAL_GPIO_ReadPin(RELE_STARTER_GPIO_Port, RELE_STARTER_Pin)){
+				RELE_STARTER_OFF();
+			}
+			else
+				RELE_STARTER_ON();
+		}
+		else if(status == NO)	{
+			flag_starter_rele = RESET;
+			ILI9341_Fill_Screen(MYFON);	// залить экран
+		}
+		return;
+	}
+	else if(flag_podsos_rele)
+	{
+		status = confirmClick("Переключить реле подсоса?");
+		if(status == YES)	{
+			flag_podsos_rele = RESET;
+			if(!flag_change){
+				flag_change = SET;
+				pAVR->avr_states.powerAutoManual = AVR_MANUAL;
+				setWarn(WARN_MANUAL_CONTROL_EN);
+			}
+			else
+				ILI9341_Fill_Screen(MYFON);	// залить экран
+				
+			if(HAL_GPIO_ReadPin(RELE_PODSOS_GPIO_Port, RELE_PODSOS_Pin)){
+				RELE_PODSOS_OFF();
+			}
+			else
+				RELE_PODSOS_ON();
+		}
+		else if(status == NO)	{
+			flag_podsos_rele = RESET;
+			ILI9341_Fill_Screen(MYFON);	// залить экран
+		}
+		return;
+	}
+	
+	//------------ обработка тач -----------------------		
+	// если отпущен после нажатия или после длительного нажатия
+	if(getTouch() == NO_PRESS || getTouch() == NO_LONG_PRESS)
+	{
+		// если нажатие в области кнопки назад
+		if(pAVR->touch.x >= 250 && pAVR->touch.x <= 315 && pAVR->touch.y >= 200 && pAVR->touch.y <= 235) {
+			flag_exit = SET;
+			return;
+		}	
+		// если нажатие в области главное реле
+		else if(pAVR->touch.x >= x && pAVR->touch.x <= 315 && pAVR->touch.y >= y + (yInc * 1) + 10 && pAVR->touch.y <= y + (yInc * 2) + 10) {
+			flag_main_rele = SET;
+			return;
+		}	
+		// если нажатие в области реле зажигания
+		else if(pAVR->touch.x >= x && pAVR->touch.x <= 315 && pAVR->touch.y >= y + (yInc * 2) + 10 && pAVR->touch.y <= y + (yInc * 3) + 10) {
+			flag_zazhig_rele = SET;
+			return;
+		}	
+		// если нажатие в области реле стартера
+		else if(pAVR->touch.x >= x && pAVR->touch.x <= 315 && pAVR->touch.y >= y + (yInc * 3) + 10 && pAVR->touch.y <= y + (yInc * 4) + 10) {
+			flag_starter_rele = SET;
+			return;
+		}	
+		// если нажатие в области реле подсоса
+		else if(pAVR->touch.x >= x && pAVR->touch.x <= 315 && pAVR->touch.y >= y + (yInc * 4) + 10 && pAVR->touch.y <= y + (yInc * 5) + 10) {
+			flag_podsos_rele = SET;
+			return;
+		}	
+	}
+
+
+	// обновлять главное меню не чаще, чем раз в 1с
+	static uint32_t time_update = 0;
+	if(HAL_GetTick() - time_update < 1000)	return;
+	time_update = HAL_GetTick();
+	
+	
+	// ------------ кнопка "назад" ------------
+	ILI9341_Draw_Filled_Rectangle_Coord(250, 200, 315, 235, NAVY);
+	snprintf(buf, BUF_LEN, "Назад"); 
+	ILI9341_WriteString(255, 210, buf, Font_11x18, WHITE, NAVY);
+	
+	
+	// ------------ заголовок ------------
+	snprintf(buf, BUF_LEN, "Управление реле мотора");	
+	ILI9341_WriteString(30, y, buf, Font_11x18, WHITE, MYFON);
+	y += yInc + 10;
+	
+	snprintf(buf, BUF_LEN, "Реле главное"); 
+	ILI9341_WriteString(x+35, y, buf, Font_11x18, WHITE, MYFON);
+	ILI9341_Draw_Hollow_Circle(x+10, y+10, 9, WHITE);
+	ILI9341_Draw_Hollow_Circle(x+10, y+10, 10, WHITE);	
+	if(!HAL_GPIO_ReadPin(RELE_OBSH_GPIO_Port, RELE_OBSH_Pin))
+		ILI9341_Draw_Filled_Circle(x+10, y+10, 5, WHITE);
+	y = y + yInc;
+		
+	snprintf(buf, BUF_LEN, "Реле зажигания"); 
+	ILI9341_WriteString(x+35, y, buf, Font_11x18, WHITE, MYFON);
+	ILI9341_Draw_Hollow_Circle(x+10, y+10, 9, WHITE);
+	ILI9341_Draw_Hollow_Circle(x+10, y+10, 10, WHITE);	
+	if(HAL_GPIO_ReadPin(RELE_OBSH_GPIO_Port, RELE_ZAJIG_Pin))
+		ILI9341_Draw_Filled_Circle(x+10, y+10, 5, WHITE);
+	y = y + yInc;
+	
+	snprintf(buf, BUF_LEN, "Реле стартера"); 
+	ILI9341_WriteString(x+35, y, buf, Font_11x18, WHITE, MYFON);
+	ILI9341_Draw_Hollow_Circle(x+10, y+10, 9, WHITE);
+	ILI9341_Draw_Hollow_Circle(x+10, y+10, 10, WHITE);	
+	if(HAL_GPIO_ReadPin(RELE_STARTER_GPIO_Port, RELE_STARTER_Pin))
+		ILI9341_Draw_Filled_Circle(x+10, y+10, 5, WHITE);
+	y = y + yInc;
+	
+	snprintf(buf, BUF_LEN, "Реле подсоса"); 
+	ILI9341_WriteString(x+35, y, buf, Font_11x18, WHITE, MYFON);
+	ILI9341_Draw_Hollow_Circle(x+10, y+10, 9, WHITE);
+	ILI9341_Draw_Hollow_Circle(x+10, y+10, 10, WHITE);	
+	if(HAL_GPIO_ReadPin(RELE_PODSOS_GPIO_Port, RELE_PODSOS_Pin))
+		ILI9341_Draw_Filled_Circle(x+10, y+10, 5, WHITE);
+	y = y + yInc;
+}
+		
+void get_v_menu(void)
+{
+	uint16_t y = 5;				// начальные координаты
+	uint16_t x = 10;				// начальные координаты
+	uint8_t yInc = 23;		// на сколько опускать каждую строку
+	char buf[BUF_LEN] = {0,};
+
+	//------------ обработка тач -----------------------		
+	// если отпущен после нажатия или после длительного нажатия
+	if(getTouch() == NO_PRESS || getTouch() == NO_LONG_PRESS)
+	{
+		// если нажатие в области кнопки назад
+		if(pAVR->touch.x >= 250 && pAVR->touch.x <= 315 && pAVR->touch.y >= 200 && pAVR->touch.y <= 235) {
+			menuChangeState(SECOND_MENU);
+			return;
+		}	
+	}
+	
+	// обновлять главное меню не чаще, чем раз в 0,5с
+	static uint32_t time_update = 0;
+	if(HAL_GetTick() - time_update < 500)	return;
+	time_update = HAL_GetTick();
+	
+	
+	// ------------ кнопка "назад" ------------
+	ILI9341_Draw_Filled_Rectangle_Coord(250, 200, 315, 235, NAVY);
+	snprintf(buf, BUF_LEN, "Назад"); 
+	ILI9341_WriteString(255, 210, buf, Font_11x18, WHITE, NAVY);
+	
+	
+	// ------------ заголовок ------------
+	snprintf(buf, BUF_LEN, "Напряжения инфо");	
+	ILI9341_WriteString(60, y, buf, Font_11x18, WHITE, MYFON);
+	y += yInc+5;
+	
+	// ------------ напряжения ------------
+	snprintf(buf, BUF_LEN, "Внешнее            %.2f", pAVR->v_t.v_out); 
+	ILI9341_WriteString(x, y, buf, Font_11x18, WHITE, MYFON);
+	y = y + yInc;
+	
+	snprintf(buf, BUF_LEN, "Акум               %.2f", pAVR->v_t.v_bat); 
+	ILI9341_WriteString(x, y, buf, Font_11x18, WHITE, MYFON);
+	y = y + yInc;
+	
+	snprintf(buf, BUF_LEN, "На обмотке мотора  %.2f", pAVR->v_t.v_motor); 
+	ILI9341_WriteString(x, y, buf, Font_11x18, WHITE, MYFON);
+	y = y + yInc;
+	
+	snprintf(buf, BUF_LEN, "На реле стартера   %.2f", pAVR->v_t.v_rele_starter); 
+	ILI9341_WriteString(x, y, buf, Font_11x18, WHITE, MYFON);
+	y = y + yInc;
+	
+	snprintf(buf, BUF_LEN, "Опора проца        %.2f", pAVR->v_t.v_opora); 
+	ILI9341_WriteString(x, y, buf, Font_11x18, WHITE, MYFON);
+	y = y + yInc;
+	
+	snprintf(buf, BUF_LEN, "Питание проца      %.2f", pAVR->v_t.v_cpu); 
+	ILI9341_WriteString(x, y, buf, Font_11x18, WHITE, MYFON);
+	y = y + yInc;
+	
+	snprintf(buf, BUF_LEN, "Температура проца  %.2f", pAVR->v_t.t_cpu); 
+	ILI9341_WriteString(x, y, buf, Font_11x18, WHITE, MYFON);
+	y = y + yInc;
 }
 
 

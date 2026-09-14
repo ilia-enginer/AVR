@@ -7,7 +7,36 @@
 
 /* defines -----------------------------------------------------------*/
 // ADC
-#define ADC_CHANELS				(6)								// кол-во каналов ацп в массиве
+#define OPORA_ADC						(3.3f)						// напряжение опоры ацп
+#define ADC_CHANELS					(6)								// кол-во каналов ацп в массиве
+#define FULL_RANGE_f				(4096.0f)
+	
+#define KOFF_FILTR					(0.1f)						// коэфициент фильтра для пересчета значений ацп
+		 
+
+// напряжение
+#define U_AKB_MIN_1 				(12.3f)						// вольт первый порог низкого напряжения (порог предупреждения)
+#define U_AKB_MIN_0 				(12.1f) 					// вольт нулевой порог низкого напряжения (порог ошибки)
+#define U_AKB_MAX 					(15.0f)						//верхний порог напряжения	(порог ошибки)
+
+// Полная формула вычисления измеряемого напряжения будет выглядеть так: U= (опорное напряжение*значение АЦП*коэффициент делителя)/число разрядов АЦП
+#define R1_EXT_V						(5100.0f)					// Om
+#define R2_EXT_V						(910.0f)					// Om
+#define	K_EXT_V	(R2_EXT_V/(R1_EXT_V + R2_EXT_V))		// Коэфициент делителя напряжения
+
+#define R1_AKB							(3300.0f)					// Om
+#define R2_AKB							(910.0f)					// Om
+#define	K_AKB	(R2_AKB/(R1_AKB + R2_AKB))			// Коэфициент делителя напряжения
+
+#define R1_ENGINE						(10000.0f)				// Om
+#define R2_ENGINE						(470.0f)					// Om
+#define	K_ENGINE	(R2_ENGINE/(R1_ENGINE + R2_ENGINE))		// Коэфициент делителя напряжения
+#define V_FALL_DIODE				(1.4f)						// напряжение падения на диодах
+
+#define R1_REL_STARTER			(3300.0f)					// Om
+#define R2_REL_STARTER			(910.0f)					// Om
+#define	K_REL_STARTER	(R2_REL_STARTER/(R1_REL_STARTER + R2_REL_STARTER))			// Коэфициент делителя напряжения
+
 
 // ошибки и предупреждения
 #define MAX_ERR_AND_WARN	(32)							// макс. кол-во ошибок и предупреждений
@@ -25,6 +54,8 @@ typedef enum {
 		SWICH_AVR,						// меню переключения силового автомата
 		SECOND_MENU,					// второе меню
 		NOTIFICATION,					// уведомление
+		MANUAL_RELE_SWITCH,		// меню ручного переключения реле
+		GET_V_MENU,						// меню вывода напряжений
 		
 } MENU_STATE;
 
@@ -84,7 +115,7 @@ typedef struct {
     const uint16_t *data;
 } FontDef;
 
-
+// структура работы с тачем
 typedef struct {
     
 	uint8_t flag_press;										// флаг нажатия на экран
@@ -122,8 +153,9 @@ typedef struct Vparam_Type {
 		float v_bat;												// напряжение акума
 		float v_motor;											// напряжение на обмотке мотора
 		float v_rele_starter;								// напряжение на выходе реле стартера
-		float v_opora;											// температура проца
-		float t_cpu;												// опорное напряжение проца
+		float v_opora;											// опорное напряжение проца 
+		float v_cpu;												// напряжение питания проца
+		float t_cpu;												// температура проца
 } Vparam_Type;
 
 
@@ -154,12 +186,12 @@ typedef struct {
 // тип данных для параметров всего прибора
 typedef struct Device_Type {
 
-	automats_devices	avr_states;
-	ADC_data 					adc;
-	Vparam_Type				v_t;
-	TouchDef					touch;
-	ErrWarnType				err;
-	ErrWarnType				warn;
+	automats_devices	avr_states;		// автоматы и флаги прибора
+	ADC_data 					adc;					// данные ацп
+	Vparam_Type				v_t;					// посчитанные параметры напряжения, температуры
+	TouchDef					touch;				// структура работы с тачем
+	ErrWarnType				err;					// структура ошибок
+	ErrWarnType				warn;					// структура предупреждений
 	
 } Device_Type;
 

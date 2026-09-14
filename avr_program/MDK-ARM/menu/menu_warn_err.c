@@ -37,11 +37,15 @@ void menuGetErrors (void)
 	if(getTouch() == NO_PRESS || getTouch() == NO_LONG_PRESS)
 	{
 		// если нажатие в области кнопки назад
-		if(pAVR->touch.x >= 250 && pAVR->touch.x <= 315 && pAVR->touch.y >= 200 && pAVR->touch.y <= 235) 
+		if(pAVR->touch.x >= 250 && pAVR->touch.x <= 315 && pAVR->touch.y >= 200 && pAVR->touch.y <= 235) {
 			menuChangeState(MAIN_MENU);	// главное меню 
+			return;
+		}	
 		// если нажатие в области кнопки сброса ошибок
-		if(pAVR->touch.x >= 295 && pAVR->touch.x <= 318 && pAVR->touch.y >= 135 && pAVR->touch.y <= 195) 
+		if(pAVR->touch.x >= 295 && pAVR->touch.x <= 318 && pAVR->touch.y >= 135 && pAVR->touch.y <= 195) {
 			flag_clear = SET;
+			return;
+		}	
 	}
 
 	// обновлять главное меню не чаще, чем раз в 1с
@@ -179,11 +183,15 @@ void menuGetWarnings (void)
 	if(getTouch() == NO_PRESS || getTouch() == NO_LONG_PRESS)
 	{
 		// если нажатие в области кнопки назад
-		if(pAVR->touch.x >= 250 && pAVR->touch.x <= 315 && pAVR->touch.y >= 200 && pAVR->touch.y <= 235) 
+		if(pAVR->touch.x >= 250 && pAVR->touch.x <= 315 && pAVR->touch.y >= 200 && pAVR->touch.y <= 235) {
 			menuChangeState(MAIN_MENU);	// главное меню 
+			return;
+		}	
 		// если нажатие в области кнопки сброса ошибок
-		if(pAVR->touch.x >= 295 && pAVR->touch.x <= 318 && pAVR->touch.y >= 135 && pAVR->touch.y <= 195) 
+		if(pAVR->touch.x >= 295 && pAVR->touch.x <= 318 && pAVR->touch.y >= 135 && pAVR->touch.y <= 195) {
 			flag_clear = SET;
+			return;
+		}	
 	}
 
 	// обновлять главное меню не чаще, чем раз в 1с

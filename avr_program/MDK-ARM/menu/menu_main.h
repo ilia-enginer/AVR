@@ -10,7 +10,7 @@
 #include "menu_warn_err.h"
 
 
-#define BUF_LEN  (96)
+#define BUF_LEN  (120)
 
 
 // вариатны возвращаемые функцией подтверждения

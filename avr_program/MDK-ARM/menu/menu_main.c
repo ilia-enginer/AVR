@@ -6,8 +6,7 @@
 void menuChangeState (uint32_t state)
 {
 	// главное меню
-	if(state == MAIN_MENU)
-	{
+	if(state == MAIN_MENU)	{
 		ILI9341_Fill_Screen(MYFON);	// залить экран
 		pAVR->avr_states.menu_state = MAIN_MENU;
 	}
@@ -21,14 +20,12 @@ void menuChangeState (uint32_t state)
 	else if(state == SET_DATA)
 		pAVR->avr_states.menu_state = SET_DATA;
 	// меню просмотра ошибок
-	else if(state == GET_ERROR)
-	{
+	else if(state == GET_ERROR)	{
 		ILI9341_Fill_Screen(MYFON);	// залить экран
 		pAVR->avr_states.menu_state = GET_ERROR;
 	}
 	// меню просмотра предупреждений
-	else if(state == GET_WARNING)
-	{
+	else if(state == GET_WARNING)	{
 		ILI9341_Fill_Screen(MYFON);	// залить экран
 		pAVR->avr_states.menu_state = GET_WARNING;
 	}
@@ -36,21 +33,29 @@ void menuChangeState (uint32_t state)
 	else if(state == SWICH_AVR)
 		pAVR->avr_states.menu_state = SWICH_AVR;
 	// вторая страница главного меню
-	else if(state == SECOND_MENU)
-	{
+	else if(state == SECOND_MENU)	{
 		ILI9341_Fill_Screen(MYFON);	// залить экран
 		pAVR->avr_states.menu_state = SECOND_MENU;
 	}
 	// уведомление
 	else if(state == NOTIFICATION)
 		pAVR->avr_states.menu_state = NOTIFICATION;
+	// меню ручного переключения реле
+	else if(state == MANUAL_RELE_SWITCH) {
+		ILI9341_Fill_Screen(MYFON);	// залить экран
+		pAVR->avr_states.menu_state = MANUAL_RELE_SWITCH;
+	}
+	// меню вывода напряжений
+	else if(state == GET_V_MENU) {
+		ILI9341_Fill_Screen(MYFON);	// залить экран
+		pAVR->avr_states.menu_state = GET_V_MENU;
+	}
 	// если такого состояния нет - перейти в главное меню
-	else
-	{
+	else	{
 		ILI9341_Fill_Screen(MYFON);	// залить экран
 		pAVR->avr_states.menu_state = MAIN_MENU;
 	}
-	
+	HAL_Delay(10);
 }
 
 // автомат переключения менюшки
@@ -76,10 +81,13 @@ void menuSwich (void)
 			break;
 		case NOTIFICATION:	notification(" ", " ", 0, MAIN_MENU);	// уведомление
 			break;
+		case MANUAL_RELE_SWITCH:	manualRelaySwitchMenu();	// меню ручного переключения реле
+			break;
+		case GET_V_MENU:	get_v_menu();				// меню выводы напряжений
+			break;
 		default:	menuMain();
 			break;
 	}
-	
 }
 
 
@@ -116,13 +124,13 @@ void menuMain (void)
 		status = confirmClick("Настроить время?");
 		if(status == YES)
 		{
+			flagSetTime = RESET;
 			menuChangeState(SET_TIME);	
-			flagSetTime = RESET;	
 		}
 		else if(status == NO)
 		{
 			flagSetTime = RESET;
-			ILI9341_Fill_Screen(MYFON);
+			menuChangeState(MAIN_MENU);
 		}
 		return;
 	}
@@ -138,7 +146,7 @@ void menuMain (void)
 		else if(status == NO)
 		{
 			flagSetData = RESET;
-			ILI9341_Fill_Screen(MYFON);
+			menuChangeState(MAIN_MENU);
 		}
 		return;
 	}
@@ -152,11 +160,17 @@ void menuMain (void)
 			
 		if(status == YES)
 		{
-			if(pAVR->avr_states.powerAutoManual == AVR_AUTO)				pAVR->avr_states.powerAutoManual = AVR_MANUAL;
-			else if(pAVR->avr_states.powerAutoManual == AVR_MANUAL)	pAVR->avr_states.powerAutoManual = AVR_AUTO;
+			if(pAVR->avr_states.powerAutoManual == AVR_AUTO)	{
+				pAVR->avr_states.powerAutoManual = AVR_MANUAL;
+				setWarn(WARN_MANUAL_CONTROL_EN);
+			}
+			else if(pAVR->avr_states.powerAutoManual == AVR_MANUAL)	{
+				pAVR->avr_states.powerAutoManual = AVR_AUTO;
+				delWarn(WARN_MANUAL_CONTROL_EN);
+				menuChangeState(MAIN_MENU);	
+			}
 			
 			flagPowerAutoManual = RESET;	
-			menuChangeState(MAIN_MENU);	
 		}
 		else if(status == NO)
 		{
@@ -180,7 +194,7 @@ void menuMain (void)
 			
 			flagStatusEngine = RESET;	
 			pAVR->avr_states.powerAutoManual = AVR_MANUAL;
-			menuChangeState(MAIN_MENU);	
+			setWarn(WARN_MANUAL_CONTROL_EN);
 		}
 		else if(status == NO)
 		{
@@ -202,9 +216,9 @@ void menuMain (void)
 			if(pAVR->avr_states.flagCharge)	pAVR->avr_states.flagCharge = RESET;
 			else														pAVR->avr_states.flagCharge = SET;
 			pAVR->avr_states.powerAutoManual = AVR_MANUAL;
+			setWarn(WARN_MANUAL_CONTROL_EN);
 			
 			flagCharge = RESET;	
-			menuChangeState(MAIN_MENU);	
 		}
 		else if(status == NO)
 		{
@@ -220,8 +234,10 @@ void menuMain (void)
 	if(getTouch() == NO_PRESS || getTouch() == NO_LONG_PRESS)
 	{
 		// если нажатие в области кнопки меню
-		if(pAVR->touch.x >= 285 && pAVR->touch.x <= 315 && pAVR->touch.y >= 200 && pAVR->touch.y <= 225) 
+		if(pAVR->touch.x >= 285 && pAVR->touch.x <= 315 && pAVR->touch.y >= 200 && pAVR->touch.y <= 225) {
 			menuChangeState(SECOND_MENU);	// следующее меню
+			return;
+		}	
 		// если нажатие на время
 		else if(pAVR->touch.x >= 30 && pAVR->touch.x <= 130 && pAVR->touch.y >= 0 && pAVR->touch.y <= yInc) 
 			flagSetTime = SET;
@@ -235,17 +251,23 @@ void menuMain (void)
 		else if(pAVR->touch.x >= 0 && pAVR->touch.x <= 320 && pAVR->touch.y >= y + 5 + (yInc * 3) && pAVR->touch.y <= y + 5 + (yInc * 4)) 	
 			flagStatusEngine = SET;
 		// если нажатие на "питание дома"
-		else if(pAVR->touch.x >= 0 && pAVR->touch.x <= 320 && pAVR->touch.y >= y + 5 + (yInc * 4) && pAVR->touch.y <= y + 5 + (yInc * 5)) 	
+		else if(pAVR->touch.x >= 0 && pAVR->touch.x <= 320 && pAVR->touch.y >= y + 5 + (yInc * 4) && pAVR->touch.y <= y + 5 + (yInc * 5)) {	
 			menuChangeState(SWICH_AVR);
+			return;
+		}	
 		// если нажатие на "зарядка акб"
 		else if(pAVR->touch.x >= 0 && pAVR->touch.x <= 320 && pAVR->touch.y >= y + 5 + (yInc * 6) && pAVR->touch.y <= y + 5 + (yInc * 7)) 	
 			flagCharge = SET;
 		// если на "ошибки"
-		else if(pAVR->touch.x >= 0 && pAVR->touch.x <= 260 && pAVR->touch.y >= y + 5 + (yInc * 8) && pAVR->touch.y <= y + 5 + (yInc * 9)) 	
+		else if(pAVR->touch.x >= 0 && pAVR->touch.x <= 260 && pAVR->touch.y >= y + 5 + (yInc * 8) && pAVR->touch.y <= y + 5 + (yInc * 9)) {	
 			menuChangeState(GET_ERROR);	// меню просмотра ошибок
+			return;
+		}	
 		// если на "предупреждения"
-		else if(pAVR->touch.x >= 0 && pAVR->touch.x <= 260 && pAVR->touch.y >= y + 5 + (yInc * 9) && pAVR->touch.y <= y + 5 + (yInc * 10)) 	
+		else if(pAVR->touch.x >= 0 && pAVR->touch.x <= 260 && pAVR->touch.y >= y + 5 + (yInc * 9) && pAVR->touch.y <= y + 5 + (yInc * 10)) {	
 			menuChangeState(GET_WARNING);	// меню просмотра предупреждений
+			return;
+		}	
 	}
 	
 	// обновлять главное меню не чаще, чем раз в 1с
@@ -440,9 +462,9 @@ uint8_t switchAvrAutomatic (void)
 		{
 			pAVR->avr_states.power_grid_mode = power_grid_mode;
 			pAVR->avr_states.powerAutoManual = AVR_MANUAL;
+			setWarn(WARN_MANUAL_CONTROL_EN);
 			flag_status_block = RESET;
 			flag_block = RESET;
-			menuChangeState(MAIN_MENU);
 			return 1;
 		}
 		else if(status == NO)
@@ -510,9 +532,9 @@ uint8_t switchAvrAutomatic (void)
 				{
 					pAVR->avr_states.power_grid_mode = power_grid_mode;
 					pAVR->avr_states.powerAutoManual = AVR_MANUAL;
+					setWarn(WARN_MANUAL_CONTROL_EN);
 					flag_status_block = RESET;
 					flag_block = RESET;
-					menuChangeState(MAIN_MENU);
 					return 1;
 				}
 				else if(status == NO)

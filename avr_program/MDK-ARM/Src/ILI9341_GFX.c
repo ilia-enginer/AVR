@@ -745,45 +745,43 @@ void ILI9341_WriteString(uint16_t x, uint16_t y, const char* str, FontDef font, 
 uint16_t ILI9341_WriteStringLen(uint16_t x, uint16_t y, const char* str, uint16_t len, FontDef font, uint16_t color, uint16_t bgcolor)
 {
 	uint16_t lenStr = 0;
+	const char *ptr = str;
 	char buff[BUF_LEN];
 	
 	for(uint16_t i = 0; i < len; i++)
 	{
 		if ( (uint8_t)*str + lenStr >= 0xC0 ){
 			lenStr += 2;
+			str += 2;
 		}
-		else
+		else{
 			lenStr++;
+			str++;
+		}	
 	}
-	strncpy(buff, str, lenStr);
+	
+	memset(buff, '\00', sizeof(buff));
+	strncpy(buff, ptr, lenStr);
 	ILI9341_WriteString(x, y, buff, font, color, bgcolor);
 	return lenStr;
 }
 
 void ILI9341_Draw_Char(unsigned char ch, uint16_t x, uint16_t y, uint16_t colour, uint16_t background_colour, FontDef font)
 {
-
 	uint32_t i, b, j;
-	
 	uint32_t X = x, Y = y;
-	
-	uint8_t xx, yy;
-	
 	uint8_t multiplier = 1;
 		
   ILI9341_Set_Address(x, y, x + font.width - 1, y + font.height - 1);
-
 	
 	/* Check available space in LCD */
 	if (ILI9341_SCREEN_WIDTH >= ( x + font.width) || ILI9341_SCREEN_HEIGHT >= ( y + font.height)){
 	
 		/* Go through font */
 		for (i = 0; i < font.height; i++) {		
-			
 			if( ch < 127 ){			
 				b = font.data[(ch - 32) * font.height + i];
 			}
-			
 			else if( (uint8_t) ch > 191 ){
 				// +96 это так как латинские символы и знаки в шрифтах занимают 96 позиций
 				// и если в шрифте который содержит сперва латиницу и спец символы и потом 
@@ -791,12 +789,10 @@ void ILI9341_Draw_Char(unsigned char ch, uint16_t x, uint16_t y, uint16_t colour
 				// содержит только кирилицу то +96 не нужно
 				b = font.data[((ch - 192) + 96) * font.height + i];
 			}
-			
 			else if( (uint8_t) ch == 168 ){	// 168 символ по ASCII - Ё
 				// 160 эллемент ( символ Ё ) 
 				b = font.data[( 160 ) * font.height + i];
 			}
-			
 			else if( (uint8_t) ch == 184 ){	// 184 символ по ASCII - ё
 				// 161 эллемент  ( символ ё ) 
 				b = font.data[( 161 ) * font.height + i];
@@ -804,13 +800,11 @@ void ILI9341_Draw_Char(unsigned char ch, uint16_t x, uint16_t y, uint16_t colour
 			//-------------------------------------------------------------------
 			
 			for (j = 0; j < font.width; j++) {
-				
 				if ((b << j) & 0x8000) {
-					
-					ILI9341_Draw_Pixel(X+xx, Y+yy, colour);
+					ILI9341_Draw_Pixel(X, Y, colour);
 				} 
 				else {
-					ILI9341_Draw_Pixel(X+xx, Y+yy, background_colour);
+					ILI9341_Draw_Pixel(X, Y, background_colour);
 				}
 				X = X + multiplier;
 			}

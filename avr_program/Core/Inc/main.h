@@ -52,6 +52,10 @@ extern "C" {
 /* Exported types ------------------------------------------------------------*/
 /* USER CODE BEGIN ET */
 
+
+#define U_CONFIG_HARD_FAULT_SIGNATURE (0x99BA85EE)		// Признак фатальной ошибки
+#define U_CONFIG_WACH_DOG_SIGNATURE (0x99BA85DF)			// Признак сброса по вачдогу
+
 /* USER CODE END ET */
 
 /* Exported constants --------------------------------------------------------*/
@@ -70,7 +74,10 @@ void HAL_TIM_MspPostInit(TIM_HandleTypeDef *htim);
 void Error_Handler(void);
 
 /* USER CODE BEGIN EFP */
-
+void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef* hadc);
+void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin);
+void HAL_RTC_AlarmAEventCallback(RTC_HandleTypeDef *hrtc);
+void set_BKP0R(uint32_t signature);
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/

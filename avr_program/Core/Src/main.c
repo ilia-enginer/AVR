@@ -70,9 +70,7 @@ static void MX_TIM2_Init(void);
 static void MX_RTC_Init(void);
 static void MX_TIM1_Init(void);
 /* USER CODE BEGIN PFP */
-void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef* hadc);
-void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin);
-void HAL_RTC_AlarmAEventCallback(RTC_HandleTypeDef *hrtc);
+
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -125,14 +123,6 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-	//???delete
-	char header[BUF_LEN] = {0,};
-	char buf[BUF_LEN] = {0,};
-	snprintf(header, BUF_LEN, "Моточасы"); 
-	snprintf(buf, BUF_LEN, "Моточасы всего     %d\nМоточасы после ТО  %d", 5, 3);		//??? заменить на реальное время 
-	notification(header, buf, 0, SECOND_MENU);
-	while (1)
-	;
 		work();
 		
     /* USER CODE END WHILE */
@@ -266,7 +256,7 @@ static void MX_ADC1_Init(void)
   */
   sConfig.Channel = ADC_CHANNEL_TEMPSENSOR;
   sConfig.Rank = 5;
-  sConfig.SamplingTime = ADC_SAMPLETIME_3CYCLES;
+  sConfig.SamplingTime = ADC_SAMPLETIME_144CYCLES;
   if (HAL_ADC_ConfigChannel(&hadc1, &sConfig) != HAL_OK)
   {
     Error_Handler();
@@ -563,7 +553,7 @@ static void MX_TIM2_Init(void)
 
   /* USER CODE END TIM2_Init 1 */
   htim2.Instance = TIM2;
-  htim2.Init.Prescaler = 50;
+  htim2.Init.Prescaler = 50000;
   htim2.Init.CounterMode = TIM_COUNTERMODE_UP;
   htim2.Init.Period = 1000;
   htim2.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
@@ -708,6 +698,18 @@ void HAL_RTC_AlarmAEventCallback(RTC_HandleTypeDef *hrtc)
         
 }
 
+void set_BKP0R(uint32_t signature)
+{
+	RCC->APB1ENR |= RCC_APB1ENR_PWREN;
+	PWR->CR |= PWR_CR_DBP;
+	RTC->BKP0R = signature;
+//	RCC->APB1ENR &= ~RCC_APB1ENR_PWREN;
+//	PWR->CR &= ~PWR_CR_DBP;
+//	RCC->CFGR &= ~RCC_CFGR_SW;
+//	RCC->CR &= ~RCC_CR_PLLON;
+//	RCC->CR &= ~RCC_CR_HSEON;
+}
+
 /* USER CODE END 4 */
 
 /**
@@ -718,6 +720,21 @@ void Error_Handler(void)
 {
   /* USER CODE BEGIN Error_Handler_Debug */
   /* User can add his own implementation to report the HAL error return state */
+	
+	set_BKP0R(U_CONFIG_HARD_FAULT_SIGNATURE);
+
+	 __asm volatile
+	(
+			" tst lr, #4                                                \n"
+			" ite eq                                                    \n"
+			" mrseq r0, msp                                             \n"
+			" mrsne r0, psp                                             \n"
+			" ldr r1, [r0, #24]                                         \n"
+			" ldr r2, handler2_address_const                            \n"
+			" bx r2                                                     \n"
+			" handler2_address_const: .word prvGetRegistersFromStack    \n"
+	);
+	
   __disable_irq();
   while (1)
   {

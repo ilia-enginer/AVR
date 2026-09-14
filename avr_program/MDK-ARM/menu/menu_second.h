@@ -8,6 +8,11 @@
 void secondMain (void);
 void engineHoursGet (void);
 void serviseWorkGet(void);
+void powerOutageGet(void);
+void startEngineGet(void);
+void manualRelaySwitchMenu(void);
+void get_v_menu(void);
+
 
 
 #endif /* MENU_SECOND_H_ */

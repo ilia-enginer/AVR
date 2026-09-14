@@ -8,21 +8,23 @@ uint8_t confirmClick (const char* text)
 {
 	static uint8_t flag_block = RESET;		// чтоб каждый раз не обновлял окно
 	char buf[BUF_LEN] = {0,};
+	uint16_t x = 60;
 	uint16_t y = 60;		// начальные координаты
 	uint8_t yInc = 25;	// на сколько опускать каждую строку
+	uint16_t stringLen = 18;
 	
 	if(flag_block == RESET)
 	{
 		ILI9341_Draw_Filled_Rectangle_Coord(40, 30, 280, 210, NAVY);
-		
-		// не более 16 символов в строке
-		uint8_t len_text = strlen(text);
-		for(uint8_t i = 0; i < len_text; )
-		{
-			lineAlignment(text, buf, 16);
-			ILI9341_WriteStringLen(60, y, buf + i, 16, Font_11x18, WHITE, NAVY);
-			i = i + 32;
-			y = y + yInc;
+
+		// текст уведомления
+		// не более хх символов в строке
+		uint16_t len_text = 0;
+		len_text = lineAlignment(text, buf, stringLen);
+		for(uint16_t i = 0; i < len_text; )	{
+			i += ILI9341_WriteStringLen(x, y, buf+i, stringLen, Font_11x18, WHITE, NAVY);
+//			memset(buf, '\00', i);
+			y += yInc;
 		}
 
 		flag_block = SET;
@@ -63,58 +65,55 @@ uint8_t confirmClick (const char* text)
 // уведомление
 // - заголовок
 // - текст
-// - время на которое надо открыть. 0 - на постоянную
+// - время на которое надо открыть в секундах. 0 - на постоянную
 // - меню в которое надо потом вернуться
-void notification(const char* header, const char* text, uint32_t time, uint8_t menu)
+void notification(const char* header, const char* text, uint32_t time, uint32_t menu)
 {
 	static uint8_t flag_block = RESET;		// чтоб каждый раз не обновлял окно
-	static uint8_t menuReturn = MAIN_MENU;
+	static uint32_t menuReturn = MAIN_MENU;
+	static uint32_t timeDelay = 0;
+	
 	char buf[BUF_LEN] = {0,};
 	uint16_t y = 65;				// начальные координаты
 	uint16_t x = 30;
 	uint8_t yInc = 35;			// на сколько опускать каждую строку
-	uint16_t stringLen = 20;
+	uint16_t stringLen = 25;
 	
 	if(flag_block == RESET)
-	{
-		flag_block = SET;
-		
-		menuReturn = menu;
-		menuChangeState(NOTIFICATION);
+	{		
+		if(time)
+			timeDelay = (time * 1000) + HAL_GetTick();
+		else
+			timeDelay = 0;
 		
 		ILI9341_Draw_Filled_Rectangle_Coord(15, 20, 305, 210, DARKGREEN);	// квадрат
 		
 		snprintf(buf, BUF_LEN, "%s", header); 														// заголовок
-		ILI9341_WriteString(50, 25, buf, Font_16x26, WHITE, DARKGREEN);	
-		memset(buf, '\00', sizeof(buf));
+		ILI9341_WriteString(40, 25, buf, Font_16x26, WHITE, DARKGREEN);	
+//		memset(buf, '\00', sizeof(buf));
 		
 		// текст уведомления
-		// не более 16 символов в строке
+		// не более хх символов в строке
 		uint16_t len_text = 0;
 		len_text = lineAlignment(text, buf, stringLen);
-		for(uint16_t i = 0; i < len_text; )
-		{
-			i += ILI9341_WriteStringLen(x, y, buf+i, stringLen, Font_11x18, WHITE, MYFON);
-			memset(buf, '\00', i);
+		for(uint16_t i = 0; i < len_text; )	{
+			i += ILI9341_WriteStringLen(x, y, buf+i, stringLen, Font_11x18, WHITE, DARKGREEN);
+//			memset(buf, '\00', i);
 			y += yInc;
 		}
-//		uint8_t len_text = strlen(text);
-//		for(uint8_t i = 0; i < len_text; )
-//		{
-//			lineAlignment(text, buf, stringLen);
-//			ILI9341_WriteStringLen(x, y, buf + i, stringLen, Font_11x18, WHITE, MYFON);
-//			i = i + (stringLen * 2)-2;
-//			y = y + yInc;
-//		}
 	
 		// ------------ кнопка "ок" ------------
-		memset(buf, '\00', sizeof(buf));
+//		memset(buf, '\00', sizeof(buf));
 		ILI9341_Draw_Filled_Rectangle_Coord(130, 170, 190, 200, MYFON);
 		snprintf(buf, BUF_LEN, "Ок"); 
 		ILI9341_WriteString(150, 175, buf, Font_11x18, WHITE, MYFON);
+		
+		flag_block = SET;
+		menuReturn = menu;
+		menuChangeState(NOTIFICATION);
+		return;
 	}
-	
-	
+
 	
 	//------------ обработка тач -----------------------		
 	// если отпущен после короткого нажатия 
@@ -124,10 +123,19 @@ void notification(const char* header, const char* text, uint32_t time, uint8_t m
 		if(pAVR->touch.x >= 130 && pAVR->touch.x <= 190 && pAVR->touch.y >= 170 && pAVR->touch.y <= 200)
 		{
 			flag_block = RESET;
+			timeDelay = 0;
 			menuChangeState(menuReturn);
 		}
 	}
-
+	
+	//------------ обработка времени -----------------------		
+	if(timeDelay)
+		if(HAL_GetTick() > timeDelay)
+		{
+			flag_block = RESET;
+			timeDelay = 0;
+			menuChangeState(menuReturn);
+		}
 }
 
 // выравнивание строки
@@ -145,8 +153,7 @@ uint16_t lineAlignment(const char* text, char *buf, uint16_t lenLine)
 	{
 		if(*text == '\n')
 		{
-			for( ; lenStr < lenLine; )
-			{
+			for( ; lenStr < lenLine; ) {
 				strncpy(buf++, spase, 1);
 				lenStr++;
 				lenBuf++;
@@ -156,7 +163,6 @@ uint16_t lineAlignment(const char* text, char *buf, uint16_t lenLine)
 		}
 		
 		if ( (uint8_t)*text >= 0xC0 ){	// код 0xC0 соответствует символу кириллица 'A' по ASCII Win-1251
-		
 			strncpy(buf++, text++, 2);
 			buf++;
 			text++;
@@ -167,7 +173,7 @@ uint16_t lineAlignment(const char* text, char *buf, uint16_t lenLine)
 			lenBuf++;
 		}	
 		lenStr ++;
-		if(lenStr == lenLine) lenStr = 0;
+		if(lenStr >= lenLine) lenStr = 0;
 	}
 	return lenBuf;
 
