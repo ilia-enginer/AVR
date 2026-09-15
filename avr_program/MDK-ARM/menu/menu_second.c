@@ -1,6 +1,14 @@
 
+#include <stdint.h>
+#include <stdio.h>
+#include <stdlib.h>
 
+#include "menu_main.h"
+#include "init.h"
+#include "warn_err.h"
 #include "menu_second.h"
+#include "popUpWindow.h"
+#include "touch.h"
 
 
 void secondMain (void)

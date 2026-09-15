@@ -1,8 +1,12 @@
 
+#include "stdlib.h"
+#include <stdio.h>
+#include <string.h>
 
 #include "ILI9341_GFX.h"
+#include "menu_main.h"
 //#include "w25qxx.h"
-#include "stdlib.h"
+
 
 #define swap(a, b) { int16_t t = a; a = b; b = t; }
 

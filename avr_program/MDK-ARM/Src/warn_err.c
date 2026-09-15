@@ -1,6 +1,8 @@
 
 
+
 #include "warn_err.h"
+#include "popUpWindow.h"
 
 
 void checkWarn(void)
@@ -58,7 +60,7 @@ void setErr(ERR_WARIANTS err)
 	switch(err){
 		// превышено максимальное кол-во попыток запуска
 		case ERR_MAX_LAUNCH_ATTEMP:
-			if(!pAVR->warn.array_flags[ERR_MAX_LAUNCH_ATTEMP]) {
+			if(!pAVR->err.array_flags[ERR_MAX_LAUNCH_ATTEMP]) {
 				pAVR->err.array_flags[ERR_MAX_LAUNCH_ATTEMP] = SET;
 				pAVR->err.counter++;
 				notification("Ошибка!!!", "Превышено макс. кол-во попыток запуска", 30, pAVR->avr_states.menu_state);
@@ -66,7 +68,7 @@ void setErr(ERR_WARIANTS err)
 			break;
 		// ошибка отключения реле стартера
 		case ERR_STARTER_RELE_SHUTDOWN:
-			if(!pAVR->warn.array_flags[ERR_STARTER_RELE_SHUTDOWN]) {
+			if(!pAVR->err.array_flags[ERR_STARTER_RELE_SHUTDOWN]) {
 				pAVR->err.array_flags[ERR_STARTER_RELE_SHUTDOWN] = SET;
 				pAVR->err.counter++;
 				notification("Ошибка!!!", "Отключения реле стартера", 30, pAVR->avr_states.menu_state);
@@ -74,7 +76,7 @@ void setErr(ERR_WARIANTS err)
 			break;
 		// ошибка включения реле стартера
 		case ERR_STARTER_RELE_ACTIVATION:
-			if(!pAVR->warn.array_flags[ERR_STARTER_RELE_ACTIVATION]) {
+			if(!pAVR->err.array_flags[ERR_STARTER_RELE_ACTIVATION]) {
 				pAVR->err.array_flags[ERR_STARTER_RELE_ACTIVATION] = SET;
 				pAVR->err.counter++;
 				notification("Ошибка!!!", "Включения реле стартера", 30, pAVR->avr_states.menu_state);
@@ -82,7 +84,7 @@ void setErr(ERR_WARIANTS err)
 			break;
 		// низкое напряжение акб
 		case ERR_LOW_VOLTAGE_AKB:
-			if(!pAVR->warn.array_flags[ERR_LOW_VOLTAGE_AKB]) {
+			if(!pAVR->err.array_flags[ERR_LOW_VOLTAGE_AKB]) {
 				pAVR->err.array_flags[ERR_LOW_VOLTAGE_AKB] = SET;
 				pAVR->err.counter++;
 				notification("Ошибка!!!", "Низкое напряжение акб", 30, pAVR->avr_states.menu_state);
@@ -90,7 +92,7 @@ void setErr(ERR_WARIANTS err)
 			break;
 		// высокое напряжение акб
 		case ERR_HIGHT_VOLTAGE_AKB:
-			if(!pAVR->warn.array_flags[ERR_HIGHT_VOLTAGE_AKB]) {
+			if(!pAVR->err.array_flags[ERR_HIGHT_VOLTAGE_AKB]) {
 				pAVR->err.array_flags[ERR_HIGHT_VOLTAGE_AKB] = SET;
 				pAVR->err.counter++;
 				notification("Ошибка!!!", "Высокое напряжение акб", 30, pAVR->avr_states.menu_state);
@@ -98,7 +100,7 @@ void setErr(ERR_WARIANTS err)
 			break;
 		// неисправность цепи зарядки
 		case ERR_CHARG_CIRCUIT:
-			if(!pAVR->warn.array_flags[ERR_CHARG_CIRCUIT]) {
+			if(!pAVR->err.array_flags[ERR_CHARG_CIRCUIT]) {
 				pAVR->err.array_flags[ERR_CHARG_CIRCUIT] = SET;
 				pAVR->err.counter++;
 				notification("Ошибка!!!", "Неисправность цепи зарядки", 30, pAVR->avr_states.menu_state);
@@ -106,7 +108,7 @@ void setErr(ERR_WARIANTS err)
 			break;
 		// был хард ресет
 		case ERR_HARD_RESET:
-			if(!pAVR->warn.array_flags[ERR_HARD_RESET]) {
+			if(!pAVR->err.array_flags[ERR_HARD_RESET]) {
 				pAVR->err.array_flags[ERR_HARD_RESET] = SET;
 				pAVR->err.counter++;
 				notification("Ошибка!!!", "Был хард ресет", 30, pAVR->avr_states.menu_state);
@@ -114,7 +116,7 @@ void setErr(ERR_WARIANTS err)
 			break;
 		// был сброс по вачдогу
 		case ERR_WATCH_DOG:
-			if(!pAVR->warn.array_flags[ERR_WATCH_DOG]) {
+			if(!pAVR->err.array_flags[ERR_WATCH_DOG]) {
 				pAVR->err.array_flags[ERR_WATCH_DOG] = SET;
 				pAVR->err.counter++;
 				notification("Ошибка!!!", "Был сброс по вачдогу", 30, pAVR->avr_states.menu_state);
@@ -122,7 +124,7 @@ void setErr(ERR_WARIANTS err)
 			break;
 		// двигатель неуправляемо остановлен (заглох)
 		case ERR_ENGINE_STALLED:
-			if(!pAVR->warn.array_flags[ERR_ENGINE_STALLED]) {
+			if(!pAVR->err.array_flags[ERR_ENGINE_STALLED]) {
 				pAVR->err.array_flags[ERR_ENGINE_STALLED] = SET;
 				pAVR->err.counter++;
 				notification("Ошибка!!!", "ДВС неуправляемо остановлен (заглох)", 30, pAVR->avr_states.menu_state);
@@ -130,7 +132,7 @@ void setErr(ERR_WARIANTS err)
 			break;
 		// ошибка sd карты
 		case ERR_SD_CARD:
-			if(!pAVR->warn.array_flags[ERR_SD_CARD]) {
+			if(!pAVR->err.array_flags[ERR_SD_CARD]) {
 				pAVR->err.array_flags[ERR_SD_CARD] = SET;
 				pAVR->err.counter++;
 				notification("Ошибка!!!", "sd карты", 30, pAVR->avr_states.menu_state);

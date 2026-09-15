@@ -1,6 +1,12 @@
 
+#include <stdio.h>
+#include <stdint.h>
 
+#include "warn_err.h"
+#include "menu_main.h"
 #include "menu_warn_err.h"
+#include "ILI9341_GFX.h"
+#include "touch.h"
 
 
 // меню просмотра ошибок

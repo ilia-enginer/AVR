@@ -106,14 +106,6 @@ typedef enum  {
 		
 }STATUS_EXT_POWER;
 
-/* variables ---------------------------------------------------------*/
-
-// для работы с дисплеем
-typedef struct {
-    const uint8_t width;
-    uint8_t height;
-    const uint16_t *data;
-} FontDef;
 
 // структура работы с тачем
 typedef struct {
@@ -196,16 +188,19 @@ typedef struct Device_Type {
 } Device_Type;
 
 
+// прибор
 extern Device_Type AVR;     // прибор с его характеристиками и параметрами
 extern Device_Type *pAVR;
 
+
+// hal
 extern RTC_TimeTypeDef sTime;
 extern RTC_DateTypeDef DateToUpdate;
-
 
 extern SPI_HandleTypeDef hspi1;
 extern TIM_HandleTypeDef htim2;
 extern ADC_HandleTypeDef hadc1;
 extern RTC_HandleTypeDef hrtc;
+
 
 #endif /* DEFS_H_ */

@@ -6,9 +6,9 @@
  */
 
 
-#include "main.h"
 #include "xpt2046_touch.h"
 #include "ILI9341_GFX.h"
+
 
 #define TOUCH_SCALE_X 320
 #define TOUCH_SCALE_Y 240

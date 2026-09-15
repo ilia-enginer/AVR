@@ -31,6 +31,7 @@
 "avr_program\xpt2046_touch.o"
 "avr_program\fonts.o"
 "avr_program\warn_err.o"
+"avr_program\fatfs_sd.o"
 "avr_program\img.o"
 "avr_program\menu_main.o"
 "avr_program\menu_servise.o"
@@ -39,6 +40,13 @@
 "avr_program\menu_second.o"
 "avr_program\menu_warn_err.o"
 "avr_program\popupwindow.o"
+"avr_program\user_diskio.o"
+"avr_program\fatfs.o"
+"avr_program\diskio.o"
+"avr_program\ff.o"
+"avr_program\ff_gen_drv.o"
+"avr_program\syscall.o"
+"avr_program\ccsbcs.o"
 --library_type=microlib --strict --scatter "avr_program\avr_program.sct"
 --summary_stderr --info summarysizes --map --load_addr_map_info --xref --callgraph --symbols
 --info sizes --info totals --info unused --info veneers

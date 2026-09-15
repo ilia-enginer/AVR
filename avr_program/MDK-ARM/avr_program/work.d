@@ -1,12 +1,9 @@
-avr_program/work.o: Src/work.c Inc\work.h ../Core/Inc\main.h \
-  ../Drivers/STM32F4xx_HAL_Driver/Inc\stm32f4xx_hal.h \
-  ../Core/Inc\stm32f4xx_hal_conf.h \
-  ../Drivers/STM32F4xx_HAL_Driver/Inc\stm32f4xx_hal_rcc.h \
-  ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_def.h \
+avr_program/work.o: Src/work.c \
+  C:\Keil_v5\ARM\ARMCLANG\Bin\..\include\stdint.h \
+  ../Drivers/STM32F4xx_HAL_Driver/Inc\stm32f4xx_ll_adc.h \
   ../Drivers/CMSIS/Device/ST/STM32F4xx/Include\stm32f4xx.h \
   ../Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f411xe.h \
   ../Drivers/CMSIS/Include\core_cm4.h \
-  C:\Keil_v5\ARM\ARMCLANG\Bin\..\include\stdint.h \
   ../Drivers/CMSIS/Include/cmsis_version.h \
   ../Drivers/CMSIS/Include/cmsis_compiler.h \
   ../Drivers/CMSIS/Include/cmsis_armclang.h \
@@ -14,6 +11,10 @@ avr_program/work.o: Src/work.c Inc\work.h ../Core/Inc\main.h \
   C:\Keil_v5\ARM\ARMCLANG\Bin\..\include\arm_acle.h \
   ../Drivers/CMSIS/Include/mpu_armv7.h \
   ../Drivers/CMSIS/Device/ST/STM32F4xx/Include/system_stm32f4xx.h \
+  ../Drivers/STM32F4xx_HAL_Driver/Inc\stm32f4xx_hal.h \
+  ../Core/Inc\stm32f4xx_hal_conf.h \
+  ../Drivers/STM32F4xx_HAL_Driver/Inc\stm32f4xx_hal_rcc.h \
+  ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_def.h \
   ../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy/stm32_hal_legacy.h \
   C:\Keil_v5\ARM\ARMCLANG\Bin\..\include\stddef.h \
   ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_rcc_ex.h \
@@ -35,11 +36,6 @@ avr_program/work.o: Src/work.c Inc\work.h ../Core/Inc\main.h \
   ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_rtc_ex.h \
   ../Drivers/STM32F4xx_HAL_Driver/Inc\stm32f4xx_hal_spi.h \
   ../Drivers/STM32F4xx_HAL_Driver/Inc\stm32f4xx_hal_tim.h \
-  ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim_ex.h \
-  C:\Keil_v5\ARM\ARMCLANG\Bin\..\include\stdio.h \
-  C:\Keil_v5\ARM\ARMCLANG\Bin\..\include\stdlib.h \
-  C:\Keil_v5\ARM\ARMCLANG\Bin\..\include\string.h Inc\defs.h \
-  Inc\ILI9341_GFX.h Inc/fonts.h menu\img.h Inc\xpt2046_touch.h \
-  Inc\init.h menu\menu_main.h menu/menu_servise.h menu/touch.h \
-  menu/settDataTime.h menu/menu_second.h menu/menu_warn_err.h \
-  Inc\warn_err.h menu\popUpWindow.h
+  ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim_ex.h Inc\work.h \
+  Inc\warn_err.h Inc/defs.h ../Core/Inc\main.h Inc\init.h \
+  menu\menu_main.h Inc\defs.h

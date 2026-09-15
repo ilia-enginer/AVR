@@ -1,6 +1,11 @@
 
-
+#include <stdint.h>
+#include <stm32f4xx_ll_adc.h>
 #include "work.h"
+#include "warn_err.h"
+#include "menu_main.h"
+
+
 
 void work (void)
 {

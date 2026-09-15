@@ -8,14 +8,14 @@
 #ifndef FONTS_H_
 #define FONTS_H_
 
-#include "main.h"
+#include <stdint.h>
 
-// to defs.h
-//typedef struct {
-//    const uint8_t width;
-//    uint8_t height;
-//    const uint16_t *data;
-//} FontDef;
+
+typedef struct {
+    const uint8_t width;
+    uint8_t height;
+    const uint16_t *data;
+} FontDef;
 
 
 extern FontDef Font_6x8;

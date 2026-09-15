@@ -1,6 +1,10 @@
 
-
+#include <stdio.h>
+#include "menu_main.h"
 #include "menu_servise.h"
+#include "ILI9341_GFX.h"
+#include "touch.h"
+
 
 
 // отладка тача

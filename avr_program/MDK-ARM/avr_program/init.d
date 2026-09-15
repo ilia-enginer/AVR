@@ -1,4 +1,6 @@
-avr_program/init.o: Src/init.c Inc\init.h ../Core/Inc\main.h \
+avr_program/init.o: Src/init.c Inc\init.h \
+  C:\Keil_v5\ARM\ARMCLANG\Bin\..\include\stdint.h Inc\warn_err.h \
+  Inc/defs.h ../Core/Inc\main.h \
   ../Drivers/STM32F4xx_HAL_Driver/Inc\stm32f4xx_hal.h \
   ../Core/Inc\stm32f4xx_hal_conf.h \
   ../Drivers/STM32F4xx_HAL_Driver/Inc\stm32f4xx_hal_rcc.h \
@@ -6,7 +8,6 @@ avr_program/init.o: Src/init.c Inc\init.h ../Core/Inc\main.h \
   ../Drivers/CMSIS/Device/ST/STM32F4xx/Include\stm32f4xx.h \
   ../Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f411xe.h \
   ../Drivers/CMSIS/Include\core_cm4.h \
-  C:\Keil_v5\ARM\ARMCLANG\Bin\..\include\stdint.h \
   ../Drivers/CMSIS/Include/cmsis_version.h \
   ../Drivers/CMSIS/Include/cmsis_compiler.h \
   ../Drivers/CMSIS/Include/cmsis_armclang.h \
@@ -35,11 +36,11 @@ avr_program/init.o: Src/init.c Inc\init.h ../Core/Inc\main.h \
   ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_rtc_ex.h \
   ../Drivers/STM32F4xx_HAL_Driver/Inc\stm32f4xx_hal_spi.h \
   ../Drivers/STM32F4xx_HAL_Driver/Inc\stm32f4xx_hal_tim.h \
-  ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim_ex.h \
-  C:\Keil_v5\ARM\ARMCLANG\Bin\..\include\stdio.h \
+  ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim_ex.h Inc\work.h \
+  menu\menu_main.h Inc\defs.h Inc\ILI9341_GFX.h Inc/fonts.h menu\touch.h \
+  Inc\xpt2046_touch.h Inc\fatfs_sd.h \
+  ../Middlewares/Third_Party/FatFs/src\ff.h \
+  ../Middlewares/Third_Party/FatFs/src/integer.h \
+  ../FATFS/Target\ffconf.h \
   C:\Keil_v5\ARM\ARMCLANG\Bin\..\include\stdlib.h \
-  C:\Keil_v5\ARM\ARMCLANG\Bin\..\include\string.h Inc\defs.h \
-  Inc\ILI9341_GFX.h Inc/fonts.h menu\img.h Inc\xpt2046_touch.h \
-  Inc\work.h menu\menu_main.h menu/menu_servise.h menu/touch.h \
-  menu/settDataTime.h menu/menu_second.h menu/menu_warn_err.h \
-  Inc\warn_err.h menu\popUpWindow.h
+  ../Middlewares/Third_Party/FatFs/src\diskio.h

@@ -2,13 +2,7 @@
 #ifndef MENU_MAIN_H_
 #define MENU_MAIN_H_
 
-#include "main.h"
-#include "menu_servise.h"
-#include "touch.h"
-#include "settDataTime.h"
-#include "menu_second.h"
-#include "menu_warn_err.h"
-
+#include <stdint.h>
 
 #define BUF_LEN  (120)
 

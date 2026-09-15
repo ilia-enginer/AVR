@@ -2,7 +2,7 @@
 #ifndef INIT_H_
 #define INIT_H_
 
-#include "main.h"
+#include <stdint.h>
 
 
 // таймер подсветки экрана

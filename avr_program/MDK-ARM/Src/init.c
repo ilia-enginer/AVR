@@ -1,32 +1,43 @@
 
 #include "init.h"
 
+#include "warn_err.h"
+#include "menu_main.h"
+#include "ILI9341_GFX.h"
+#include "touch.h"
+
+#include "fatfs_sd.h"
+
 
 uint8_t initDevice(void)
 {
+	// ------------- структура прибора ------------
 	pAVR->touch.flag_hold = 0;
 	pAVR->touch.flag_press = 0;
 	pAVR->touch.flag_release = 0;
 	pAVR->touch.x = 0;
 	pAVR->touch.y = 0;
-	
-	initTFT();		// дисплей
-		
-	outputInit();	// выхода (светодиоды, реле и.т.д.)
-	
 	pAVR->avr_states.power_grid_mode 	= POWER_IS_OFF;		// флаг о питании дома
 	pAVR->avr_states.flagCharge 			= RESET;					// флаг что заряжка откл
 	pAVR->avr_states.powerAutoManual 	= AVR_AUTO;				// автоматический режим
 	pAVR->avr_states.statusEngine 		= RESET;					// остановлен
 	pAVR->avr_states.extPowerSupply 	= EXT_POWER_OFF;	// нет
-	
 	resetErrors();
 	resetWarning();
 	
-	HAL_ADC_Start_DMA(&hadc1, (uint32_t*)&AVR.adc, ADC_CHANELS);	// запуск ацп
-	
+	// ------------- дисплей ------------
+	initTFT();
 	menuChangeState(MAIN_MENU);
-			
+	
+	// ------------- переферия ------------
+	outputInit();	// выхода (светодиоды, реле и.т.д.)
+	
+	// ------------- sd card ------------
+	SD_Init();
+		
+	// ------------- ацп ------------
+	HAL_ADC_Start_DMA(&hadc1, (uint32_t*)&AVR.adc, ADC_CHANELS);	// запуск ацп
+		
 	return 1;
 }
 

@@ -2,8 +2,8 @@
 #ifndef POP_UP_WINDOW_H_
 #define POP_UP_WINDOW_H_
 
-#include "main.h"
 
+#include <stdint.h>
 
 
 uint8_t confirmClick (const char* text);		// всплывающее окно подтверждения действия

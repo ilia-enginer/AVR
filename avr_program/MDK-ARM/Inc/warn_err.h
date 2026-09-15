@@ -2,7 +2,7 @@
 #ifndef WARN_ERR_H_
 #define WARN_ERR_H_
 
-#include "main.h"
+#include "defs.h"
 
 void checkWarn(void);
 void checkErr(void);

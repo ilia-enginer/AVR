@@ -19,15 +19,28 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
+#include "fatfs.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include <stdio.h>
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
 /* USER CODE BEGIN PTD */
+typedef struct 
+{
+	volatile uint32_t r0;
+	volatile uint32_t r1;
+	volatile uint32_t r2;
+	volatile uint32_t r3;
+	volatile uint32_t r12;
+	volatile uint32_t lr; /* Link register. */
+	volatile uint32_t pc; /* Program counter. */
+	volatile uint32_t psr;/* Program status register. */
+}stack_bit; // ????????? ?? ??????? ???????? ?????(SP)
 
+stack_bit stack = {0, };
 /* USER CODE END PTD */
 
 /* Private define ------------------------------------------------------------*/
@@ -52,11 +65,13 @@ TIM_HandleTypeDef htim1;
 TIM_HandleTypeDef htim2;
 
 /* USER CODE BEGIN PV */
+
 RTC_TimeTypeDef sTime = {0};
 RTC_DateTypeDef DateToUpdate = {0};
 	
 Device_Type AVR;     // прибор с его характеристиками и параметрами
 struct Device_Type *pAVR = &AVR;
+
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -113,6 +128,7 @@ int main(void)
   MX_TIM2_Init();
   MX_RTC_Init();
   MX_TIM1_Init();
+  MX_FATFS_Init();
   /* USER CODE BEGIN 2 */
 	
 	initDevice();
@@ -455,7 +471,7 @@ static void MX_SPI2_Init(void)
   hspi2.Init.CLKPolarity = SPI_POLARITY_LOW;
   hspi2.Init.CLKPhase = SPI_PHASE_1EDGE;
   hspi2.Init.NSS = SPI_NSS_SOFT;
-  hspi2.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_2;
+  hspi2.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_8;
   hspi2.Init.FirstBit = SPI_FIRSTBIT_MSB;
   hspi2.Init.TIMode = SPI_TIMODE_DISABLE;
   hspi2.Init.CRCCalculation = SPI_CRCCALCULATION_DISABLE;
@@ -674,10 +690,7 @@ static void MX_GPIO_Init(void)
 void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef* hadc)
 {
 	if(hadc->Instance == ADC1)
-	{
 			HAL_ADC_Stop_DMA(&hadc1); 
-//			HAL_ADC_Start_DMA(&hadc1, (uint32_t*)&AVR.adc, ADC_chanels);
-	}
 }
 
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
@@ -710,6 +723,37 @@ void set_BKP0R(uint32_t signature)
 //	RCC->CR &= ~RCC_CR_HSEON;
 }
 
+void _Error_Handler(char * s, int i)
+{
+//	char buf[30] = {0,};
+//	snprintf(buf, 30, "%s", s);
+	int num = i;
+	
+	if (CoreDebug->DHCSR & 1) {  //check C_DEBUGEN == 1 -> Debugger Connected  
+      __breakpoint(0);  // halt program execution here     
+  }  
+	setErr(ERR_SD_CARD);
+}
+
+void prvGetRegistersFromStack( uint32_t *pulFaultStackAddress )
+{
+	stack.r0 = pulFaultStackAddress[ 0 ];
+	stack.r1 = pulFaultStackAddress[ 1 ];
+	stack.r2 = pulFaultStackAddress[ 2 ];
+	stack.r3 = pulFaultStackAddress[ 3 ];
+
+	stack.r12 = pulFaultStackAddress[ 4 ];
+	stack.lr = pulFaultStackAddress[ 5 ];
+	stack.pc = pulFaultStackAddress[ 6 ];
+	stack.psr = pulFaultStackAddress[ 7 ];
+
+		if (CoreDebug->DHCSR & 1) {  //check C_DEBUGEN == 1 -> Debugger Connected  
+      __breakpoint(0);  // halt program execution here         
+  }  
+
+	NVIC_SystemReset();
+}
+
 /* USER CODE END 4 */
 
 /**
@@ -720,6 +764,8 @@ void Error_Handler(void)
 {
   /* USER CODE BEGIN Error_Handler_Debug */
   /* User can add his own implementation to report the HAL error return state */
+	
+	__disable_irq();
 	
 	set_BKP0R(U_CONFIG_HARD_FAULT_SIGNATURE);
 
@@ -735,7 +781,7 @@ void Error_Handler(void)
 			" handler2_address_const: .word prvGetRegistersFromStack    \n"
 	);
 	
-  __disable_irq();
+  
   while (1)
   {
   }

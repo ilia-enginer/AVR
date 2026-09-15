@@ -24,19 +24,7 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 
-typedef struct 
-{
-	volatile uint32_t r0;
-	volatile uint32_t r1;
-	volatile uint32_t r2;
-	volatile uint32_t r3;
-	volatile uint32_t r12;
-	volatile uint32_t lr; /* Link register. */
-	volatile uint32_t pc; /* Program counter. */
-	volatile uint32_t psr;/* Program status register. */
-}stack_bit; // ????????? ?? ??????? ???????? ?????(SP)
-
-stack_bit stack = {0, };
+#include "fatfs_sd.h"
 
 /* USER CODE END Includes */
 
@@ -67,6 +55,18 @@ stack_bit stack = {0, };
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
+
+volatile uint8_t FatFsCnt = 0;
+extern volatile uint8_t Timer1, Timer2;
+
+void SDTimer_Handler(void)
+{  
+  if(Timer1 > 0)
+    Timer1--;
+  
+  if(Timer2 > 0)
+    Timer2--;
+}
 
 /* USER CODE END 0 */
 
@@ -101,21 +101,8 @@ void NMI_Handler(void)
 void HardFault_Handler(void)
 {
   /* USER CODE BEGIN HardFault_IRQn 0 */
-
-	set_BKP0R(U_CONFIG_HARD_FAULT_SIGNATURE);
-
-	 __asm volatile
-	(
-			" tst lr, #4                                                \n"
-			" ite eq                                                    \n"
-			" mrseq r0, msp                                             \n"
-			" mrsne r0, psp                                             \n"
-			" ldr r1, [r0, #24]                                         \n"
-			" ldr r2, handler2_address_const                            \n"
-			" bx r2                                                     \n"
-			" handler2_address_const: .word prvGetRegistersFromStack    \n"
-	);
 	
+	Error_Handler();
 	
   /* USER CODE END HardFault_IRQn 0 */
   while (1)
@@ -216,6 +203,13 @@ void SysTick_Handler(void)
 {
   /* USER CODE BEGIN SysTick_IRQn 0 */
 
+	FatFsCnt++;
+  if(FatFsCnt >= 10)
+  {
+    FatFsCnt = 0;
+    SDTimer_Handler();
+  }  
+	
   /* USER CODE END SysTick_IRQn 0 */
   HAL_IncTick();
   /* USER CODE BEGIN SysTick_IRQn 1 */
@@ -273,25 +267,6 @@ void DMA2_Stream0_IRQHandler(void)
 }
 
 /* USER CODE BEGIN 1 */
-
-void prvGetRegistersFromStack( uint32_t *pulFaultStackAddress )
-{
-	stack.r0 = pulFaultStackAddress[ 0 ];
-	stack.r1 = pulFaultStackAddress[ 1 ];
-	stack.r2 = pulFaultStackAddress[ 2 ];
-	stack.r3 = pulFaultStackAddress[ 3 ];
-
-	stack.r12 = pulFaultStackAddress[ 4 ];
-	stack.lr = pulFaultStackAddress[ 5 ];
-	stack.pc = pulFaultStackAddress[ 6 ];
-	stack.psr = pulFaultStackAddress[ 7 ];
-
-		if (CoreDebug->DHCSR & 1) {  //check C_DEBUGEN == 1 -> Debugger Connected  
-      __breakpoint(0);  // halt program execution here         
-  }  
-
-	NVIC_SystemReset();
-}
 
 
 /* USER CODE END 1 */

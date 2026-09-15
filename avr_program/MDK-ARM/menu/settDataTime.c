@@ -1,6 +1,13 @@
 
+#include <stdint.h>
+#include <stdio.h>
+#include <string.h>
 
+#include "stm32f4xx.h"
 #include "settDataTime.h"
+#include "ILI9341_GFX.h"
+#include "menu_main.h"
+#include "touch.h"
 
 
 // натройка времени

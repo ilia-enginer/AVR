@@ -8,9 +8,9 @@
 #ifndef XPT2046_TOUCH_H_
 #define XPT2046_TOUCH_H_
 
-#include "main.h"
+#include "ILI9341_GFX.h"
 
-#define TOUCH_SPI_PTR 		 &hspi1
+#define TOUCH_SPI_PTR 		 	&hspi1
 
 #define TOUCH_CS_SELECT      HAL_GPIO_WritePin(TOUCH_CS_GPIO_Port, TOUCH_CS_Pin, GPIO_PIN_RESET)
 #define TOUCH_CS_UNSELECT    HAL_GPIO_WritePin(TOUCH_CS_GPIO_Port, TOUCH_CS_Pin, GPIO_PIN_SET)

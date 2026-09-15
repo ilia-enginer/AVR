@@ -32,26 +32,18 @@ extern "C" {
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 
-#include "defs.h"
-#include "ILI9341_GFX.h"
-#include "fonts.h"
-#include "img.h"
-#include "xpt2046_touch.h"
 #include "init.h"
 #include "work.h"
 #include "menu_main.h"
 #include "warn_err.h"
-#include "popUpWindow.h"
+#include "defs.h"
+
 
 /* USER CODE END Includes */
 
 /* Exported types ------------------------------------------------------------*/
 /* USER CODE BEGIN ET */
-
 
 #define U_CONFIG_HARD_FAULT_SIGNATURE (0x99BA85EE)		// Признак фатальной ошибки
 #define U_CONFIG_WACH_DOG_SIGNATURE (0x99BA85DF)			// Признак сброса по вачдогу
@@ -78,6 +70,9 @@ void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef* hadc);
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin);
 void HAL_RTC_AlarmAEventCallback(RTC_HandleTypeDef *hrtc);
 void set_BKP0R(uint32_t signature);
+
+void prvGetRegistersFromStack(uint32_t *pulFaultStackAddress);
+void _Error_Handler(char *, int);
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/

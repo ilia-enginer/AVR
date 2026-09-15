@@ -1,6 +1,17 @@
 
+#include <stdio.h>
+#include <string.h>
 
+#include "ILI9341_GFX.h"
+#include "menu_servise.h"
+#include "touch.h"
+#include "settDataTime.h"
+#include "menu_second.h"
+#include "menu_warn_err.h"
+#include "popUpWindow.h"
 #include "menu_main.h"
+#include "warn_err.h"
+
 
 // смена менюшки
 void menuChangeState (uint32_t state)

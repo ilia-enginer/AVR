@@ -2,8 +2,7 @@
 #ifndef TOUCH_H_
 #define TOUCH_H_
 
-#include "main.h"
-
+#include "xpt2046_touch.h"
 
 // вариатны тача
 enum TUCH_WARIANTS {
