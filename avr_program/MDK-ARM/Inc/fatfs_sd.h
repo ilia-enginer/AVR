@@ -6,6 +6,7 @@
 #include "ff.h"
 #include "diskio.h"
 
+#define SD_BUF_LEN	(1024)
 
 /* Definitions for MMC/SDC command */
 #define CMD0     (0x40+0)     	/* GO_IDLE_STATE */
@@ -33,6 +34,7 @@
 
 /* Functions */
 uint8_t SD_Init(void);
+uint8_t recLog(char* text);
 uint8_t recFileSdCard (char* nameFile, char* text, uint8_t flagOverwrite);
 
 DSTATUS SD_disk_initialize (BYTE pdrv);

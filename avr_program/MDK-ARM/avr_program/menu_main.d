@@ -38,7 +38,12 @@ avr_program/menu_main.o: menu/menu_main.c \
   ../Drivers/STM32F4xx_HAL_Driver/Inc\stm32f4xx_hal_spi.h \
   ../Drivers/STM32F4xx_HAL_Driver/Inc\stm32f4xx_hal_tim.h \
   ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim_ex.h Inc\init.h \
-  Inc\work.h menu\menu_main.h Inc\warn_err.h Inc/defs.h Inc/fonts.h \
+  Inc\work.h menu\menu_main.h Inc\warn_err.h Inc/defs.h Inc\fatfs_sd.h \
+  ../Middlewares/Third_Party/FatFs/src\ff.h \
+  ../Middlewares/Third_Party/FatFs/src/integer.h \
+  ../FATFS/Target\ffconf.h \
+  C:\Keil_v5\ARM\ARMCLANG\Bin\..\include\stdlib.h \
+  ../Middlewares/Third_Party/FatFs/src\diskio.h Inc/fonts.h \
   menu/menu_servise.h menu/touch.h Inc\xpt2046_touch.h \
   menu/settDataTime.h menu/menu_second.h menu/menu_warn_err.h \
   menu/popUpWindow.h

@@ -18,7 +18,7 @@ FATFS *FS_Ptr;
 UINT RWC, WWC; // Read/Write Word Counter
 DWORD FreeClusters;
 uint32_t TotalSize, FreeSpace;
-char RW_Buffer[200];
+char RW_Buffer[SD_BUF_LEN];
 
 
 // FIX 1: volatile 키워드 추가
@@ -360,97 +360,86 @@ uint8_t SD_Init(void)
 		_Error_Handler(__FILE__, __LINE__);
 		return 0;
 	}
+	
+	return recLog("Start CPU");
+}
+
+// записывает лог на флешку
+uint8_t recLog(char* text)
+{
+	snprintf(RW_Buffer, SD_BUF_LEN, "( %d:%d:%d  %d-%d-20%d ) - %s\r\n", sTime.Hours, sTime.Minutes, sTime.Seconds, DateToUpdate.Date, DateToUpdate.Month, DateToUpdate.Year, text);	
+	
+	if(!recFileSdCard ("logFile", text, 0))
+	{
+		setErr(ERR_SD_CARD);
+		return 0;
+	}
 	return 1;
 }
 
+
+// nameFile - название файла
+// text - текст для записи
+// flagOverwrite - 0 - не перезаписывать файл, а дописать, 1 - перезаписать содержимое
+// возвращает 1 если все в порядке, 0 если ошибка
 uint8_t recFileSdCard (char* nameFile, char* text, uint8_t flagOverwrite)
 {
-//???
-////	do
-////  {
-////    //------------------[ Mount The SD Card ]--------------------
-////    FR_Status = f_mount(&FatFs, "", 1);
-////    if (FR_Status != FR_OK)
-////			return 0;
+	do
+  {
+    //------------------[ Mount The SD Card ]--------------------
+    FR_Status = f_mount(&FatFs, "", 1);
+    if (FR_Status != FR_OK)
+			return 0;
 
-////    //------------------[ Получить и распечатать размер SD-карты и свободное место ]--------------------
-////    f_getfree("", &FreeClusters, &FS_Ptr);
-////    TotalSize = (uint32_t)((FS_Ptr->n_fatent - 2) * FS_Ptr->csize * 0.5);
-////    FreeSpace = (uint32_t)(FreeClusters * FS_Ptr->csize * 0.5);
-////    // свободное пространство менее 1 КБ 
-////		if(FreeSpace < 1)
-////		{
-////			setErr(ERR_SD_FREE_SPACE_NULL);
-////			return 0;
-////		}
-////			
-////    //------------------[ Открыть текстовый файл для записи и записать данные ]--------------------
-////		// Открыть файл для записи 
-////		// FA_CREATE_NEW (0x04) — создать новый файл; ошибка, если файл уже существует.
-////		// FA_CREATE_ALWAYS (0x08) — создать новый файл. Если файл с таким именем уже есть, он будет обрезан до нулевой длины (очищен).
-////		// FA_OPEN_EXISTING (0x10) — открыть существующий файл (используется по умолчанию, если ни один из флагов создания не указан).
-////		// FA_READ (0x00) — открыть для чтения.
-////		// FA_WRITE (0x01) — открыть для записи. Можно комбинировать с FA_READ для доступа в режиме «читать/записать».
-////		// FA_OPEN_APPEND (0x30) - аналогичен FA_OPEN_EXISTING, но с важным отличием: если файл уже есть, указатель сразу устанавливается на его конец, и запись будет идти в конец, а не в начало
-////		// FA_OPEN_ALWAYS (0x10) - файл будет открыт, если он уже существует, либо создан заново
-////    //Open the file
-////    FR_Status = f_open(&Fil, "TextFileWrite.txt", FA_WRITE | FA_READ | FA_CREATE_ALWAYS);
-////    if(FR_Status != FR_OK)
-////			return 0;
-////			
-////    // (1) Write Data To The Text File [ Using f_puts() Function ]
-////    f_puts("Hello! From STM32 To SD Card Over SPI, Using f_puts()\n", &Fil);
-////    // (2) Write Data To The Text File [ Using f_write() Function ]
-////    strcpy(RW_Buffer, "Hello! From STM32 To SD Card Over SPI, Using f_write()\r\n");
-////    f_write(&Fil, RW_Buffer, strlen(RW_Buffer), &WWC);
-////    // Close The File
-////    f_close(&Fil);
-////    //------------------[ Открыть текстовый файл для чтения и считать его данные ]--------------------
-////    // Open The File
-////    FR_Status = f_open(&Fil, "TextFileWrite.txt", FA_READ);
-////    if(FR_Status != FR_OK)
-////			return 0;
-////			
-////    // (1) Read The Text File's Data [ Using f_gets() Function ]
-////    f_gets(RW_Buffer, sizeof(RW_Buffer), &Fil);
+    //------------------[ Получить и распечатать размер SD-карты и свободное место ]--------------------
+    f_getfree("", &FreeClusters, &FS_Ptr);
+    TotalSize = (uint32_t)((FS_Ptr->n_fatent - 2) * FS_Ptr->csize * 0.5);
+    FreeSpace = (uint32_t)(FreeClusters * FS_Ptr->csize * 0.5);
+    // свободное пространство менее 1 КБ 
+		if(FreeSpace < 1)
+		{
+			setErr(ERR_SD_FREE_SPACE_NULL);
+			return 0;
+		}
+			
+    //------------------[ Открыть текстовый файл для записи и записать данные ]--------------------
+		// Открыть файл для записи 
+		// FA_CREATE_NEW (0x04) — создать новый файл; ошибка, если файл уже существует.
+		// FA_CREATE_ALWAYS (0x08) — создать новый файл. Если файл с таким именем уже есть, он будет обрезан до нулевой длины (очищен).
+		// FA_OPEN_EXISTING (0x10) — открыть существующий файл (используется по умолчанию, если ни один из флагов создания не указан).
+		// FA_READ (0x00) — открыть для чтения.
+		// FA_WRITE (0x01) — открыть для записи. Можно комбинировать с FA_READ для доступа в режиме «читать/записать».
+		// FA_OPEN_APPEND (0x30) - аналогичен FA_OPEN_EXISTING, но с важным отличием: если файл уже есть, указатель сразу устанавливается на его конец, и запись будет идти в конец, а не в начало
+		// FA_OPEN_ALWAYS (0x10) - файл будет открыт, если он уже существует, либо создан заново
+    //Open the file
+		// если необходимо перезаписать
+		if(flagOverwrite)
+			FR_Status = f_open(&Fil, nameFile, FA_WRITE | FA_READ | FA_CREATE_ALWAYS);	
+		// если надо дописать к файлу
+		else
+			FR_Status = f_open(&Fil, nameFile, FA_WRITE | FA_READ | FA_OPEN_ALWAYS);
+    if(FR_Status != FR_OK)
+			return 0;	
 
-////    // (2) Read The Text File's Data [ Using f_read() Function ]
-////    f_read(&Fil, RW_Buffer, f_size(&Fil), &RWC);
+		FR_Status = f_lseek(&Fil, f_size(&Fil)); // Переместить указатель файла к EOF (End-Of-File, конец файла)
+    if(FR_Status != FR_OK)
+			return 0;
+			
+    // записать текст
+		//snprintf(RW_Buffer, sizeof(RW_Buffer), "%s\r\n", text);	
+    f_write(&Fil, RW_Buffer, strlen(RW_Buffer), &WWC);
+		
+    // Close The File
+    f_close(&Fil);
 
-////    // Close The File
-////    f_close(&Fil);
-
-////    //------------------[ Откройте существующий текстовый файл, обновите его содержимое и прочтите обратно ]--------------------
-////    // (1) Open The Existing File For Write (Update)
-////    FR_Status = f_open(&Fil, "TextFileWrite.txt", FA_OPEN_EXISTING | FA_WRITE);
-////    FR_Status = f_lseek(&Fil, f_size(&Fil)); // Move The File Pointer To The EOF (End-Of-File)
-////    if(FR_Status != FR_OK)
-////			return 0;
-////			
-////    // (2) Write New Line of Text Data To The File
-////    FR_Status = f_puts("This New Line Was Added During Update!\r\n", &Fil);
-////    f_close(&Fil);
-////    memset(RW_Buffer,'\0',sizeof(RW_Buffer)); // Clear The Buffer
-////    // (3) Read The Contents of The Text File After The Update
-////    FR_Status = f_open(&Fil, "TextFileWrite.txt", FA_READ); // Open The File For Read
-////    f_read(&Fil, RW_Buffer, f_size(&Fil), &RWC);
-
-////    f_close(&Fil);
-////    //------------------[ Удалить текстовый файл ]--------------------
-////    // Delete The File
-////    /*
-////    FR_Status = f_unlink(TextFileWrite.txt);
-////    if (FR_Status != FR_OK){
-////        sprintf(TxBuffer, "Error! While Deleting The (TextFileWrite.txt) File.. \r\n");
-////        UART_Print(TxBuffer);
-////    }
-////    */
-////  } while(0);
-////  //------------------[ Тест пройден! Отключите SD-карту ]--------------------
-////  FR_Status = f_mount(NULL, "", 0);
-////  if (FR_Status != FR_OK)
-////		return 0;
-////  else
+		memset(RW_Buffer,'\0',sizeof(RW_Buffer)); // Clear The Buffer		
+		
+  } while(0);
+  //------------------[ Отключите SD-карту ]--------------------
+  FR_Status = f_mount(NULL, "", 0);
+  if (FR_Status != FR_OK)
+		return 0;
+  else
 		return 1;
 }
 

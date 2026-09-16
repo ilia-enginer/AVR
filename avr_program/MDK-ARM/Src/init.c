@@ -25,6 +25,9 @@ uint8_t initDevice(void)
 	resetErrors();
 	resetWarning();
 	
+	HAL_RTC_GetTime(&hrtc, &sTime, RTC_FORMAT_BIN); 				// RTC_FORMAT_BIN , RTC_FORMAT_BCD
+	HAL_RTC_GetDate(&hrtc, &DateToUpdate, RTC_FORMAT_BIN);
+	
 	// ------------- дисплей ------------
 	initTFT();
 	menuChangeState(MAIN_MENU);

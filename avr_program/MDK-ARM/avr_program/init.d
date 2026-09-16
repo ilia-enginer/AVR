@@ -37,10 +37,10 @@ avr_program/init.o: Src/init.c Inc\init.h \
   ../Drivers/STM32F4xx_HAL_Driver/Inc\stm32f4xx_hal_spi.h \
   ../Drivers/STM32F4xx_HAL_Driver/Inc\stm32f4xx_hal_tim.h \
   ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim_ex.h Inc\work.h \
-  menu\menu_main.h Inc\defs.h Inc\ILI9341_GFX.h Inc/fonts.h menu\touch.h \
-  Inc\xpt2046_touch.h Inc\fatfs_sd.h \
+  menu\menu_main.h Inc\defs.h Inc\fatfs_sd.h \
   ../Middlewares/Third_Party/FatFs/src\ff.h \
   ../Middlewares/Third_Party/FatFs/src/integer.h \
   ../FATFS/Target\ffconf.h \
   C:\Keil_v5\ARM\ARMCLANG\Bin\..\include\stdlib.h \
-  ../Middlewares/Third_Party/FatFs/src\diskio.h
+  ../Middlewares/Third_Party/FatFs/src\diskio.h Inc\ILI9341_GFX.h \
+  Inc/fonts.h menu\touch.h Inc\xpt2046_touch.h

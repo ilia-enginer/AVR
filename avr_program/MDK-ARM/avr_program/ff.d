@@ -39,7 +39,8 @@ avr_program/ff.o: ../Middlewares/Third_Party/FatFs/src/ff.c \
   ../Drivers/STM32F4xx_HAL_Driver/Inc\stm32f4xx_hal_spi.h \
   ../Drivers/STM32F4xx_HAL_Driver/Inc\stm32f4xx_hal_tim.h \
   ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim_ex.h Inc\init.h \
-  Inc\work.h menu\menu_main.h Inc\warn_err.h Inc/defs.h \
+  Inc\work.h menu\menu_main.h Inc\warn_err.h Inc/defs.h Inc\fatfs_sd.h \
+  ../Middlewares/Third_Party/FatFs/src\ff.h \
+  ../Middlewares/Third_Party/FatFs/src\diskio.h \
   C:\Keil_v5\ARM\ARMCLANG\Bin\..\include\stdlib.h \
-  ../Middlewares/Third_Party/FatFs/src/diskio.h \
   C:\Keil_v5\ARM\ARMCLANG\Bin\..\include\stdarg.h

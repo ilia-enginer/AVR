@@ -39,5 +39,8 @@ avr_program/menu_second.o: menu/menu_second.c \
   ../Drivers/STM32F4xx_HAL_Driver/Inc\stm32f4xx_hal_spi.h \
   ../Drivers/STM32F4xx_HAL_Driver/Inc\stm32f4xx_hal_tim.h \
   ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim_ex.h Inc\work.h \
-  Inc\defs.h menu/menu_second.h menu/popUpWindow.h menu/touch.h \
-  Inc\xpt2046_touch.h Inc/ILI9341_GFX.h Inc/fonts.h
+  Inc\defs.h Inc\fatfs_sd.h ../Middlewares/Third_Party/FatFs/src\ff.h \
+  ../Middlewares/Third_Party/FatFs/src/integer.h \
+  ../FATFS/Target\ffconf.h ../Middlewares/Third_Party/FatFs/src\diskio.h \
+  menu/menu_second.h menu/popUpWindow.h menu/touch.h Inc\xpt2046_touch.h \
+  Inc/ILI9341_GFX.h Inc/fonts.h

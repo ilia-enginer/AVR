@@ -38,7 +38,7 @@ extern "C" {
 #include "menu_main.h"
 #include "warn_err.h"
 #include "defs.h"
-
+#include "fatfs_sd.h"
 
 /* USER CODE END Includes */
 

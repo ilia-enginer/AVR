@@ -37,4 +37,9 @@ avr_program/xpt2046_touch.o: Src/xpt2046_touch.c Inc\xpt2046_touch.h \
   ../Drivers/STM32F4xx_HAL_Driver/Inc\stm32f4xx_hal_spi.h \
   ../Drivers/STM32F4xx_HAL_Driver/Inc\stm32f4xx_hal_tim.h \
   ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim_ex.h Inc\init.h \
-  Inc\work.h menu\menu_main.h Inc\warn_err.h Inc/defs.h Inc/fonts.h
+  Inc\work.h menu\menu_main.h Inc\warn_err.h Inc/defs.h Inc\fatfs_sd.h \
+  ../Middlewares/Third_Party/FatFs/src\ff.h \
+  ../Middlewares/Third_Party/FatFs/src/integer.h \
+  ../FATFS/Target\ffconf.h \
+  C:\Keil_v5\ARM\ARMCLANG\Bin\..\include\stdlib.h \
+  ../Middlewares/Third_Party/FatFs/src\diskio.h Inc/fonts.h

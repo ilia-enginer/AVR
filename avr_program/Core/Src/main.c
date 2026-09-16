@@ -38,7 +38,7 @@ typedef struct
 	volatile uint32_t lr; /* Link register. */
 	volatile uint32_t pc; /* Program counter. */
 	volatile uint32_t psr;/* Program status register. */
-}stack_bit; // ????????? ?? ??????? ???????? ?????(SP)
+}stack_bit; // (SP)
 
 stack_bit stack = {0, };
 /* USER CODE END PTD */
@@ -132,7 +132,7 @@ int main(void)
   /* USER CODE BEGIN 2 */
 	
 	initDevice();
-			
+	recLog("Проверка записи русского языка");		//???delete
   /* USER CODE END 2 */
 
   /* Infinite loop */
