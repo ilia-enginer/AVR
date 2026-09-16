@@ -138,6 +138,14 @@ void setErr(ERR_WARIANTS err)
 				notification("Ошибка!!!", "sd карты", 30, pAVR->avr_states.menu_state);
 			}	
 			break;
+		// закончилось место на sd карте
+		case ERR_SD_FREE_SPACE_NULL:
+			if(!pAVR->err.array_flags[ERR_SD_FREE_SPACE_NULL]) {
+				pAVR->err.array_flags[ERR_SD_FREE_SPACE_NULL] = SET;
+				pAVR->err.counter++;
+				notification("Ошибка!!!", "sd карта заполненна", 30, pAVR->avr_states.menu_state);
+			}	
+			break;
 		default:
 			notification("Ошибка!", "Ошибка вывода ошибки", 30, pAVR->avr_states.menu_state);
 			break;

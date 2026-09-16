@@ -1,4 +1,5 @@
 avr_program/fatfs_sd.o: Src/fatfs_sd.c \
+  C:\Keil_v5\ARM\ARMCLANG\Bin\..\include\string.h \
   C:\Keil_v5\ARM\ARMCLANG\Bin\..\include\stdio.h \
   ../Drivers/STM32F4xx_HAL_Driver/Inc\stm32f4xx_hal.h \
   ../Core/Inc\stm32f4xx_hal_conf.h \

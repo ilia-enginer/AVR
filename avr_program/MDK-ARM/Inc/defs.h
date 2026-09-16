@@ -80,6 +80,7 @@ typedef enum  {
 		ERR_WATCH_DOG,										// был сброс по вачдогу
 		ERR_ENGINE_STALLED,								// двигатель неуправляемо остановлен (заглох)
 		ERR_SD_CARD,											// ошибка sd карты
+		ERR_SD_FREE_SPACE_NULL,						// закончилось место на sd карте
 
 }ERR_WARIANTS;
 

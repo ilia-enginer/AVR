@@ -42,4 +42,4 @@ avr_program/user_diskio.o: ../FATFS/Target/user_diskio.c \
   ../Drivers/STM32F4xx_HAL_Driver/Inc\stm32f4xx_hal_tim.h \
   ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim_ex.h Inc\init.h \
   Inc\work.h menu\menu_main.h Inc\warn_err.h Inc/defs.h \
-  C:\Keil_v5\ARM\ARMCLANG\Bin\..\include\stdlib.h
+  C:\Keil_v5\ARM\ARMCLANG\Bin\..\include\stdlib.h Inc\fatfs_sd.h
