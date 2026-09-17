@@ -153,7 +153,7 @@
         <Ww>
           <count>0</count>
           <WinNumber>1</WinNumber>
-          <ItemText>pAVR</ItemText>
+          <ItemText>pAVR,0x0A</ItemText>
         </Ww>
         <Ww>
           <count>1</count>
@@ -164,6 +164,11 @@
           <count>2</count>
           <WinNumber>1</WinNumber>
           <ItemText>RW_Buffer</ItemText>
+        </Ww>
+        <Ww>
+          <count>3</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>historyParamBuf</ItemText>
         </Ww>
       </WatchWindow1>
       <Tracepoint>
@@ -772,7 +777,7 @@
 
   <Group>
     <GroupName>menu</GroupName>
-    <tvExp>0</tvExp>
+    <tvExp>1</tvExp>
     <tvExpOptDlg>0</tvExpOptDlg>
     <cbSel>0</cbSel>
     <RteFlg>0</RteFlg>

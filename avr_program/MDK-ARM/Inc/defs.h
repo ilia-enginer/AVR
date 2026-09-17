@@ -41,6 +41,14 @@
 // ошибки и предупреждения
 #define MAX_ERR_AND_WARN	(32)							// макс. кол-во ошибок и предупреждений
 
+
+// для хранения истории настроек на sd карте
+#define NUM_VARIABLES_HISTORI		(25)						// кол-во переменных в структуре истории
+#define BUF_LEN_SD_PARAM				((NUM_VARIABLES_HISTORI*4) + NUM_VARIABLES_HISTORI)						// объем буфера для хранения параметров, считанных из флеш
+#define INIT_HISTORY_FILE_SIGNATURE (2092942078)			// признак инициализации файла истории параметров на sd карте
+
+
+
 /* Exported types ------------------------------------------------------------*/
 
 // виды меню
@@ -174,8 +182,49 @@ typedef struct {
 	
 } ErrWarnType;
 
+// структура параметров которые хранятся на sd карте
+typedef struct {
+  
+	// проверка
+	uint32_t checkNum;						// проверочное число инициализации
+	
+	// моточасы				
+	uint32_t engineHoursTotal;						// моточасы всего
+	uint32_t engineHoursTO;								// моточасы после ТО
+	uint32_t hoursBeforeTO;								// моточасы до ТО
+					
+	// ТО				
+	uint32_t hoursLastTO;									// час последнего ТО
+	uint32_t minutesLastTO;								// минуты последнего ТО
+	uint32_t secondsLastTO;								// секунды последнего ТО
+	uint32_t dateLastTO;									// дата последнего ТО
+	uint32_t monthLastTO;									// месяц последнего ТО
+	uint32_t yearLastTO;									// год последнего ТО
+					
+	uint32_t hoursNextTO;									// час следующего ТО
+	uint32_t minutesNextTO;								// минуты следующего ТО
+	uint32_t secondsNextTO;								// секунды следующего ТО
+	uint32_t dateNextTO;									// дата следующего ТО
+	uint32_t monthNextTO;									// месяц следующего ТО
+	uint32_t yearNextTO;									// год следующего ТО
+	
+	// отключение эл-ва
+	uint32_t hoursWithoutElectric;				// час последнего отключения
+	uint32_t minutesWithoutElectric;			// минуты последнего отключения
+	uint32_t secondsWithoutElectric;			// секунды последнего отключения
+	uint32_t dateWithoutElectric;					// дата последнего отключения
+	uint32_t monthWithoutElectric;				// месяц последнего отключения
+	uint32_t yearWithoutElectric;					// год последнего отключения
+	
+	uint32_t hoursALLWithoutElectric;			// общее кол-во часов без эл-ва
+	
+	// запуск ДВС инфо
+	uint32_t numSuccessLaunch;						// кол-во удачных запусков
+	uint32_t numLaunchAttempt;						// кол-во попыток запуска
+	
+} SdParametersType;
 
-
+		
 // тип данных для параметров всего прибора
 typedef struct Device_Type {
 
@@ -185,6 +234,7 @@ typedef struct Device_Type {
 	TouchDef					touch;				// структура работы с тачем
 	ErrWarnType				err;					// структура ошибок
 	ErrWarnType				warn;					// структура предупреждений
+	SdParametersType	sdParams;			// структура параметров которые хранятся на sd карте
 	
 } Device_Type;
 
@@ -193,6 +243,7 @@ typedef struct Device_Type {
 extern Device_Type AVR;     // прибор с его характеристиками и параметрами
 extern Device_Type *pAVR;
 
+extern char buf[BUF_LEN];		// массив для вывода информации
 
 // hal
 extern RTC_TimeTypeDef sTime;

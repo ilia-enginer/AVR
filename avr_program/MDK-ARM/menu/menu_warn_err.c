@@ -7,19 +7,19 @@
 #include "menu_warn_err.h"
 #include "ILI9341_GFX.h"
 #include "touch.h"
-
+#include "fatfs.h"
 
 // меню просмотра ошибок
+static uint8_t flag_clear = RESET;
+// обновлять главное меню не чаще, чем раз в 1с
+static uint32_t time_update = 0;
 void menuGetErrors (void)
 {
 	uint16_t y = 5;			// начальные координаты
 	uint16_t x = 5;		// начальные координаты
 	uint8_t yInc = 16;	// на сколько опускать каждую строку
-	char buf[BUF_LEN] = {0,};
 	uint8_t status;
-	
-	static uint8_t flag_clear = RESET;
-	
+
 	// проверка подтверждения очистки ошибок
 	if(flag_clear)
 	{
@@ -29,6 +29,7 @@ void menuGetErrors (void)
 			flag_clear = RESET;
 			resetErrors();
 			ILI9341_Fill_Screen(MYFON);	// залить экран
+			recLog("Пользователь - ошибки удалены");
 		}
 		else if(status == NO)
 		{
@@ -54,8 +55,6 @@ void menuGetErrors (void)
 		}	
 	}
 
-	// обновлять главное меню не чаще, чем раз в 1с
-	static uint32_t time_update = 0;
 	if(HAL_GetTick() - time_update < 1000)	return;
 	time_update = HAL_GetTick();
 	
@@ -152,6 +151,12 @@ void menuGetErrors (void)
 		ILI9341_WriteString(x, y, buf, Font_11x18, WHITE, MYFON);
 		y += yInc;
 	}
+	if(pAVR->err.array_flags[ERR_SD_FREE_SPACE_NULL])
+	{
+		snprintf(buf, BUF_LEN, "- нет места на sd карте");	
+		ILI9341_WriteString(x, y, buf, Font_11x18, WHITE, MYFON);
+		y += yInc;
+	}
 }
 
 		
@@ -161,10 +166,7 @@ void menuGetWarnings (void)
 	uint16_t y = 5;			// начальные координаты
 	uint16_t x = 5;		// начальные координаты
 	uint8_t yInc = 16;	// на сколько опускать каждую строку
-	char buf[BUF_LEN] = {0,};
 	uint8_t status;
-	
-	static uint8_t flag_clear = RESET;
 	
 	// проверка подтверждения очистки ошибок
 	if(flag_clear)
@@ -175,6 +177,7 @@ void menuGetWarnings (void)
 			flag_clear = RESET;
 			resetWarning();
 			ILI9341_Fill_Screen(MYFON);	// залить экран
+			recLog("Пользователь - предупреждения удалены");
 		}
 		else if(status == NO)
 		{
@@ -200,8 +203,6 @@ void menuGetWarnings (void)
 		}	
 	}
 
-	// обновлять главное меню не чаще, чем раз в 1с
-	static uint32_t time_update = 0;
 	if(HAL_GetTick() - time_update < 1000)	return;
 	time_update = HAL_GetTick();
 	

@@ -357,7 +357,7 @@ uint8_t SD_Init(void)
 	//HAL_Delay(500);	// эта задержка уже есть в инициализации tft
 	
 	if(!SD_Card_Test())	{
-		_Error_Handler(__FILE__, __LINE__);
+//		_Error_Handler(__FILE__, __LINE__);
 		return 0;
 	}
 	
@@ -365,11 +365,15 @@ uint8_t SD_Init(void)
 }
 
 // записывает лог на флешку
+char buff[SD_BUF_LEN] = {0, };
 uint8_t recLog(char* text)
 {
-	snprintf(RW_Buffer, SD_BUF_LEN, "( %d:%d:%d  %d-%d-20%d ) - %s\r\n", sTime.Hours, sTime.Minutes, sTime.Seconds, DateToUpdate.Date, DateToUpdate.Month, DateToUpdate.Year, text);	
+	HAL_RTC_GetTime(&hrtc, &sTime, RTC_FORMAT_BIN); 				// RTC_FORMAT_BIN , RTC_FORMAT_BCD
+	HAL_RTC_GetDate(&hrtc, &DateToUpdate, RTC_FORMAT_BIN);
 	
-	if(!recFileSdCard ("logFile", text, 0))
+	snprintf(buff, SD_BUF_LEN, "( %d:%d:%d  %d-%d-20%d ) - %s", sTime.Hours, sTime.Minutes, sTime.Seconds, DateToUpdate.Date, DateToUpdate.Month, DateToUpdate.Year, text);	
+	
+	if(!recFileSdCard ("logFile.txt", buff, 0))
 	{
 		setErr(ERR_SD_CARD);
 		return 0;
@@ -378,6 +382,51 @@ uint8_t recLog(char* text)
 }
 
 
+// читает из файла с карты
+// nameFile - название файла
+// buf - указатель на буфер, в который запишет для записи
+uint8_t readFileSdCard (char* nameFile, char* buf)
+{
+	do
+  {
+    //------------------[ Mount The SD Card ]--------------------
+    FR_Status = f_mount(&FatFs, "", 1);
+    if (FR_Status != FR_OK) 
+			return 0;
+
+    //------------------[ Получить и распечатать размер SD-карты и свободное место ]--------------------
+    f_getfree("", &FreeClusters, &FS_Ptr);
+    TotalSize = (uint32_t)((FS_Ptr->n_fatent - 2) * FS_Ptr->csize * 0.5);
+    FreeSpace = (uint32_t)(FreeClusters * FS_Ptr->csize * 0.5);
+    // свободное пространство менее 1 КБ 
+		if(FreeSpace < 1)
+		{
+			setErr(ERR_SD_FREE_SPACE_NULL);
+			return 0;
+		}
+			
+		//------------------[ Открыть текстовый файл для чтения и считать его данные ]--------------------
+    // Open The File
+    FR_Status = f_open(&Fil, nameFile, FA_OPEN_ALWAYS | FA_READ);
+    if(FR_Status != FR_OK)
+			return 0;
+			
+    // (1) Read The Text File's Data [ Using f_gets() Function ]
+		f_read(&Fil, buf, f_size(&Fil), &RWC);
+
+    // Close The File
+    f_close(&Fil);	
+		
+  } while(0);
+  //------------------[ Отключите SD-карту ]--------------------
+  FR_Status = f_mount(NULL, "", 0);
+  if (FR_Status != FR_OK)
+		return 0;
+  else
+		return 1;
+}
+
+// записывает в файл на карте
 // nameFile - название файла
 // text - текст для записи
 // flagOverwrite - 0 - не перезаписывать файл, а дописать, 1 - перезаписать содержимое
@@ -388,7 +437,7 @@ uint8_t recFileSdCard (char* nameFile, char* text, uint8_t flagOverwrite)
   {
     //------------------[ Mount The SD Card ]--------------------
     FR_Status = f_mount(&FatFs, "", 1);
-    if (FR_Status != FR_OK)
+    if (FR_Status != FR_OK) 
 			return 0;
 
     //------------------[ Получить и распечатать размер SD-карты и свободное место ]--------------------
@@ -413,26 +462,31 @@ uint8_t recFileSdCard (char* nameFile, char* text, uint8_t flagOverwrite)
 		// FA_OPEN_ALWAYS (0x10) - файл будет открыт, если он уже существует, либо создан заново
     //Open the file
 		// если необходимо перезаписать
-		if(flagOverwrite)
+		if(flagOverwrite) {
 			FR_Status = f_open(&Fil, nameFile, FA_WRITE | FA_READ | FA_CREATE_ALWAYS);	
-		// если надо дописать к файлу
-		else
-			FR_Status = f_open(&Fil, nameFile, FA_WRITE | FA_READ | FA_OPEN_ALWAYS);
-    if(FR_Status != FR_OK)
-			return 0;	
-
-		FR_Status = f_lseek(&Fil, f_size(&Fil)); // Переместить указатель файла к EOF (End-Of-File, конец файла)
-    if(FR_Status != FR_OK)
+			if(FR_Status != FR_OK)
 			return 0;
-			
+		}
+		// если надо дописать к файлу
+		else {
+			FR_Status = f_open(&Fil, nameFile, FA_WRITE | FA_READ | FA_OPEN_ALWAYS);
+			if(FR_Status != FR_OK)
+				return 0;	
+
+			FR_Status = f_lseek(&Fil, f_size(&Fil)); // Переместить указатель файла к EOF (End-Of-File, конец файла)
+			if(FR_Status != FR_OK)
+				return 0;
+		}
+		
+		memset(RW_Buffer,'\0',sizeof(RW_Buffer)); // Clear The Buffer		
+		
     // записать текст
-		//snprintf(RW_Buffer, sizeof(RW_Buffer), "%s\r\n", text);	
+		snprintf(RW_Buffer, sizeof(RW_Buffer), "%s\r\n", text);	
     f_write(&Fil, RW_Buffer, strlen(RW_Buffer), &WWC);
 		
     // Close The File
     f_close(&Fil);
 
-		memset(RW_Buffer,'\0',sizeof(RW_Buffer)); // Clear The Buffer		
 		
   } while(0);
   //------------------[ Отключите SD-карту ]--------------------

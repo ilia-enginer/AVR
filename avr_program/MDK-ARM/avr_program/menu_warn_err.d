@@ -44,4 +44,6 @@ avr_program/menu_warn_err.o: menu/menu_warn_err.c \
   ../FATFS/Target\ffconf.h \
   C:\Keil_v5\ARM\ARMCLANG\Bin\..\include\stdlib.h \
   ../Middlewares/Third_Party/FatFs/src\diskio.h menu/menu_warn_err.h \
-  Inc\ILI9341_GFX.h Inc/fonts.h menu/touch.h Inc\xpt2046_touch.h
+  Inc\ILI9341_GFX.h Inc/fonts.h menu/touch.h Inc\xpt2046_touch.h \
+  ../FATFS/App\fatfs.h ../Middlewares/Third_Party/FatFs/src\ff_gen_drv.h \
+  ../FATFS/Target\user_diskio.h

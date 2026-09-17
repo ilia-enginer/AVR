@@ -1,4 +1,6 @@
-avr_program/init.o: Src/init.c Inc\init.h \
+avr_program/init.o: Src/init.c \
+  C:\Keil_v5\ARM\ARMCLANG\Bin\..\include\string.h \
+  C:\Keil_v5\ARM\ARMCLANG\Bin\..\include\stdio.h Inc\init.h \
   C:\Keil_v5\ARM\ARMCLANG\Bin\..\include\stdint.h Inc\warn_err.h \
   Inc/defs.h ../Core/Inc\main.h \
   ../Drivers/STM32F4xx_HAL_Driver/Inc\stm32f4xx_hal.h \

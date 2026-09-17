@@ -1,5 +1,4 @@
 
-//#include <stdint.h>
 #include <stdio.h>
 #include <string.h>
 
@@ -8,12 +7,12 @@
 #include "menu_main.h"
 #include "touch.h"
 
-
+#define POP_UP_BUF_LEN  (200)
+static char popUpWinBuf[POP_UP_BUF_LEN] = {0,};
+static uint8_t flag_block = RESET;		// чтоб каждый раз не обновлял окно
 // окно подтверждения действия
 uint8_t confirmClick (const char* text)
 {
-	static uint8_t flag_block = RESET;		// чтоб каждый раз не обновлял окно
-	char buf[BUF_LEN] = {0,};
 	uint16_t x = 60;
 	uint16_t y = 60;		// начальные координаты
 	uint8_t yInc = 25;	// на сколько опускать каждую строку
@@ -26,9 +25,9 @@ uint8_t confirmClick (const char* text)
 		// текст уведомления
 		// не более хх символов в строке
 		uint16_t len_text = 0;
-		len_text = lineAlignment(text, buf, stringLen);
+		len_text = lineAlignment(text, popUpWinBuf, stringLen);
 		for(uint16_t i = 0; i < len_text; )	{
-			i += ILI9341_WriteStringLen(x, y, buf+i, stringLen, Font_11x18, WHITE, NAVY);
+			i += ILI9341_WriteStringLen(x, y, popUpWinBuf+i, stringLen, Font_11x18, WHITE, NAVY);
 //			memset(buf, '\00', i);
 			y += yInc;
 		}
@@ -37,13 +36,15 @@ uint8_t confirmClick (const char* text)
 		
 		// ------------ кнопка "да" ------------
 		ILI9341_Draw_Filled_Rectangle_Coord(50, 170, 100, 200, MYFON);
-		snprintf(buf, BUF_LEN, "Да"); 
-		ILI9341_WriteString(65, 175, buf, Font_11x18, WHITE, MYFON);
+		snprintf(popUpWinBuf, BUF_LEN, "Да"); 
+		ILI9341_WriteString(65, 175, popUpWinBuf, Font_11x18, WHITE, MYFON);
 		
 		// ------------ кнопка "нет" ------------
 		ILI9341_Draw_Filled_Rectangle_Coord(220, 170, 270, 200, MYFON);
-		snprintf(buf, BUF_LEN, "Нет"); 
-		ILI9341_WriteString(230, 175, buf, Font_11x18, WHITE, MYFON);
+		snprintf(popUpWinBuf, BUF_LEN, "Нет"); 
+		ILI9341_WriteString(230, 175, popUpWinBuf, Font_11x18, WHITE, MYFON);
+		
+		memset(popUpWinBuf, '\00', sizeof(popUpWinBuf));
 	}
 	
 	//------------ обработка тач -----------------------		
@@ -73,16 +74,13 @@ uint8_t confirmClick (const char* text)
 // - текст
 // - время на которое надо открыть в секундах. 0 - на постоянную
 // - меню в которое надо потом вернуться
+static uint32_t menuReturn = MAIN_MENU;
+static uint32_t timeDelay = 0;
 void notification(const char* header, const char* text, uint32_t time, uint32_t menu)
 {
-	static uint8_t flag_block = RESET;		// чтоб каждый раз не обновлял окно
-	static uint32_t menuReturn = MAIN_MENU;
-	static uint32_t timeDelay = 0;
-	
-	char buf[BUF_LEN] = {0,};
-	uint16_t y = 65;				// начальные координаты
+	uint16_t y = 55;				// начальные координаты
 	uint16_t x = 30;
-	uint8_t yInc = 35;			// на сколько опускать каждую строку
+	uint8_t yInc = 20;			// на сколько опускать каждую строку
 	uint16_t stringLen = 25;
 	
 	if(flag_block == RESET)
@@ -94,29 +92,32 @@ void notification(const char* header, const char* text, uint32_t time, uint32_t 
 		
 		ILI9341_Draw_Filled_Rectangle_Coord(15, 20, 305, 210, DARKGREEN);	// квадрат
 		
-		snprintf(buf, BUF_LEN, "%s", header); 														// заголовок
-		ILI9341_WriteString(40, 25, buf, Font_16x26, WHITE, DARKGREEN);	
-//		memset(buf, '\00', sizeof(buf));
+		snprintf(popUpWinBuf, BUF_LEN, "%s", header); 														// заголовок
+		ILI9341_WriteString(40, 25, popUpWinBuf, Font_16x26, WHITE, DARKGREEN);	
+		memset(popUpWinBuf, '\00', sizeof(popUpWinBuf));
 		
 		// текст уведомления
 		// не более хх символов в строке
 		uint16_t len_text = 0;
-		len_text = lineAlignment(text, buf, stringLen);
+		len_text = lineAlignment(text, popUpWinBuf, stringLen);
 		for(uint16_t i = 0; i < len_text; )	{
-			i += ILI9341_WriteStringLen(x, y, buf+i, stringLen, Font_11x18, WHITE, DARKGREEN);
-//			memset(buf, '\00', i);
+			i += ILI9341_WriteStringLen(x, y, popUpWinBuf+i, stringLen, Font_11x18, WHITE, DARKGREEN);
+			memset(popUpWinBuf, '\00', i);
 			y += yInc;
+			if(y > 210-16)
+				break;
 		}
 	
 		// ------------ кнопка "ок" ------------
-//		memset(buf, '\00', sizeof(buf));
+		memset(popUpWinBuf, '\00', sizeof(popUpWinBuf));
 		ILI9341_Draw_Filled_Rectangle_Coord(130, 170, 190, 200, MYFON);
-		snprintf(buf, BUF_LEN, "Ок"); 
-		ILI9341_WriteString(150, 175, buf, Font_11x18, WHITE, MYFON);
+		snprintf(popUpWinBuf, BUF_LEN, "Ок"); 
+		ILI9341_WriteString(150, 175, popUpWinBuf, Font_11x18, WHITE, MYFON);
 		
 		flag_block = SET;
 		menuReturn = menu;
 		menuChangeState(NOTIFICATION);
+		memset(popUpWinBuf, '\00', sizeof(popUpWinBuf));
 		return;
 	}
 
@@ -182,57 +183,4 @@ uint16_t lineAlignment(const char* text, char *buf, uint16_t lenLine)
 		if(lenStr >= lenLine) lenStr = 0;
 	}
 	return lenBuf;
-
-//	uint16_t bufSize = strlen(text);
-//	uint16_t maxLenLine = lenLine * 2;
-//	uint8_t spase = 0;
-//	uint16_t numSpase;
-//	
-//	for(uint16_t b = 0, t = 0, c = 0; t < bufSize; t++, b++)
-//	{
-//		
-//		buf[b] = text[t];
-//		
-//if ( ((uint8_t)buf[b] >= 0x20) && (uint8_t)buf[b] <= 0x7e )
-//	c++;
-//else
-//	c = c+2;
-//		
-////		if((buf[b] == ' ') && (c < maxLenLine))	// если это символ пробела
-////		{
-////			spase++;
-////			numSpase = b;
-////		}
-//				
-//		// если символ новой строки
-////		if((uint8_t)buf[b] == 0x7f)		
-//		if(buf[b] == 0x0A)		
-//		{
-//			c = c+2;
-//			// заполнить текущую строку пробелом
-//			for( ; c <= maxLenLine; c++)
-//			{
-//				buf[b++] = ' ';
-//				c = c+2;
-//			}
-//			c = 0;
-//			spase = 0;
-//		}
-////		else
-////		{
-////			// если дошел до конца предполагаемой длины строки
-////			if(c >= maxLenLine)
-////			{
-////				// если пробелов нечетное кол-во
-////				// добавить еще один, т.к. пробел - 1 символ, русская буква - 2 символа
-////				if (spase % 2 != 0) {
-////						b = numSpase;
-////						t = numSpase-1;
-////				} 
-////				c = 0;
-////			}
-////			
-////		}
-//		
-//	}
 }

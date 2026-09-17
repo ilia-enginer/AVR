@@ -10,13 +10,12 @@
 #include "popUpWindow.h"
 #include "touch.h"
 
-
+static uint8_t flagTO = RESET;		// для обновления даты ТО
+// обновлять главное меню не чаще, чем раз в 1с
+static uint32_t time_update = 0;
 void secondMain (void)
-{
-	static uint8_t flagTO = RESET;		// для обновления даты ТО
-	
+{	
 	uint8_t status;
-	char buf[BUF_LEN] = {0,};
 	uint16_t y = 5;			// начальные координаты
 	uint16_t x = 20;		// начальные координаты
 	uint8_t yInc = 22;	// на сколько опускать каждую строку
@@ -33,6 +32,7 @@ void secondMain (void)
 			// обновить дату ТО
 			delWarn(WARN_NECESSITY_TECH_INSP);
 			notification("ТО", "Дата ТО обновлена", 0, SECOND_MENU);
+			recLog("Пользователь - дата ТО обновлена"); 
 		}
 		else if(status == NO)
 		{
@@ -93,8 +93,6 @@ void secondMain (void)
 		}	
 	}
 
-	// обновлять главное меню не чаще, чем раз в 1с
-	static uint32_t time_update = 0;
 	if(HAL_GetTick() - time_update < 1000)	return;
 	time_update = HAL_GetTick();
 	
@@ -145,12 +143,10 @@ void secondMain (void)
 	ILI9341_Draw_Rectangle(5, 220, 30, 5, WHITE);
 }
 
+char header[BUF_LEN] = {0,};
 // вывод моточасов
 void engineHoursGet (void)
 {
-	char header[BUF_LEN] = {0,};
-	char buf[BUF_LEN] = {0,};
-	
 	snprintf(header, BUF_LEN, "Моточасы инфо"); 
 	snprintf(buf, BUF_LEN, "Моточасы всего     %d\nМоточасы после ТО  %d", 5, 3);		//??? заменить на реальное время 
 	notification(header, buf, 0, SECOND_MENU);
@@ -159,9 +155,6 @@ void engineHoursGet (void)
 // вывод информации о ТО
 void serviseWorkGet(void)
 {
-	char header[BUF_LEN] = {0,};
-	char buf[BUF_LEN] = {0,};
-	
 	snprintf(header, BUF_LEN, "ТО инфо"); 
 	snprintf(buf, BUF_LEN, "Последнее ТО    %d.%d.%d\nСлед. ТО        %d.%d.%d\nМот. час. до ТО %d", 5, 11, 26, 3, 12, 27, 5);		//??? заменить на реальное время 
 	notification(header, buf, 0, SECOND_MENU);
@@ -170,41 +163,34 @@ void serviseWorkGet(void)
 // вывод информации о отключении эл-ва
 void powerOutageGet(void)
 {
-	char header[BUF_LEN] = {0,};
-	char buf[BUF_LEN] = {0,};
-	
+	char buf[160] = {0,};
 	snprintf(header, BUF_LEN, "Откл эл-ва инфо"); 
-	snprintf(buf, BUF_LEN, "Дата посл. откл %d.%d.%d\nБез эл-ва.      %d.%d.%d\nВсего без эл-ва %d", 10, 11, 26, 3, 12, 27, 5);		//??? заменить на реальное время 
+	snprintf(buf, 160, "Последнее отключение\nВремя          %d.%d.%d\nДата           %d.%d.%d\nБез эл-ва        %d\nВсего без эл-ва  %d", 10, 11, 26, 13, 12, 27, 5, 6);		//??? заменить на реальное время 
 	notification(header, buf, 0, SECOND_MENU);
 }
 
 // вывод информации о запуске двигателя
 void startEngineGet(void)
 {
-	char header[BUF_LEN] = {0,};
-	char buf[BUF_LEN] = {0,};
-	
 	snprintf(header, BUF_LEN, "Запуск ДВС инфо"); 
 	snprintf(buf, BUF_LEN, "Ко-во запусков  %d\nПопытки запуска %d", 10, 11);		//??? заменить на реальные цифры
 	notification(header, buf, 0, SECOND_MENU);
 }
 
+// меню ручного переключения реле (мотора)
+static uint8_t flag_exit = RESET;
+static uint8_t flag_change = RESET;
 
+static uint8_t flag_main_rele = RESET;
+static uint8_t flag_zazhig_rele = RESET;
+static uint8_t flag_starter_rele = RESET;
+static uint8_t flag_podsos_rele = RESET;
 void manualRelaySwitchMenu(void)
 {
 	uint16_t y = 5;				// начальные координаты
 	uint16_t x = 5;				// начальные координаты
 	uint8_t yInc = 25;		// на сколько опускать каждую строку
-	char buf[BUF_LEN] = {0,};
 	uint8_t status;
-	
-	static uint8_t flag_exit = RESET;
-	static uint8_t flag_change = RESET;
-	
-	static uint8_t flag_main_rele = RESET;
-	static uint8_t flag_zazhig_rele = RESET;
-	static uint8_t flag_starter_rele = RESET;
-	static uint8_t flag_podsos_rele = RESET;
 	
 	// проверка подтверждения выхода
 	if(flag_exit)
@@ -242,9 +228,11 @@ void manualRelaySwitchMenu(void)
 				
 			if(HAL_GPIO_ReadPin(RELE_OBSH_GPIO_Port, RELE_OBSH_Pin)){
 				RELE_OBSH_ON();
+				recLog("Пользователь - включено главное реле");
 			}
 			else
 				RELE_OBSH_OFF();
+				recLog("Пользователь - отключено главное реле");
 		}
 		else if(status == NO)	{
 			flag_main_rele = RESET;
@@ -267,9 +255,11 @@ void manualRelaySwitchMenu(void)
 				
 			if(HAL_GPIO_ReadPin(RELE_OBSH_GPIO_Port, RELE_ZAJIG_Pin)){
 				RELE_ZAJIG_OFF();
+				recLog("Пользователь - выключено реле зажигания");
 			}
 			else
 				RELE_ZAJIG_ON();
+				recLog("Пользователь - включено реле зажигания");
 		}
 		else if(status == NO)	{
 			flag_zazhig_rele = RESET;
@@ -292,9 +282,11 @@ void manualRelaySwitchMenu(void)
 				
 			if(HAL_GPIO_ReadPin(RELE_STARTER_GPIO_Port, RELE_STARTER_Pin)){
 				RELE_STARTER_OFF();
+				recLog("Пользователь - выключено реле стартера");
 			}
 			else
 				RELE_STARTER_ON();
+				recLog("Пользователь - включено реле стартера");
 		}
 		else if(status == NO)	{
 			flag_starter_rele = RESET;
@@ -317,9 +309,11 @@ void manualRelaySwitchMenu(void)
 				
 			if(HAL_GPIO_ReadPin(RELE_PODSOS_GPIO_Port, RELE_PODSOS_Pin)){
 				RELE_PODSOS_OFF();
+				recLog("Пользователь - выключено реле подсоса");
 			}
 			else
 				RELE_PODSOS_ON();
+				recLog("Пользователь - включено реле подсоса");
 		}
 		else if(status == NO)	{
 			flag_podsos_rele = RESET;
@@ -360,8 +354,6 @@ void manualRelaySwitchMenu(void)
 	}
 
 
-	// обновлять главное меню не чаще, чем раз в 1с
-	static uint32_t time_update = 0;
 	if(HAL_GetTick() - time_update < 1000)	return;
 	time_update = HAL_GetTick();
 	
@@ -410,12 +402,12 @@ void manualRelaySwitchMenu(void)
 	y = y + yInc;
 }
 		
+// меню показа напряжений и температуры
 void get_v_menu(void)
 {
 	uint16_t y = 5;				// начальные координаты
 	uint16_t x = 10;				// начальные координаты
 	uint8_t yInc = 23;		// на сколько опускать каждую строку
-	char buf[BUF_LEN] = {0,};
 
 	//------------ обработка тач -----------------------		
 	// если отпущен после нажатия или после длительного нажатия
@@ -427,9 +419,7 @@ void get_v_menu(void)
 			return;
 		}	
 	}
-	
-	// обновлять главное меню не чаще, чем раз в 0,5с
-	static uint32_t time_update = 0;
+
 	if(HAL_GetTick() - time_update < 500)	return;
 	time_update = HAL_GetTick();
 	

@@ -111,18 +111,19 @@ void menuSwich (void)
 // ошибки " "
 // предупреждения " "
 // справа снизу иконка входа в меню
+static uint8_t flagSetTime = RESET;						// для перехода в режим настройки времени
+static uint8_t flagSetData = RESET;						// для перехода в режим настройки даты
+static uint8_t flagPowerAutoManual = RESET;		// для смены режимы управления ручной / авто
+static uint8_t flagStatusEngine = RESET;			// для принудительного включения / выключения двс
+static uint8_t flagCharge = RESET;						// для принудительного включения / выключения зарядки
+// обновлять главное меню не чаще, чем раз в 1с
+static uint32_t time_update = 0;
+char buf[BUF_LEN] = {0,};
 void menuMain (void)
 {
-	char buf[BUF_LEN] = {0,};
 	char day_the_week[5] = {0,};
 	
 	uint8_t status;
-	static uint8_t flagSetTime = RESET;						// для перехода в режим настройки времени
-	static uint8_t flagSetData = RESET;						// для перехода в режим настройки даты
-	static uint8_t flagPowerAutoManual = RESET;		// для смены режимы управления ручной / авто
-	static uint8_t flagStatusEngine = RESET;			// для принудительного включения / выключения двс
-	static uint8_t flagCharge = RESET;						// для принудительного включения / выключения зарядки
-	
 	
 	uint16_t y = 5;			// начальные координаты
 	uint16_t x = 20;		// начальные координаты
@@ -179,6 +180,7 @@ void menuMain (void)
 				pAVR->avr_states.powerAutoManual = AVR_AUTO;
 				delWarn(WARN_MANUAL_CONTROL_EN);
 				menuChangeState(MAIN_MENU);	
+				recLog("Пользователь - переход в автоматический режим");
 			}
 			
 			flagPowerAutoManual = RESET;	
@@ -200,8 +202,14 @@ void menuMain (void)
 			
 		if(status == YES)
 		{
-			if(pAVR->avr_states.statusEngine == RESET)			pAVR->avr_states.statusEngine = SET;
-			else if(pAVR->avr_states.statusEngine == SET)		pAVR->avr_states.statusEngine = RESET;
+			if(pAVR->avr_states.statusEngine == RESET){
+				pAVR->avr_states.statusEngine = SET;
+				recLog("Пользователь - запуск двигателя");
+			}
+			else if(pAVR->avr_states.statusEngine == SET)	{
+				pAVR->avr_states.statusEngine = RESET;
+				recLog("Пользователь - остановка двигателя");
+			}
 			
 			flagStatusEngine = RESET;	
 			pAVR->avr_states.powerAutoManual = AVR_MANUAL;
@@ -224,12 +232,20 @@ void menuMain (void)
 			
 		if(status == YES)
 		{
-			if(pAVR->avr_states.flagCharge)	pAVR->avr_states.flagCharge = RESET;
-			else														pAVR->avr_states.flagCharge = SET;
-			pAVR->avr_states.powerAutoManual = AVR_MANUAL;
-			setWarn(WARN_MANUAL_CONTROL_EN);
+			if(pAVR->avr_states.flagCharge){
+				pAVR->avr_states.flagCharge = RESET;
+				menuChangeState(MAIN_MENU);
+				recLog("Пользователь -  отключение зарядки АКБ");
+			}
+			else	{
+				pAVR->avr_states.flagCharge = SET;
+				menuChangeState(MAIN_MENU);
+				recLog("Пользователь - включение зарядки АКБ");
+			}
 			
 			flagCharge = RESET;	
+			pAVR->avr_states.powerAutoManual = AVR_MANUAL;	
+			setWarn(WARN_MANUAL_CONTROL_EN);
 		}
 		else if(status == NO)
 		{
@@ -281,8 +297,7 @@ void menuMain (void)
 		}	
 	}
 	
-	// обновлять главное меню не чаще, чем раз в 1с
-	static uint32_t time_update = 0;
+
 	if(HAL_GetTick() - time_update < 1000)	return;
 	time_update = HAL_GetTick();
 
@@ -398,16 +413,15 @@ void menuMain (void)
 }
 
 // переключение силового автомата авр
+static uint8_t flag_block = RESET;		// чтоб каждый раз не обновлял окно
+static uint8_t flag_status_block = RESET;
+static POWER_GRID_MODE power_grid_mode;
+static uint8_t yPoint = 75;	// координаты навигационной точки
 uint8_t switchAvrAutomatic (void)
 {
-	static uint8_t flag_block = RESET;		// чтоб каждый раз не обновлял окно
-	static uint8_t flag_status_block = RESET;
-	static POWER_GRID_MODE power_grid_mode;
-	char buf[BUF_LEN] = {0,};
 	uint16_t y = 65;				// начальные координаты
 	uint8_t yInc = 35;			// на сколько опускать каждую строку
 	uint8_t status;
-	static uint8_t yPoint = 75;	// координаты навигационной точки
 	
 	if(flag_block == RESET)
 	{
@@ -471,6 +485,18 @@ uint8_t switchAvrAutomatic (void)
 		}
 		if(status == YES)
 		{
+			switch(power_grid_mode)
+			{
+				case POWER_IS_OFF:					recLog("Пользователь - переключение силового автомата авр, POWER_IS_OFF");
+					break;
+				case EXTERNAL_POWER:				recLog("Пользователь - переключение силового автомата авр, EXTERNAL_POWER");
+					break;
+				case POWERED_BY_GENERATOR:	recLog("Пользователь - переключение силового автомата авр, POWERED_BY_GENERATOR");
+					break;
+				default:										recLog("Пользователь - переключение силового автомата авр. ошибка переключения"); 
+					break;
+			}
+			
 			pAVR->avr_states.power_grid_mode = power_grid_mode;
 			pAVR->avr_states.powerAutoManual = AVR_MANUAL;
 			setWarn(WARN_MANUAL_CONTROL_EN);
@@ -541,6 +567,18 @@ uint8_t switchAvrAutomatic (void)
 				}
 				if(status == YES)
 				{
+					switch(power_grid_mode)
+					{
+						case POWER_IS_OFF:					recLog("Пользователь - переключение силового автомата авр, POWER_IS_OFF");
+							break;
+						case EXTERNAL_POWER:				recLog("Пользователь - переключение силового автомата авр, EXTERNAL_POWER");
+							break;
+						case POWERED_BY_GENERATOR:	recLog("Пользователь - переключение силового автомата авр, POWERED_BY_GENERATOR");
+							break;
+						default:										recLog("Пользователь - переключение силового автомата авр. ошибка переключения"); 
+							break;
+					}
+			
 					pAVR->avr_states.power_grid_mode = power_grid_mode;
 					pAVR->avr_states.powerAutoManual = AVR_MANUAL;
 					setWarn(WARN_MANUAL_CONTROL_EN);

@@ -132,7 +132,7 @@ int main(void)
   /* USER CODE BEGIN 2 */
 	
 	initDevice();
-	recLog("Проверка записи русского языка");		//???delete
+
   /* USER CODE END 2 */
 
   /* Infinite loop */

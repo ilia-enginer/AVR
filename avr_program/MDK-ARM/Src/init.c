@@ -1,4 +1,7 @@
 
+#include <string.h>
+#include <stdio.h>
+
 #include "init.h"
 
 #include "warn_err.h"
@@ -8,9 +11,14 @@
 
 #include "fatfs_sd.h"
 
-
+static char historyParamBuf[BUF_LEN_SD_PARAM] = {0, };
+static uint32_t numbers[NUM_VARIABLES_HISTORI]; // Массив для чисел
 uint8_t initDevice(void)
 {
+	// прочитать дату, время
+	HAL_RTC_GetTime(&hrtc, &sTime, RTC_FORMAT_BIN); 				
+	HAL_RTC_GetDate(&hrtc, &DateToUpdate, RTC_FORMAT_BIN);
+	
 	// ------------- структура прибора ------------
 	pAVR->touch.flag_hold = 0;
 	pAVR->touch.flag_press = 0;
@@ -25,9 +33,6 @@ uint8_t initDevice(void)
 	resetErrors();
 	resetWarning();
 	
-	HAL_RTC_GetTime(&hrtc, &sTime, RTC_FORMAT_BIN); 				// RTC_FORMAT_BIN , RTC_FORMAT_BCD
-	HAL_RTC_GetDate(&hrtc, &DateToUpdate, RTC_FORMAT_BIN);
-	
 	// ------------- дисплей ------------
 	initTFT();
 	menuChangeState(MAIN_MENU);
@@ -37,10 +42,130 @@ uint8_t initDevice(void)
 	
 	// ------------- sd card ------------
 	SD_Init();
-		
+	
+	// ------------- инициализация данных с sd card ------------
+	if(readFileSdCard("historyStorageFile.txt", historyParamBuf)) {
+		// если файл еще не проинициализирован - проинициализировать
+		if(!fillStructureStoryParameters(historyParamBuf))
+		{
+			// инициализация структуры
+			
+			// проверка
+			numbers[0] = pAVR->sdParams.checkNum									= INIT_HISTORY_FILE_SIGNATURE;	// проверочное число инициализации
+			
+			// моточасы				
+			numbers[1] = pAVR->sdParams.engineHoursTotal					= 0;	// моточасы всего
+			numbers[2] = pAVR->sdParams.engineHoursTO							= 0;	// моточасы после ТО
+			numbers[3] = pAVR->sdParams.hoursBeforeTO							= 0;	// моточасы до ТО
+
+			// ТО		
+			numbers[4] = pAVR->sdParams.hoursLastTO								= sTime.Hours;	// час последнего ТО
+			numbers[5] = pAVR->sdParams.minutesLastTO							= sTime.Minutes;	// минуты последнего ТО
+			numbers[6] = pAVR->sdParams.secondsLastTO							= sTime.Seconds;	// секунды последнего ТО
+			numbers[7] = pAVR->sdParams.dateLastTO								= DateToUpdate.Date;	// дата последнего ТО
+			numbers[8] = pAVR->sdParams.monthLastTO								= DateToUpdate.Month;	// месяц последнего ТО
+			numbers[9] = pAVR->sdParams.yearLastTO								= DateToUpdate.Year;	// год последнего ТО
+
+			//??? узнать, записать
+			numbers[10] = pAVR->sdParams.hoursNextTO							= 0;	// час следующего ТО
+			numbers[11] = pAVR->sdParams.minutesNextTO						= 0;	// минуты следующего ТО
+			numbers[12] = pAVR->sdParams.secondsNextTO						= 0;	// секунды следующего ТО
+			numbers[13] = pAVR->sdParams.dateNextTO								= 0;	// дата следующего ТО
+			numbers[14] = pAVR->sdParams.monthNextTO							= 0;	// месяц следующего ТО
+			numbers[15] = pAVR->sdParams.yearNextTO								= 0;	// год следующего ТО
+
+			// отключение эл-ва
+			numbers[16] = pAVR->sdParams.hoursWithoutElectric			= 0;	// час последнего отключения
+			numbers[17] = pAVR->sdParams.minutesWithoutElectric		= 0;	// минуты последнего отключения
+			numbers[18] = pAVR->sdParams.secondsWithoutElectric		= 0;	// секунды последнего отключения
+			numbers[19] = pAVR->sdParams.dateWithoutElectric			= 0;	// дата последнего отключения
+			numbers[20] = pAVR->sdParams.monthWithoutElectric			= 0;	// месяц последнего отключения
+			numbers[21] = pAVR->sdParams.yearWithoutElectric			= 0;	// год последнего отключения
+
+			numbers[22] = pAVR->sdParams.hoursALLWithoutElectric	= 0;	// общее кол-во часов без эл-ва
+
+			// запуск ДВС инфо
+			numbers[23] = pAVR->sdParams.numSuccessLaunch					= 0;	// кол-во удачных запусков
+			numbers[24] = pAVR->sdParams.numLaunchAttempt					= 0;	// кол-во попыток запуска
+	
+			// очистить буфер
+			memset(historyParamBuf,'\0',sizeof(historyParamBuf)); 
+
+			// переместить массив чисел в строку
+			for (uint8_t i = 0; i < NUM_VARIABLES_HISTORI-1; i++) {
+					// Вычисляем позицию: добавляем к текущей позиции в строке длину уже записанной части
+					sprintf(historyParamBuf + strlen(historyParamBuf), "%d,", numbers[i]);
+			}
+			sprintf(historyParamBuf + strlen(historyParamBuf), "%d", numbers[NUM_VARIABLES_HISTORI-1]);
+			
+			// записать в файл на флеш
+			recFileSdCard ("historyStorageFile.txt", historyParamBuf, 1);
+		}
+	}
+	
 	// ------------- ацп ------------
 	HAL_ADC_Start_DMA(&hadc1, (uint32_t*)&AVR.adc, ADC_CHANELS);	// запуск ацп
 		
+//	// для проверки ошибок и предупреждений	
+//	for(uint8_t i = 0; i < MAX_ERR_AND_WARN; i++)	{
+//		pAVR->err.counter++;
+//		pAVR->err.array_flags[i] = SET;
+//		pAVR->warn.counter++;
+//		pAVR->warn.array_flags[i] = SET;
+//	}
+
+	return 1;
+}
+
+// переводит строку, прочитанную с sd карты в структуру параметров и проверяет их
+uint8_t fillStructureStoryParameters(char* buf)
+{
+	char *end = buf;  // Указатель для отслеживания конца числа 
+	uint8_t count = 0;
+	
+	while (*end) {
+			// Преобразуем подстроку от `str` до `end` в число
+			numbers[count++] = strtol(end, &end, 10);
+			// Пропускаем разделитель (запятую)
+			if (*end == ',') {
+					end++;
+			}
+			if(*end == '\0')
+						break;
+	}
+	
+	// данные не валидны
+	if(numbers[0] != INIT_HISTORY_FILE_SIGNATURE)
+		return 0;
+	// если данные на флешке валидны
+	else
+	{
+		pAVR->sdParams.checkNum									= numbers[0];
+		pAVR->sdParams.engineHoursTotal					= numbers[1];
+		pAVR->sdParams.engineHoursTO						= numbers[2];
+		pAVR->sdParams.hoursBeforeTO						= numbers[3];
+		pAVR->sdParams.hoursLastTO							= numbers[4];
+		pAVR->sdParams.minutesLastTO						= numbers[5];
+		pAVR->sdParams.secondsLastTO						= numbers[6];
+		pAVR->sdParams.dateLastTO								= numbers[7];
+		pAVR->sdParams.monthLastTO							= numbers[8];
+		pAVR->sdParams.yearLastTO								= numbers[9];
+		pAVR->sdParams.hoursNextTO							= numbers[10];
+		pAVR->sdParams.minutesNextTO						= numbers[11];
+		pAVR->sdParams.secondsNextTO						= numbers[12];
+		pAVR->sdParams.dateNextTO								= numbers[13];
+		pAVR->sdParams.monthNextTO							= numbers[14];
+		pAVR->sdParams.yearNextTO								= numbers[15];
+		pAVR->sdParams.hoursWithoutElectric			= numbers[16];
+		pAVR->sdParams.minutesWithoutElectric		= numbers[17];
+		pAVR->sdParams.secondsWithoutElectric		= numbers[18];
+		pAVR->sdParams.dateWithoutElectric			= numbers[19];
+		pAVR->sdParams.monthWithoutElectric			= numbers[20];
+		pAVR->sdParams.yearWithoutElectric			= numbers[21];
+		pAVR->sdParams.hoursALLWithoutElectric	= numbers[22];
+		pAVR->sdParams.numSuccessLaunch					= numbers[23];
+		pAVR->sdParams.numLaunchAttempt					= numbers[24];
+	}
 	return 1;
 }
 

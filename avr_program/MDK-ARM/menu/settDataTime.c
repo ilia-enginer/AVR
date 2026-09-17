@@ -10,23 +10,21 @@
 #include "touch.h"
 
 
+static uint8_t flagFirst = RESET;		// первый вход в функцию
+static uint8_t flagSave = RESET;		// флаг сохранения
+static uint8_t flagExit = RESET;		// флаг выходы
+
+static uint8_t Hours;            
+static uint8_t Minutes;          
+static uint8_t Seconds;  
 // натройка времени
 void setTime (void)
 {
-	char buf[BUF_LEN] = {0,};
 	uint8_t status;
 	
 	uint16_t y = 55;			// начальные координаты
 	uint16_t x = 5;				// начальные координаты
 	uint8_t yInc = 35;		// на сколько опускать каждую строку
-	
-	static uint8_t flagFirst = RESET;		// первый вход в функцию
-	static uint8_t flagSave = RESET;		// флаг сохранения
-	static uint8_t flagExit = RESET;		// флаг выходы
-	
-	static uint8_t Hours;            
-  static uint8_t Minutes;          
-  static uint8_t Seconds;  
 	
 	// ------------------------------------------------------------------------
 	if(!flagFirst)		// если первый вход в функцию
@@ -85,6 +83,8 @@ void setTime (void)
 			sTime.Minutes = Minutes;
 			sTime.Seconds = Seconds;
 			HAL_RTC_SetTime(&hrtc, &sTime, RTC_FORMAT_BIN);
+			
+			recLog("Пользователь - время изменено");
 			
 			menuChangeState(MAIN_MENU);	
 			flagSave = RESET;	
@@ -194,25 +194,20 @@ void setTime (void)
 	}
 }
 
+static uint8_t WeekDay;   
+static uint8_t Month;            
+static uint8_t Date;          
+static uint8_t Year;  
+	
 // настройка даты
 void setData (void)
 {
 	char day_the_week[5] = {0,};
-	char buf[BUF_LEN] = {0,};
 	uint8_t status;
 	
 	uint16_t y = 40;			// начальные координаты
 	uint16_t x = 5;				// начальные координаты
 	uint8_t yInc = 35;		// на сколько опускать каждую строку
-	
-	static uint8_t flagFirst = RESET;		// первый вход в функцию
-	static uint8_t flagSave = RESET;		// флаг сохранения
-	static uint8_t flagExit = RESET;		// флаг выходы
-	
-	static uint8_t WeekDay;   
-	static uint8_t Month;            
-  static uint8_t Date;          
-  static uint8_t Year;  
 	
 	
 	// ------------------------------------------------------------------------
@@ -298,6 +293,8 @@ void setData (void)
 			DateToUpdate.Date 		= Date;
 			DateToUpdate.Year 		= Year;
 			HAL_RTC_SetDate(&hrtc, &DateToUpdate, RTC_FORMAT_BIN);
+			
+			recLog("Пользователь - дата изменена");
 			
 			menuChangeState(MAIN_MENU);	
 			flagSave = RESET;	

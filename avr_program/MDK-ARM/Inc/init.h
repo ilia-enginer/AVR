@@ -47,6 +47,7 @@
 
 
 uint8_t initDevice(void);
+uint8_t fillStructureStoryParameters(char* buf);
 uint8_t initTFT(void);
 uint8_t ledTFTInit(void);
 uint8_t outputInit(void);

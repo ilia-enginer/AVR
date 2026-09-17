@@ -4,6 +4,7 @@
 
 
 // работа с тачем
+static uint32_t time_press = 0;
 uint8_t getTouch (void)
 {
 //    NONE = 0,				// ничего
@@ -13,7 +14,6 @@ uint8_t getTouch (void)
 //		NO_LONG_PRESS,	// отпущен после длительного нажатия
 
 	// для задержки опроса
-	static uint32_t time_press = 0;
 	if(HAL_GetTick() - time_press < 30)	return NONE;
 	time_press = HAL_GetTick();
 	

@@ -35,6 +35,7 @@
 /* Functions */
 uint8_t SD_Init(void);
 uint8_t recLog(char* text);
+uint8_t readFileSdCard (char* nameFile, char* buf);
 uint8_t recFileSdCard (char* nameFile, char* text, uint8_t flagOverwrite);
 
 DSTATUS SD_disk_initialize (BYTE pdrv);

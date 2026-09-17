@@ -6,14 +6,12 @@
 #include "touch.h"
 
 
-
 // отладка тача
+static uint8_t flagExit = RESET;
+static uint8_t flagFirst = RESET;		// первый вход в функцию
 void serviseTouch (void)
 {
-	char buf[BUF_LEN] = {0,};
-	uint8_t status = getTouch();
-	static uint8_t flagExit = RESET;
-	static uint8_t flagFirst = RESET;		// первый вход в функцию
+	uint8_t status;
 	
 	if(!flagFirst)		// если первый вход в функцию - сразу вывести координаты
 	{
@@ -28,19 +26,20 @@ void serviseTouch (void)
 	if(flagExit)
 	{
 		status = confirmClick("Выйти?");
-
+		
 		if(status == YES)
 		{
-			menuChangeState(SECOND_MENU);
 			flagExit = RESET;	
 			flagFirst = RESET;
+			menuChangeState(SECOND_MENU);
 		}
 		else if(status == NO)
 			flagExit = RESET;
-			
+		
 		return;
 	}
 	
+	status = getTouch();
 	if(status == NO_PRESS || status == NO_LONG_PRESS)
 	{	
 		snprintf(buf, BUF_LEN, "X = %d, Y = %d", pAVR->touch.x, pAVR->touch.y); 

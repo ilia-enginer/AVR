@@ -31,6 +31,7 @@ void setWarn(WARN_WARIANTS warn)
 				pAVR->warn.array_flags[WARN_MANUAL_CONTROL_EN] = SET;
 				pAVR->warn.counter++;
 				notification("Предупреждение", "Включен ручной режим работы", 10, pAVR->avr_states.menu_state);
+				recLog("Пользователь - переход в ручной режим работы"); 
 			}	
 			break;
 		// необходимо провести тех. осмотр
@@ -39,6 +40,7 @@ void setWarn(WARN_WARIANTS warn)
 				pAVR->warn.array_flags[WARN_NECESSITY_TECH_INSP] = SET;
 				pAVR->warn.counter++;
 				notification("Предупреждение", "Необходимо провести тех. осмотр", 10, pAVR->avr_states.menu_state);
+				recLog("Предупреждение! Необходимо провести тех. осмотр"); 
 			}	
 			break;
 		// необходимо зарядить акб
@@ -47,10 +49,12 @@ void setWarn(WARN_WARIANTS warn)
 				pAVR->warn.array_flags[WARN_CHARGE_AKB] = SET;
 				pAVR->warn.counter++;
 				notification("Предупреждение", "Необходимо зарядить акб", 10, pAVR->avr_states.menu_state);
+				recLog("Предупреждение! Необходимо зарядить акб"); 
 			}	
 			break;
 		default:
 			notification("Предупреждение", "Ошибка вывода предупреждения", 10, pAVR->avr_states.menu_state);
+			recLog("Предупреждение! Ошибка вывода предупреждения"); 
 			break;
 	}
 }
@@ -64,6 +68,7 @@ void setErr(ERR_WARIANTS err)
 				pAVR->err.array_flags[ERR_MAX_LAUNCH_ATTEMP] = SET;
 				pAVR->err.counter++;
 				notification("Ошибка!!!", "Превышено макс. кол-во попыток запуска", 30, pAVR->avr_states.menu_state);
+				recLog("Ошибка!!! Превышено макс. кол-во попыток запуска");
 			}	
 			break;
 		// ошибка отключения реле стартера
@@ -72,6 +77,7 @@ void setErr(ERR_WARIANTS err)
 				pAVR->err.array_flags[ERR_STARTER_RELE_SHUTDOWN] = SET;
 				pAVR->err.counter++;
 				notification("Ошибка!!!", "Отключения реле стартера", 30, pAVR->avr_states.menu_state);
+				recLog("Ошибка!!! Отключения реле стартера");
 			}	
 			break;
 		// ошибка включения реле стартера
@@ -80,6 +86,7 @@ void setErr(ERR_WARIANTS err)
 				pAVR->err.array_flags[ERR_STARTER_RELE_ACTIVATION] = SET;
 				pAVR->err.counter++;
 				notification("Ошибка!!!", "Включения реле стартера", 30, pAVR->avr_states.menu_state);
+				recLog("Ошибка!!! Включения реле стартера");
 			}	
 			break;
 		// низкое напряжение акб
@@ -88,6 +95,7 @@ void setErr(ERR_WARIANTS err)
 				pAVR->err.array_flags[ERR_LOW_VOLTAGE_AKB] = SET;
 				pAVR->err.counter++;
 				notification("Ошибка!!!", "Низкое напряжение акб", 30, pAVR->avr_states.menu_state);
+				recLog("Ошибка!!! Низкое напряжение акб");
 			}	
 			break;
 		// высокое напряжение акб
@@ -96,6 +104,7 @@ void setErr(ERR_WARIANTS err)
 				pAVR->err.array_flags[ERR_HIGHT_VOLTAGE_AKB] = SET;
 				pAVR->err.counter++;
 				notification("Ошибка!!!", "Высокое напряжение акб", 30, pAVR->avr_states.menu_state);
+				recLog("Ошибка!!! Высокое напряжение акб");
 			}	
 			break;
 		// неисправность цепи зарядки
@@ -104,6 +113,7 @@ void setErr(ERR_WARIANTS err)
 				pAVR->err.array_flags[ERR_CHARG_CIRCUIT] = SET;
 				pAVR->err.counter++;
 				notification("Ошибка!!!", "Неисправность цепи зарядки", 30, pAVR->avr_states.menu_state);
+				recLog("Ошибка!!! Неисправность цепи зарядки");
 			}	
 			break;
 		// был хард ресет
@@ -112,6 +122,7 @@ void setErr(ERR_WARIANTS err)
 				pAVR->err.array_flags[ERR_HARD_RESET] = SET;
 				pAVR->err.counter++;
 				notification("Ошибка!!!", "Был хард ресет", 30, pAVR->avr_states.menu_state);
+				recLog("Ошибка!!! Был хард ресет");
 			}	
 			break;
 		// был сброс по вачдогу
@@ -120,6 +131,7 @@ void setErr(ERR_WARIANTS err)
 				pAVR->err.array_flags[ERR_WATCH_DOG] = SET;
 				pAVR->err.counter++;
 				notification("Ошибка!!!", "Был сброс по вачдогу", 30, pAVR->avr_states.menu_state);
+				recLog("Ошибка!!! Был сброс по вачдогу");
 			}	
 			break;
 		// двигатель неуправляемо остановлен (заглох)
@@ -128,6 +140,7 @@ void setErr(ERR_WARIANTS err)
 				pAVR->err.array_flags[ERR_ENGINE_STALLED] = SET;
 				pAVR->err.counter++;
 				notification("Ошибка!!!", "ДВС неуправляемо остановлен (заглох)", 30, pAVR->avr_states.menu_state);
+				recLog("Ошибка!!! ДВС неуправляемо остановлен (заглох)");
 			}	
 			break;
 		// ошибка sd карты
@@ -135,7 +148,8 @@ void setErr(ERR_WARIANTS err)
 			if(!pAVR->err.array_flags[ERR_SD_CARD]) {
 				pAVR->err.array_flags[ERR_SD_CARD] = SET;
 				pAVR->err.counter++;
-				notification("Ошибка!!!", "sd карты", 30, pAVR->avr_states.menu_state);
+//				notification("Ошибка!!!", "sd карты", 30, pAVR->avr_states.menu_state);
+				recLog("Ошибка!!! sd карты");
 			}	
 			break;
 		// закончилось место на sd карте
@@ -143,11 +157,13 @@ void setErr(ERR_WARIANTS err)
 			if(!pAVR->err.array_flags[ERR_SD_FREE_SPACE_NULL]) {
 				pAVR->err.array_flags[ERR_SD_FREE_SPACE_NULL] = SET;
 				pAVR->err.counter++;
-				notification("Ошибка!!!", "sd карта заполненна", 30, pAVR->avr_states.menu_state);
+//				notification("Ошибка!!!", "sd карта заполненна", 30, pAVR->avr_states.menu_state);
+				recLog("Ошибка!!! sd карта заполненна");
 			}	
 			break;
 		default:
 			notification("Ошибка!", "Ошибка вывода ошибки", 30, pAVR->avr_states.menu_state);
+			recLog("Ошибка!!! Ошибка вывода ошибки");
 			break;
 	}
 }
@@ -175,10 +191,12 @@ void delWarn(WARN_WARIANTS warn)
 			if(pAVR->warn.array_flags[WARN_CHARGE_AKB]) {
 				pAVR->warn.array_flags[WARN_CHARGE_AKB] = RESET;
 				pAVR->warn.counter--;
+				recLog("Удалено предупреждение о разряде АКБ");
 			}	
 			break;
 		default:
 			notification("Предупреждение", "Ошибка отмены предупреждения", 10, pAVR->avr_states.menu_state);
+			recLog("Предупреждение. Ошибка отмены предупреждения");
 			break;
 	}
 }
