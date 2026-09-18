@@ -361,7 +361,7 @@ uint8_t SD_Init(void)
 		return 0;
 	}
 	
-	return recLog("Start CPU");
+	return recLog("SD_Init Успешная инициализация SD карты");
 }
 
 // записывает лог на флешку
@@ -371,7 +371,7 @@ uint8_t recLog(char* text)
 	HAL_RTC_GetTime(&hrtc, &sTime, RTC_FORMAT_BIN); 				// RTC_FORMAT_BIN , RTC_FORMAT_BCD
 	HAL_RTC_GetDate(&hrtc, &DateToUpdate, RTC_FORMAT_BIN);
 	
-	snprintf(buff, SD_BUF_LEN, "( %d:%d:%d  %d-%d-20%d ) - %s", sTime.Hours, sTime.Minutes, sTime.Seconds, DateToUpdate.Date, DateToUpdate.Month, DateToUpdate.Year, text);	
+	snprintf(buff, SD_BUF_LEN, "( %02d:%02d:%02d  %02d-%02d-20%d ) - %s\n\r", sTime.Hours, sTime.Minutes, sTime.Seconds, DateToUpdate.Date, DateToUpdate.Month, DateToUpdate.Year, text);	
 	
 	if(!recFileSdCard ("logFile.txt", buff, 0))
 	{
