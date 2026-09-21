@@ -27,7 +27,19 @@ uint8_t getTouch (void)
 			TOUCH_CS_UNSELECT;
 			DISP_CS_UNSELECT;
 			HAL_SPI_DeInit(DISP_SPI_PTR);
+			
+			hspi1.Instance = SPI1;
+			hspi1.Init.Mode = SPI_MODE_MASTER;
+			hspi1.Init.Direction = SPI_DIRECTION_2LINES;
+			hspi1.Init.DataSize = SPI_DATASIZE_8BIT;
+			hspi1.Init.CLKPolarity = SPI_POLARITY_LOW;
+			hspi1.Init.CLKPhase = SPI_PHASE_1EDGE;
+			hspi1.Init.NSS = SPI_NSS_SOFT;
 			hspi1.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_32;
+			hspi1.Init.FirstBit = SPI_FIRSTBIT_MSB;
+			hspi1.Init.TIMode = SPI_TIMODE_DISABLE;
+			hspi1.Init.CRCCalculation = SPI_CRCCALCULATION_DISABLE;
+			hspi1.Init.CRCPolynomial = 10;
 			HAL_SPI_Init(DISP_SPI_PTR);
 
 			ILI9341_TouchGetCoordinates(&pAVR->touch.x, &pAVR->touch.y);			
@@ -40,7 +52,7 @@ uint8_t getTouch (void)
 			DISP_CS_SELECT;	
 			
 			// если координаты получены
-			if(pAVR->touch.x && pAVR->touch.y)
+			if(pAVR->touch.x || pAVR->touch.y)
 				return PRESS;
 	}
 	// если отпущен

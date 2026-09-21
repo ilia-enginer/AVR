@@ -44,7 +44,8 @@ uint8_t initDevice(void)
 	SD_Init();
 	
 	// ------------- инициализация данных с sd card ------------
-	if(getFillStructureStoryParameters()) {
+	if(getFillStructureStoryParameters()) 
+	{
 		// если файл еще не проинициализирован - проинициализировать
 		if(pAVR->sdParams.checkNum != INIT_HISTORY_FILE_SIGNATURE)
 		{
@@ -66,7 +67,7 @@ uint8_t initDevice(void)
 			pAVR->sdParams.monthLastTO							= DateToUpdate.Month;	// месяц последнего ТО
 			pAVR->sdParams.yearLastTO								= DateToUpdate.Year;	// год последнего ТО
 
-			//??? узнать, записать
+			//
 			pAVR->sdParams.hoursNextTO							= 0;	// час следующего ТО
 			pAVR->sdParams.minutesNextTO						= 0;	// минуты следующего ТО
 			pAVR->sdParams.secondsNextTO						= 0;	// секунды следующего ТО
@@ -82,16 +83,21 @@ uint8_t initDevice(void)
 			pAVR->sdParams.monthWithoutElectric			= 0;	// месяц последнего отключения
 			pAVR->sdParams.yearWithoutElectric			= 0;	// год последнего отключения
 
+			pAVR->sdParams.hoursLastWithoutElectric = 0;	// часы без эл-ва за последний раз	
 			pAVR->sdParams.hoursALLWithoutElectric	= 0;	// общее кол-во часов без эл-ва
 
 			// запуск ДВС инфо
 			pAVR->sdParams.numSuccessLaunch					= 0;	// кол-во удачных запусков
 			pAVR->sdParams.numLaunchAttempt					= 0;	// кол-во попыток запуска
 			
+			// обновить инфо о ТО - в данном случае проинициализировать
+			updateInfoTO();
+	
 			// записать в файл на флеш
 			setFillStructureStoryParameters();
 		}
 	}
+	
 	
 	// ------------- ацп ------------
 	HAL_ADC_Start_DMA(&hadc1, (uint32_t*)&AVR.adc, ADC_CHANELS);	// запуск ацп
@@ -139,87 +145,94 @@ uint8_t getFillStructureStoryParameters(void)
 			}
 			if(*end == '\0')
 						break;
+			if(i == NUM_VARIABLES_HISTORI)
+				break;
 	}
 	
+	i = 0;
 	// перенести параметры в структуру
-	pAVR->sdParams.checkNum									= numbers[0];
-	pAVR->sdParams.engineHoursTotal					= numbers[1];
-	pAVR->sdParams.engineHoursTO						= numbers[2];
-	pAVR->sdParams.hoursBeforeTO						= numbers[3];
-	pAVR->sdParams.hoursLastTO							= numbers[4];
-	pAVR->sdParams.minutesLastTO						= numbers[5];
-	pAVR->sdParams.secondsLastTO						= numbers[6];
-	pAVR->sdParams.dateLastTO								= numbers[7];
-	pAVR->sdParams.monthLastTO							= numbers[8];
-	pAVR->sdParams.yearLastTO								= numbers[9];
-	pAVR->sdParams.hoursNextTO							= numbers[10];
-	pAVR->sdParams.minutesNextTO						= numbers[11];
-	pAVR->sdParams.secondsNextTO						= numbers[12];
-	pAVR->sdParams.dateNextTO								= numbers[13];
-	pAVR->sdParams.monthNextTO							= numbers[14];
-	pAVR->sdParams.yearNextTO								= numbers[15];
-	pAVR->sdParams.hoursWithoutElectric			= numbers[16];
-	pAVR->sdParams.minutesWithoutElectric		= numbers[17];
-	pAVR->sdParams.secondsWithoutElectric		= numbers[18];
-	pAVR->sdParams.dateWithoutElectric			= numbers[19];
-	pAVR->sdParams.monthWithoutElectric			= numbers[20];
-	pAVR->sdParams.yearWithoutElectric			= numbers[21];
-	pAVR->sdParams.hoursALLWithoutElectric	= numbers[22];
-	pAVR->sdParams.numSuccessLaunch					= numbers[23];
-	pAVR->sdParams.numLaunchAttempt					= numbers[24];
-
+	pAVR->sdParams.checkNum									= numbers[i++];
+	pAVR->sdParams.engineHoursTotal					= numbers[i++];
+	pAVR->sdParams.engineHoursTO						= numbers[i++];
+	pAVR->sdParams.hoursBeforeTO						= numbers[i++];
+	pAVR->sdParams.hoursLastTO							= numbers[i++];
+	pAVR->sdParams.minutesLastTO						= numbers[i++];
+	pAVR->sdParams.secondsLastTO						= numbers[i++];
+	pAVR->sdParams.dateLastTO								= numbers[i++];
+	pAVR->sdParams.monthLastTO							= numbers[i++];
+	pAVR->sdParams.yearLastTO								= numbers[i++];
+	pAVR->sdParams.hoursNextTO							= numbers[i++];
+	pAVR->sdParams.minutesNextTO						= numbers[i++];
+	pAVR->sdParams.secondsNextTO						= numbers[i++];
+	pAVR->sdParams.dateNextTO								= numbers[i++];
+	pAVR->sdParams.monthNextTO							= numbers[i++];
+	pAVR->sdParams.yearNextTO								= numbers[i++];
+	pAVR->sdParams.hoursWithoutElectric			= numbers[i++];
+	pAVR->sdParams.minutesWithoutElectric		= numbers[i++];
+	pAVR->sdParams.secondsWithoutElectric		= numbers[i++];
+	pAVR->sdParams.dateWithoutElectric			= numbers[i++];
+	pAVR->sdParams.monthWithoutElectric			= numbers[i++];
+	pAVR->sdParams.yearWithoutElectric			= numbers[i++];
+	pAVR->sdParams.hoursLastWithoutElectric = numbers[i++];
+	pAVR->sdParams.hoursALLWithoutElectric	= numbers[i++];
+	pAVR->sdParams.numSuccessLaunch					= numbers[i++];
+	pAVR->sdParams.numLaunchAttempt					= numbers[i++];
+	
 	return 1;
 }
 
 // записывает структуру истории на sd
 uint8_t setFillStructureStoryParameters(void)
 {	
+	uint8_t i = 0;
 	// очистить массив чисел
-	for(uint8_t i = 0; i < NUM_VARIABLES_HISTORI; i++)
+	for(i = 0; i < NUM_VARIABLES_HISTORI; i++)
 		numbers[i] = 0;
 		
+	i = 0;	
 	// проверка
-	numbers[0] = pAVR->sdParams.checkNum;										// проверочное число инициализации
+	numbers[i++] = pAVR->sdParams.checkNum;										// проверочное число инициализации
 	
 	// моточасы				
-	numbers[1] = pAVR->sdParams.engineHoursTotal;						// моточасы всего
-	numbers[2] = pAVR->sdParams.engineHoursTO;							// моточасы после ТО
-	numbers[3] = pAVR->sdParams.hoursBeforeTO;							// моточасы до ТО
+	numbers[i++] = pAVR->sdParams.engineHoursTotal;						// моточасы всего
+	numbers[i++] = pAVR->sdParams.engineHoursTO;							// моточасы после ТО
+	numbers[i++] = pAVR->sdParams.hoursBeforeTO;							// моточасы до ТО
 
 	// ТО		
-	numbers[4] = pAVR->sdParams.hoursLastTO;								// час последнего ТО
-	numbers[5] = pAVR->sdParams.minutesLastTO;							// минуты последнего ТО
-	numbers[6] = pAVR->sdParams.secondsLastTO;							// секунды последнего ТО
-	numbers[7] = pAVR->sdParams.dateLastTO;									// дата последнего ТО
-	numbers[8] = pAVR->sdParams.monthLastTO;								// месяц последнего ТО
-	numbers[9] = pAVR->sdParams.yearLastTO;									// год последнего ТО
+	numbers[i++] = pAVR->sdParams.hoursLastTO;								// час последнего ТО
+	numbers[i++] = pAVR->sdParams.minutesLastTO;							// минуты последнего ТО
+	numbers[i++] = pAVR->sdParams.secondsLastTO;							// секунды последнего ТО
+	numbers[i++] = pAVR->sdParams.dateLastTO;									// дата последнего ТО
+	numbers[i++] = pAVR->sdParams.monthLastTO;								// месяц последнего ТО
+	numbers[i++] = pAVR->sdParams.yearLastTO;									// год последнего ТО
 
-	numbers[10] = pAVR->sdParams.hoursNextTO;								// час следующего ТО
-	numbers[11] = pAVR->sdParams.minutesNextTO;							// минуты следующего ТО
-	numbers[12] = pAVR->sdParams.secondsNextTO;							// секунды следующего ТО
-	numbers[13] = pAVR->sdParams.dateNextTO;								// дата следующего ТО
-	numbers[14] = pAVR->sdParams.monthNextTO;								// месяц следующего ТО
-	numbers[15] = pAVR->sdParams.yearNextTO;								// год следующего ТО
+	numbers[i++] = pAVR->sdParams.hoursNextTO;								// час следующего ТО
+	numbers[i++] = pAVR->sdParams.minutesNextTO;							// минуты следующего ТО
+	numbers[i++] = pAVR->sdParams.secondsNextTO;							// секунды следующего ТО
+	numbers[i++] = pAVR->sdParams.dateNextTO;								// дата следующего ТО
+	numbers[i++] = pAVR->sdParams.monthNextTO;								// месяц следующего ТО
+	numbers[i++] = pAVR->sdParams.yearNextTO;								// год следующего ТО
 
 	// отключение эл-ва
-	numbers[16] = pAVR->sdParams.hoursWithoutElectric;			// час последнего отключения
-	numbers[17] = pAVR->sdParams.minutesWithoutElectric;		// минуты последнего отключения
-	numbers[18] = pAVR->sdParams.secondsWithoutElectric;		// секунды последнего отключения
-	numbers[19] = pAVR->sdParams.dateWithoutElectric;				// дата последнего отключения
-	numbers[20] = pAVR->sdParams.monthWithoutElectric;			// месяц последнего отключения
-	numbers[21] = pAVR->sdParams.yearWithoutElectric;				// год последнего отключения
+	numbers[i++] = pAVR->sdParams.hoursWithoutElectric;			// час последнего отключения
+	numbers[i++] = pAVR->sdParams.minutesWithoutElectric;		// минуты последнего отключения
+	numbers[i++] = pAVR->sdParams.secondsWithoutElectric;		// секунды последнего отключения
+	numbers[i++] = pAVR->sdParams.dateWithoutElectric;				// дата последнего отключения
+	numbers[i++] = pAVR->sdParams.monthWithoutElectric;			// месяц последнего отключения
+	numbers[i++] = pAVR->sdParams.yearWithoutElectric;				// год последнего отключения
 
-	numbers[22] = pAVR->sdParams.hoursALLWithoutElectric;		// общее кол-во часов без эл-ва
+	numbers[i++] = pAVR->sdParams.hoursLastWithoutElectric;	// часы без эл-ва за последний раз	
+	numbers[i++] = pAVR->sdParams.hoursALLWithoutElectric;		// общее кол-во часов без эл-ва
 
 	// запуск ДВС инфо
-	numbers[23] = pAVR->sdParams.numSuccessLaunch;					// кол-во удачных запусков
-	numbers[24] = pAVR->sdParams.numLaunchAttempt;					// кол-во попыток запуска
-
+	numbers[i++] = pAVR->sdParams.numSuccessLaunch;					// кол-во удачных запусков
+	numbers[i++] = pAVR->sdParams.numLaunchAttempt;					// кол-во попыток запуска
+	
 	// очистить буфер
 	memset(historyParamBuf,'\0',sizeof(historyParamBuf)); 
 
 	// переместить массив чисел в строку
-	for (uint8_t i = 0; i < NUM_VARIABLES_HISTORI; i++) {
+	for (i = 0; i < NUM_VARIABLES_HISTORI; i++) {
 			// Вычисляем позицию: добавляем к текущей позиции в строке длину уже записанной части
 			sprintf(historyParamBuf + strlen(historyParamBuf), "%d,", numbers[i]);
 	}
@@ -386,6 +399,12 @@ uint8_t setFillStructureStoryParameters(void)
 		return 0;
 	}
 	memset(historyParamBuf,'\0',sizeof(historyParamBuf)); 
+	sprintf(historyParamBuf + strlen(historyParamBuf), "%d - часы без эл-ва за последний раз\n", pAVR->sdParams.hoursLastWithoutElectric);
+	if(!recFileSdCard ("historyUserFile.txt", historyParamBuf, 0)){
+		setErr(ERR_SD_CARD);
+		return 0;
+	}
+	memset(historyParamBuf,'\0',sizeof(historyParamBuf)); 
 	sprintf(historyParamBuf + strlen(historyParamBuf), "%d - общее кол-во часов без эл-ва\n", pAVR->sdParams.hoursALLWithoutElectric);
 	if(!recFileSdCard ("historyUserFile.txt", historyParamBuf, 0)){
 		setErr(ERR_SD_CARD);
@@ -415,6 +434,15 @@ uint8_t setFillStructureStoryParameters(void)
 	return 1;
 }
 
+void updateInfoTO (void)
+{
+
+
+
+}
+
+
+
 uint8_t initTFT(void)
 {
 	ledTFTInit();		// подсветка дисплея
@@ -432,7 +460,7 @@ uint8_t initTFT(void)
 	/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   ILI9341_Fill_Screen(MYFON); // заливка всего экрана цветом (цвета в файле ILI9341_GFX.h)
 	
-//	//???
+//	//??? заставка загрузки
 //	uint32_t size_img = sizeof(img_logo); // размер картинки в байтах (картинка лежит в файле img.h)
 //	ILI9341_Draw_Image(img_logo, 60, 7, IMG_WIDTH, IMG_HEIGHT, size_img); // вывести в центре
 //	

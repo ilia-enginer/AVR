@@ -708,7 +708,7 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 // будильник, срабатывает в 00:00
 void HAL_RTC_AlarmAEventCallback(RTC_HandleTypeDef *hrtc)
 {
-        
+   pAVR->avr_states.flagSaveInfoSD = SET;		// необходимо сохранить всю инфу на флеш
 }
 
 void set_BKP0R(uint32_t signature)

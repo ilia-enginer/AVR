@@ -13,6 +13,17 @@ void work (void)
 	checkWarn();			// поиск предупреждений
 	checkErr();				// поиск ошибок
 	menuSwich();			// экранное меню
+	
+	
+	
+	// если необходимо сохранить всю инфу на флеш
+	if(pAVR->avr_states.flagSaveInfoSD == SET)
+	{
+		// обновить инфо о ТО
+		updateInfoTO();
+		// записать на sd
+		setFillStructureStoryParameters();
+	}
 }
 
 

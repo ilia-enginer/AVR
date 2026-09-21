@@ -17,7 +17,7 @@ FRESULT FR_Status;
 FATFS *FS_Ptr;
 UINT RWC, WWC; // Read/Write Word Counter
 DWORD FreeClusters;
-uint32_t TotalSize, FreeSpace;
+uint32_t TotalSize, FreeSpace = 0;
 char RW_Buffer[SD_BUF_LEN];
 
 

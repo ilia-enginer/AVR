@@ -49,6 +49,7 @@
 uint8_t initDevice(void);
 uint8_t getFillStructureStoryParameters(void);
 uint8_t setFillStructureStoryParameters(void);
+void updateInfoTO (void);
 uint8_t initTFT(void);
 uint8_t ledTFTInit(void);
 uint8_t outputInit(void);

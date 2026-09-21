@@ -13,6 +13,7 @@
 static uint8_t flagTO = RESET;		// для обновления даты ТО
 // обновлять главное меню не чаще, чем раз в 1с
 static uint32_t time_update = 0;
+
 void secondMain (void)
 {	
 	uint8_t status;
@@ -28,8 +29,12 @@ void secondMain (void)
 		if(status == YES)
 		{
 			flagTO = RESET;
-			//???
-			// обновить дату ТО
+			
+			// обновить инфо о ТО
+			updateInfoTO();
+			// сохранить на sd
+			setFillStructureStoryParameters();
+			
 			delWarn(WARN_NECESSITY_TECH_INSP);
 			notification("ТО", "Дата ТО обновлена", 0, SECOND_MENU);
 			recLog("Пользователь - дата ТО обновлена"); 
@@ -86,7 +91,7 @@ void secondMain (void)
 			menuChangeState(SERVISE_TOUCH);	// меню сервис тачскрина
 			return;
 		}	
-		// если нажатие на Напряжения инфо
+		// если нажатие на Тех инфо
 		else if(pAVR->touch.x >= x && pAVR->touch.x <= 320 && pAVR->touch.y >= y + (yInc * 7) && pAVR->touch.y <= y + (yInc * 8)) {
 			menuChangeState(GET_V_MENU);	// Напряжения инфо
 			return;
@@ -132,7 +137,7 @@ void secondMain (void)
 	y += yInc;
 	
 	//------------ Напряжения инфо -----------------------
-	snprintf(buf, BUF_LEN, "Напряжения инфо");
+	snprintf(buf, BUF_LEN, "Тех инфо");
 	ILI9341_WriteString(x, y, buf, Font_11x18, WHITE, MYFON);
 	y += yInc;
 	
@@ -148,7 +153,9 @@ char header[BUF_LEN] = {0,};
 void engineHoursGet (void)
 {
 	snprintf(header, BUF_LEN, "Моточасы инфо"); 
-	snprintf(buf, BUF_LEN, "Моточасы всего     %d\nМоточасы после ТО  %d", 5, 3);		//??? заменить на реальное время 
+	snprintf(buf, BUF_LEN, "Моточасы всего     %d\nМоточасы после ТО  %d", 
+																																				pAVR->sdParams.engineHoursTotal, 
+																																				pAVR->sdParams.engineHoursTO);		
 	notification(header, buf, 0, SECOND_MENU);
 }
 
@@ -156,7 +163,13 @@ void engineHoursGet (void)
 void serviseWorkGet(void)
 {
 	snprintf(header, BUF_LEN, "ТО инфо"); 
-	snprintf(buf, BUF_LEN, "Последнее ТО    %d.%d.%d\nСлед. ТО        %d.%d.%d\nМот. час. до ТО %d", 5, 11, 26, 3, 12, 27, 5);		//??? заменить на реальное время 
+	snprintf(buf, BUF_LEN, "Последнее ТО    %d.%d.%d\nСлед. ТО        %d.%d.%d\nМот. час. до ТО %d", pAVR->sdParams.dateLastTO, 
+																																																	pAVR->sdParams.monthLastTO, 
+																																																	pAVR->sdParams.yearLastTO, 
+																																																	pAVR->sdParams.dateNextTO, 
+																																																	pAVR->sdParams.monthNextTO, 
+																																																	pAVR->sdParams.yearNextTO, 
+																																																	pAVR->sdParams.hoursBeforeTO);		
 	notification(header, buf, 0, SECOND_MENU);
 }
 
@@ -165,7 +178,15 @@ void powerOutageGet(void)
 {
 	char buf[160] = {0,};
 	snprintf(header, BUF_LEN, "Откл эл-ва инфо"); 
-	snprintf(buf, 160, "Последнее отключение\nВремя          %d.%d.%d\nДата           %d.%d.%d\nБез эл-ва        %d\nВсего без эл-ва  %d", 10, 11, 26, 13, 12, 27, 5, 6);		//??? заменить на реальное время 
+	snprintf(buf, 160, "Последнее отключение\nВремя          %d.%d.%d\nДата           %d.%d.%d\nБез эл-ва        %d\nВсего без эл-ва  %d", 
+																																																																				pAVR->sdParams.hoursWithoutElectric, 
+																																																																				pAVR->sdParams.minutesWithoutElectric, 
+																																																																				pAVR->sdParams.secondsWithoutElectric, 
+																																																																				pAVR->sdParams.dateWithoutElectric, 
+																																																																				pAVR->sdParams.monthWithoutElectric, 
+																																																																				pAVR->sdParams.yearWithoutElectric, 
+																																																																				pAVR->sdParams.hoursLastWithoutElectric, 
+																																																																				pAVR->sdParams.hoursALLWithoutElectric);		
 	notification(header, buf, 0, SECOND_MENU);
 }
 
@@ -173,7 +194,8 @@ void powerOutageGet(void)
 void startEngineGet(void)
 {
 	snprintf(header, BUF_LEN, "Запуск ДВС инфо"); 
-	snprintf(buf, BUF_LEN, "Ко-во запусков  %d\nПопытки запуска %d", 10, 11);		//??? заменить на реальные цифры
+	snprintf(buf, BUF_LEN, "Ко-во запусков  %d\nПопытки запуска %d", pAVR->sdParams.numSuccessLaunch, 
+																																		pAVR->sdParams.numLaunchAttempt);		
 	notification(header, buf, 0, SECOND_MENU);
 }
 
@@ -185,6 +207,7 @@ static uint8_t flag_main_rele = RESET;
 static uint8_t flag_zazhig_rele = RESET;
 static uint8_t flag_starter_rele = RESET;
 static uint8_t flag_podsos_rele = RESET;
+
 void manualRelaySwitchMenu(void)
 {
 	uint16_t y = 5;				// начальные координаты
@@ -402,7 +425,7 @@ void manualRelaySwitchMenu(void)
 	y = y + yInc;
 }
 		
-// меню показа напряжений и температуры
+// меню показа напряжений, температуры места на sd карте
 void get_v_menu(void)
 {
 	uint16_t y = 5;				// начальные координаты
@@ -463,6 +486,11 @@ void get_v_menu(void)
 	snprintf(buf, BUF_LEN, "Температура проца  %.2f", pAVR->v_t.t_cpu); 
 	ILI9341_WriteString(x, y, buf, Font_11x18, WHITE, MYFON);
 	y = y + yInc;
+	
+	snprintf(buf, BUF_LEN, "Место на sd %dкб", FreeSpace); 
+	ILI9341_WriteString(x, y, buf, Font_11x18, WHITE, MYFON);
+	y = y + yInc;
+
 }
 
 

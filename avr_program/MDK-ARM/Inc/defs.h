@@ -43,7 +43,7 @@
 
 
 // для хранения истории настроек на sd карте
-#define NUM_VARIABLES_HISTORI		(25)						// кол-во переменных в структуре истории
+#define NUM_VARIABLES_HISTORI		(26)						// кол-во переменных в структуре истории
 #define BUF_LEN_SD_PARAM				((NUM_VARIABLES_HISTORI*4) + NUM_VARIABLES_HISTORI)						// объем буфера для хранения параметров, считанных из флеш
 #define INIT_HISTORY_FILE_SIGNATURE (2092942078)			// признак инициализации файла истории параметров на sd карте
 
@@ -170,6 +170,7 @@ typedef struct automats_devices {
 		MANAGEMENT_WORK		powerAutoManual;		// режим работы управления авто / ручной
 		uint8_t						statusEngine;				// работа ДВС генератора выключен / включен
 		STATUS_EXT_POWER	extPowerSupply;			// наличие внешнего питания
+		uint8_t						flagSaveInfoSD;			// флаг сохранения информации о работе генератора на sd карту
 		
 } automats_devices;
 
@@ -215,6 +216,7 @@ typedef struct {
 	uint32_t dateWithoutElectric;					// дата последнего отключения
 	uint32_t monthWithoutElectric;				// месяц последнего отключения
 	uint32_t yearWithoutElectric;					// год последнего отключения
+	uint32_t hoursLastWithoutElectric;		// часы без эл-ва за последний раз	
 	
 	uint32_t hoursALLWithoutElectric;			// общее кол-во часов без эл-ва
 	
@@ -244,12 +246,14 @@ extern Device_Type AVR;     // прибор с его характеристик
 extern Device_Type *pAVR;
 
 extern char buf[BUF_LEN];		// массив для вывода информации
+extern uint32_t FreeSpace;	// хранит остаток места на sd карте
 
 // hal
 extern RTC_TimeTypeDef sTime;
 extern RTC_DateTypeDef DateToUpdate;
 
 extern SPI_HandleTypeDef hspi1;
+extern SPI_HandleTypeDef hspi2;
 extern TIM_HandleTypeDef htim2;
 extern ADC_HandleTypeDef hadc1;
 extern RTC_HandleTypeDef hrtc;
