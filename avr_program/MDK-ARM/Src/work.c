@@ -4,7 +4,7 @@
 #include "work.h"
 #include "warn_err.h"
 #include "menu_main.h"
-
+#include "popUpWindow.h"
 
 
 void work (void)
@@ -19,10 +19,11 @@ void work (void)
 	// если необходимо сохранить всю инфу на флеш
 	if(pAVR->avr_states.flagSaveInfoSD == SET)
 	{
-		// обновить инфо о ТО
-		updateInfoTO();
+		checkInfoTO();
+		notification("SAVE SD", "Сохранение данных", 5, pAVR->avr_states.menu_state);
 		// записать на sd
 		setFillStructureStoryParameters();
+		pAVR->avr_states.flagSaveInfoSD = RESET;
 	}
 }
 

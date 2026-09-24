@@ -41,4 +41,6 @@ avr_program/warn_err.o: Src/warn_err.c Inc\warn_err.h Inc/defs.h \
   ../Middlewares/Third_Party/FatFs/src/integer.h \
   ../FATFS/Target\ffconf.h \
   C:\Keil_v5\ARM\ARMCLANG\Bin\..\include\stdlib.h \
-  ../Middlewares/Third_Party/FatFs/src\diskio.h menu\popUpWindow.h
+  ../Middlewares/Third_Party/FatFs/src\diskio.h menu\popUpWindow.h \
+  ../FATFS/App\fatfs.h ../Middlewares/Third_Party/FatFs/src\ff_gen_drv.h \
+  ../FATFS/Target\user_diskio.h

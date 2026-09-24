@@ -267,8 +267,9 @@ static uint8_t SD_Card_Test(void)
   {
     //------------------[ Mount The SD Card ]--------------------
     FR_Status = f_mount(&FatFs, "", 1);
-    if (FR_Status != FR_OK)
+    if (FR_Status != FR_OK){
 			return 0;
+		}
 
     //------------------[ Получить и распечатать размер SD-карты и свободное место ]--------------------
     f_getfree("", &FreeClusters, &FS_Ptr);
@@ -292,8 +293,9 @@ static uint8_t SD_Card_Test(void)
 		// FA_OPEN_ALWAYS (0x10) - файл будет открыт, если он уже существует, либо создан заново
     //Open the file
     FR_Status = f_open(&Fil, "TextFileWrite.txt", FA_WRITE | FA_READ | FA_CREATE_ALWAYS);
-    if(FR_Status != FR_OK)
+    if(FR_Status != FR_OK){
 			return 0;
+		}
 			
     // (1) Write Data To The Text File [ Using f_puts() Function ]
     f_puts("Hello! From STM32 To SD Card Over SPI, Using f_puts()\n", &Fil);
@@ -305,8 +307,9 @@ static uint8_t SD_Card_Test(void)
     //------------------[ Открыть текстовый файл для чтения и считать его данные ]--------------------
     // Open The File
     FR_Status = f_open(&Fil, "TextFileWrite.txt", FA_READ);
-    if(FR_Status != FR_OK)
+    if(FR_Status != FR_OK){
 			return 0;
+		}
 			
     // (1) Read The Text File's Data [ Using f_gets() Function ]
     f_gets(RW_Buffer, sizeof(RW_Buffer), &Fil);
@@ -321,8 +324,9 @@ static uint8_t SD_Card_Test(void)
     // (1) Open The Existing File For Write (Update)
     FR_Status = f_open(&Fil, "TextFileWrite.txt", FA_OPEN_EXISTING | FA_WRITE);
     FR_Status = f_lseek(&Fil, f_size(&Fil)); // Move The File Pointer To The EOF (End-Of-File)
-    if(FR_Status != FR_OK)
+    if(FR_Status != FR_OK){
 			return 0;
+		}
 			
     // (2) Write New Line of Text Data To The File
     FR_Status = f_puts("This New Line Was Added During Update!\r\n", &Fil);
@@ -345,8 +349,9 @@ static uint8_t SD_Card_Test(void)
   } while(0);
   //------------------[ Тест пройден! Отключите SD-карту ]--------------------
   FR_Status = f_mount(NULL, "", 0);
-  if (FR_Status != FR_OK)
+  if (FR_Status != FR_OK){
 		return 0;
+	}
   else
 		return 1;
 }
@@ -357,6 +362,7 @@ uint8_t SD_Init(void)
 	//HAL_Delay(500);	// эта задержка уже есть в инициализации tft
 	
 	if(!SD_Card_Test())	{
+		DESELECT();
 //		_Error_Handler(__FILE__, __LINE__);
 		return 0;
 	}
@@ -375,6 +381,7 @@ uint8_t recLog(char* text)
 	
 	if(!recFileSdCard ("logFile.txt", buff, 0))
 	{
+		DESELECT();
 		setErr(ERR_SD_CARD);
 		return 0;
 	}
@@ -391,8 +398,10 @@ uint8_t readFileSdCard (char* nameFile, char* buf)
   {
     //------------------[ Mount The SD Card ]--------------------
     FR_Status = f_mount(&FatFs, "", 1);
-    if (FR_Status != FR_OK) 
+    if (FR_Status != FR_OK) {
+			DESELECT();
 			return 0;
+		}
 
     //------------------[ Получить и распечатать размер SD-карты и свободное место ]--------------------
     f_getfree("", &FreeClusters, &FS_Ptr);
@@ -401,6 +410,7 @@ uint8_t readFileSdCard (char* nameFile, char* buf)
     // свободное пространство менее 1 КБ 
 		if(FreeSpace < 1)
 		{
+			DESELECT();
 			setErr(ERR_SD_FREE_SPACE_NULL);
 			return 0;
 		}
@@ -408,8 +418,10 @@ uint8_t readFileSdCard (char* nameFile, char* buf)
 		//------------------[ Открыть текстовый файл для чтения и считать его данные ]--------------------
     // Open The File
     FR_Status = f_open(&Fil, nameFile, FA_OPEN_ALWAYS | FA_READ);
-    if(FR_Status != FR_OK)
+    if(FR_Status != FR_OK){
+			DESELECT();
 			return 0;
+		}
 			
     // (1) Read The Text File's Data [ Using f_gets() Function ]
 		f_read(&Fil, buf, f_size(&Fil), &RWC);
@@ -420,8 +432,10 @@ uint8_t readFileSdCard (char* nameFile, char* buf)
   } while(0);
   //------------------[ Отключите SD-карту ]--------------------
   FR_Status = f_mount(NULL, "", 0);
-  if (FR_Status != FR_OK)
+  if (FR_Status != FR_OK){
+		DESELECT();
 		return 0;
+	}
   else
 		return 1;
 }
@@ -437,8 +451,10 @@ uint8_t recFileSdCard (char* nameFile, char* text, uint8_t flagOverwrite)
   {
     //------------------[ Mount The SD Card ]--------------------
     FR_Status = f_mount(&FatFs, "", 1);
-    if (FR_Status != FR_OK) 
+    if (FR_Status != FR_OK) {
+			DESELECT();
 			return 0;
+		}
 
     //------------------[ Получить и распечатать размер SD-карты и свободное место ]--------------------
     f_getfree("", &FreeClusters, &FS_Ptr);
@@ -447,6 +463,7 @@ uint8_t recFileSdCard (char* nameFile, char* text, uint8_t flagOverwrite)
     // свободное пространство менее 1 КБ 
 		if(FreeSpace < 1)
 		{
+			DESELECT();
 			setErr(ERR_SD_FREE_SPACE_NULL);
 			return 0;
 		}
@@ -464,18 +481,24 @@ uint8_t recFileSdCard (char* nameFile, char* text, uint8_t flagOverwrite)
 		// если необходимо перезаписать
 		if(flagOverwrite) {
 			FR_Status = f_open(&Fil, nameFile, FA_WRITE | FA_READ | FA_CREATE_ALWAYS);	
-			if(FR_Status != FR_OK)
-			return 0;
+			if(FR_Status != FR_OK){
+				DESELECT();
+				return 0;
+			}
 		}
 		// если надо дописать к файлу
 		else {
 			FR_Status = f_open(&Fil, nameFile, FA_WRITE | FA_READ | FA_OPEN_ALWAYS);
-			if(FR_Status != FR_OK)
+			if(FR_Status != FR_OK){
+				DESELECT();
 				return 0;	
+			}
 
 			FR_Status = f_lseek(&Fil, f_size(&Fil)); // Переместить указатель файла к EOF (End-Of-File, конец файла)
-			if(FR_Status != FR_OK)
+			if(FR_Status != FR_OK){
+				DESELECT();
 				return 0;
+			}
 		}
 		
 		memset(RW_Buffer,'\0',sizeof(RW_Buffer)); // Clear The Buffer		
@@ -491,8 +514,10 @@ uint8_t recFileSdCard (char* nameFile, char* text, uint8_t flagOverwrite)
   } while(0);
   //------------------[ Отключите SD-карту ]--------------------
   FR_Status = f_mount(NULL, "", 0);
-  if (FR_Status != FR_OK)
+  if (FR_Status != FR_OK){
+		DESELECT();
 		return 0;
+	}
   else
 		return 1;
 }

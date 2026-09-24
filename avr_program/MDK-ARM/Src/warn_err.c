@@ -3,12 +3,13 @@
 
 #include "warn_err.h"
 #include "popUpWindow.h"
+#include "fatfs.h"
 
 
 void checkWarn(void)
 {
 
-
+//WARN_MANUAL_CONTROL_EN						// Включен ручной режим работы
 //WARN_NECESSITY_TECH_INSP,					// необходимо провести тех. осмотр
 //WARN_CHARGE_AKB,									// необходимо зарядить акб
 }
@@ -32,7 +33,8 @@ void setWarn(WARN_WARIANTS warn)
 				pAVR->warn.counter++;
 				notification("Предупреждение", "Включен ручной режим работы", 10, pAVR->avr_states.menu_state);
 				recLog("Пользователь - переход в ручной режим работы"); 
-			}	
+			}
+			else menuChangeState(pAVR->avr_states.menu_state);	
 			break;
 		// необходимо провести тех. осмотр
 		case WARN_NECESSITY_TECH_INSP:
@@ -42,6 +44,7 @@ void setWarn(WARN_WARIANTS warn)
 				notification("Предупреждение", "Необходимо провести тех. осмотр", 10, pAVR->avr_states.menu_state);
 				recLog("Предупреждение! Необходимо провести тех. осмотр"); 
 			}	
+			else menuChangeState(pAVR->avr_states.menu_state);	
 			break;
 		// необходимо зарядить акб
 		case WARN_CHARGE_AKB:
@@ -51,6 +54,7 @@ void setWarn(WARN_WARIANTS warn)
 				notification("Предупреждение", "Необходимо зарядить акб", 10, pAVR->avr_states.menu_state);
 				recLog("Предупреждение! Необходимо зарядить акб"); 
 			}	
+			else menuChangeState(pAVR->avr_states.menu_state);	
 			break;
 		default:
 			notification("Предупреждение", "Ошибка вывода предупреждения", 10, pAVR->avr_states.menu_state);
@@ -70,6 +74,7 @@ void setErr(ERR_WARIANTS err)
 				notification("Ошибка!!!", "Превышено макс. кол-во попыток запуска", 30, pAVR->avr_states.menu_state);
 				recLog("Ошибка!!! Превышено макс. кол-во попыток запуска");
 			}	
+			else menuChangeState(pAVR->avr_states.menu_state);	
 			break;
 		// ошибка отключения реле стартера
 		case ERR_STARTER_RELE_SHUTDOWN:
@@ -79,6 +84,7 @@ void setErr(ERR_WARIANTS err)
 				notification("Ошибка!!!", "Отключения реле стартера", 30, pAVR->avr_states.menu_state);
 				recLog("Ошибка!!! Отключения реле стартера");
 			}	
+			else menuChangeState(pAVR->avr_states.menu_state);	
 			break;
 		// ошибка включения реле стартера
 		case ERR_STARTER_RELE_ACTIVATION:
@@ -88,6 +94,7 @@ void setErr(ERR_WARIANTS err)
 				notification("Ошибка!!!", "Включения реле стартера", 30, pAVR->avr_states.menu_state);
 				recLog("Ошибка!!! Включения реле стартера");
 			}	
+			else menuChangeState(pAVR->avr_states.menu_state);	
 			break;
 		// низкое напряжение акб
 		case ERR_LOW_VOLTAGE_AKB:
@@ -97,6 +104,7 @@ void setErr(ERR_WARIANTS err)
 				notification("Ошибка!!!", "Низкое напряжение акб", 30, pAVR->avr_states.menu_state);
 				recLog("Ошибка!!! Низкое напряжение акб");
 			}	
+			else menuChangeState(pAVR->avr_states.menu_state);	
 			break;
 		// высокое напряжение акб
 		case ERR_HIGHT_VOLTAGE_AKB:
@@ -106,6 +114,7 @@ void setErr(ERR_WARIANTS err)
 				notification("Ошибка!!!", "Высокое напряжение акб", 30, pAVR->avr_states.menu_state);
 				recLog("Ошибка!!! Высокое напряжение акб");
 			}	
+			else menuChangeState(pAVR->avr_states.menu_state);	
 			break;
 		// неисправность цепи зарядки
 		case ERR_CHARG_CIRCUIT:
@@ -115,6 +124,7 @@ void setErr(ERR_WARIANTS err)
 				notification("Ошибка!!!", "Неисправность цепи зарядки", 30, pAVR->avr_states.menu_state);
 				recLog("Ошибка!!! Неисправность цепи зарядки");
 			}	
+			else menuChangeState(pAVR->avr_states.menu_state);	
 			break;
 		// был хард ресет
 		case ERR_HARD_RESET:
@@ -124,6 +134,7 @@ void setErr(ERR_WARIANTS err)
 				notification("Ошибка!!!", "Был хард ресет", 30, pAVR->avr_states.menu_state);
 				recLog("Ошибка!!! Был хард ресет");
 			}	
+			else menuChangeState(pAVR->avr_states.menu_state);	
 			break;
 		// был сброс по вачдогу
 		case ERR_WATCH_DOG:
@@ -133,6 +144,7 @@ void setErr(ERR_WARIANTS err)
 				notification("Ошибка!!!", "Был сброс по вачдогу", 30, pAVR->avr_states.menu_state);
 				recLog("Ошибка!!! Был сброс по вачдогу");
 			}	
+			else menuChangeState(pAVR->avr_states.menu_state);	
 			break;
 		// двигатель неуправляемо остановлен (заглох)
 		case ERR_ENGINE_STALLED:
@@ -142,15 +154,31 @@ void setErr(ERR_WARIANTS err)
 				notification("Ошибка!!!", "ДВС неуправляемо остановлен (заглох)", 30, pAVR->avr_states.menu_state);
 				recLog("Ошибка!!! ДВС неуправляемо остановлен (заглох)");
 			}	
+			else menuChangeState(pAVR->avr_states.menu_state);	
 			break;
 		// ошибка sd карты
 		case ERR_SD_CARD:
 			if(!pAVR->err.array_flags[ERR_SD_CARD]) {
 				pAVR->err.array_flags[ERR_SD_CARD] = SET;
 				pAVR->err.counter++;
+				
+				// дэинициализация карты, если ошибка
+				// slave deselect
+				HAL_GPIO_WritePin(SD_CS_GPIO_Port, SD_CS_Pin, GPIO_PIN_SET);
+				// spi stop
+				__HAL_RCC_SPI2_CLK_DISABLE();
+
+				/**SPI2 GPIO Configuration
+				PB13     ------> SPI2_SCK
+				PB14     ------> SPI2_MISO
+				PB15     ------> SPI2_MOSI
+				*/
+				HAL_GPIO_DeInit(GPIOB, GPIO_PIN_13|GPIO_PIN_14|GPIO_PIN_15);
+				MX_FATFS_DeInit(); // Отвязываем драйвер
 //				notification("Ошибка!!!", "sd карты", 30, pAVR->avr_states.menu_state);
-				recLog("Ошибка!!! sd карты");
+//				recLog("Ошибка!!! sd карты");
 			}	
+			else menuChangeState(pAVR->avr_states.menu_state);	
 			break;
 		// закончилось место на sd карте
 		case ERR_SD_FREE_SPACE_NULL:
@@ -160,6 +188,7 @@ void setErr(ERR_WARIANTS err)
 //				notification("Ошибка!!!", "sd карта заполненна", 30, pAVR->avr_states.menu_state);
 				recLog("Ошибка!!! sd карта заполненна");
 			}	
+			else menuChangeState(pAVR->avr_states.menu_state);	
 			break;
 		default:
 			notification("Ошибка!", "Ошибка вывода ошибки", 30, pAVR->avr_states.menu_state);
@@ -205,6 +234,28 @@ void delWarn(WARN_WARIANTS warn)
 
 void resetErrors (void)
 {
+	// переинициализация карты, если ошибка
+	if(pAVR->err.array_flags[ERR_SD_CARD] == SET)
+	{
+		GPIO_InitTypeDef GPIO_InitStruct = {0};
+		__HAL_RCC_SPI2_CLK_ENABLE();
+
+    __HAL_RCC_GPIOB_CLK_ENABLE();
+    /**SPI2 GPIO Configuration
+    PB13     ------> SPI2_SCK
+    PB14     ------> SPI2_MISO
+    PB15     ------> SPI2_MOSI
+    */
+    GPIO_InitStruct.Pin = GPIO_PIN_13|GPIO_PIN_14|GPIO_PIN_15;
+    GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
+    GPIO_InitStruct.Pull = GPIO_NOPULL;
+    GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
+    GPIO_InitStruct.Alternate = GPIO_AF5_SPI2;
+    HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
+
+		MX_FATFS_Init();
+	}
+	
 	for(uint8_t i = 0; i < MAX_ERR_AND_WARN; i++)
 		pAVR->err.array_flags[i] = 0;
 

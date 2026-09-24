@@ -2,6 +2,8 @@
 #include <string.h>
 #include <stdio.h>
 
+#include <time.h>
+
 #include "init.h"
 
 #include "warn_err.h"
@@ -53,11 +55,13 @@ uint8_t initDevice(void)
 			
 			// проверка
 			pAVR->sdParams.checkNum									= INIT_HISTORY_FILE_SIGNATURE;	// проверочное число инициализации
-			
+
 			// моточасы				
 			pAVR->sdParams.engineHoursTotal					= 0;	// моточасы всего
 			pAVR->sdParams.engineHoursTO						= 0;	// моточасы после ТО
+			pAVR->sdParams.engineMinutesTO					= 0;	// мотоминуты после ТО
 			pAVR->sdParams.hoursBeforeTO						= 0;	// моточасы до ТО
+			pAVR->sdParams.minutesBeforeTO					= 0;	// мотоминуты до ТО
 
 			// ТО		
 			pAVR->sdParams.hoursLastTO							= sTime.Hours;				// час последнего ТО
@@ -92,12 +96,11 @@ uint8_t initDevice(void)
 			
 			// обновить инфо о ТО - в данном случае проинициализировать
 			updateInfoTO();
-	
-			// записать в файл на флеш
-			setFillStructureStoryParameters();
+		}
+		else{
+			checkInfoTO();
 		}
 	}
-	
 	
 	// ------------- ацп ------------
 	HAL_ADC_Start_DMA(&hadc1, (uint32_t*)&AVR.adc, ADC_CHANELS);	// запуск ацп
@@ -148,12 +151,14 @@ uint8_t getFillStructureStoryParameters(void)
 			if(i == NUM_VARIABLES_HISTORI)
 				break;
 	}
-	
+			
 	i = 0;
 	// перенести параметры в структуру
 	pAVR->sdParams.checkNum									= numbers[i++];
 	pAVR->sdParams.engineHoursTotal					= numbers[i++];
+	pAVR->sdParams.engineMinutesTO					= numbers[i++];
 	pAVR->sdParams.engineHoursTO						= numbers[i++];
+	pAVR->sdParams.minutesBeforeTO					= numbers[i++];
 	pAVR->sdParams.hoursBeforeTO						= numbers[i++];
 	pAVR->sdParams.hoursLastTO							= numbers[i++];
 	pAVR->sdParams.minutesLastTO						= numbers[i++];
@@ -192,11 +197,13 @@ uint8_t setFillStructureStoryParameters(void)
 	i = 0;	
 	// проверка
 	numbers[i++] = pAVR->sdParams.checkNum;										// проверочное число инициализации
-	
+			
 	// моточасы				
 	numbers[i++] = pAVR->sdParams.engineHoursTotal;						// моточасы всего
 	numbers[i++] = pAVR->sdParams.engineHoursTO;							// моточасы после ТО
+	numbers[i++] = pAVR->sdParams.engineMinutesTO;						// мотоминуты после ТО
 	numbers[i++] = pAVR->sdParams.hoursBeforeTO;							// моточасы до ТО
+	numbers[i++] = pAVR->sdParams.minutesBeforeTO;						// мотоминуты до ТО
 
 	// ТО		
 	numbers[i++] = pAVR->sdParams.hoursLastTO;								// час последнего ТО
@@ -434,14 +441,98 @@ uint8_t setFillStructureStoryParameters(void)
 	return 1;
 }
 
+
+// обновляет инфо о
+// след ТО
 void updateInfoTO (void)
 {
+	struct tm tmm = {0}; // Инициализируем нулями
+	
+	// прочитать дату, время
+	HAL_RTC_GetTime(&hrtc, &sTime, RTC_FORMAT_BIN); 				
+	HAL_RTC_GetDate(&hrtc, &DateToUpdate, RTC_FORMAT_BIN);
+	
+	//------ реальное время ---------
+	// дата
+	tmm.tm_year = DateToUpdate.Year + 2000 - 1900;	// т.к. хранятся только 2 последние цифры года
+	tmm.tm_mon = DateToUpdate.Month-1;
+	tmm.tm_mday = DateToUpdate.Date;
+	// Заполняем структуру временем 
+	tmm.tm_hour = sTime.Hours;
+	tmm.tm_min = sTime.Minutes;
+	tmm.tm_sec = sTime.Seconds;
+	tmm.tm_isdst = -1; // Пусть система решит сама
 
-
-
+	// Переводим в Unix-время (в UTC)
+	time_t unix_realTime = mktime(&tmm);
+	
+	unix_realTime += INTERVAL_DATA_TO_UNIX;	// прибавляю интервал ТО
+	
+	// перевод обратно в дату и время
+	struct tm *time_struct = localtime(&unix_realTime); // Получаем структуру в UTC
+	if (time_struct != NULL) 
+	{
+			// дата и время след ТО
+			pAVR->sdParams.hoursNextTO		= time_struct->tm_hour;
+			pAVR->sdParams.minutesNextTO	= time_struct->tm_min;
+			pAVR->sdParams.secondsNextTO	= time_struct->tm_sec;
+			pAVR->sdParams.dateNextTO			= time_struct->tm_mday;
+			pAVR->sdParams.monthNextTO		= time_struct->tm_mon+1;
+			pAVR->sdParams.yearNextTO			= time_struct->tm_year + 1900 - 2000;	// т.к. хранятся только 2 последние цифры года
+			
+			// обнуление моточасов
+			pAVR->sdParams.engineHoursTO 		= 0;
+			pAVR->sdParams.engineMinutesTO 	= 0;
+			pAVR->sdParams.hoursBeforeTO 		= INTERVAL_TO_HOURS;
+			pAVR->sdParams.minutesBeforeTO 	= 0;
+			
+			// записать в файл на флеш
+			setFillStructureStoryParameters();
+   }
 }
 
+void checkInfoTO (void)
+{
+	struct tm tm = {0}; // Инициализируем нулями
+		
+	// прочитать дату, время
+	HAL_RTC_GetTime(&hrtc, &sTime, RTC_FORMAT_BIN); 				
+	HAL_RTC_GetDate(&hrtc, &DateToUpdate, RTC_FORMAT_BIN);
 
+	//------ реальное время ---------
+	// Заполняем структуру временем 
+	tm.tm_sec = sTime.Seconds;
+	tm.tm_min = sTime.Minutes;
+	tm.tm_hour = sTime.Hours;
+	// дата
+	tm.tm_mday = DateToUpdate.Date;
+	tm.tm_mon = DateToUpdate.Month;
+	tm.tm_year = DateToUpdate.Year;
+
+	// Переводим в Unix-время (в UTC)
+	time_t unix_realTime = mktime(&tm);
+	
+	//------ время последнего ТО---------
+	// Заполняем структуру временем 
+	tm.tm_sec = pAVR->sdParams.secondsLastTO;
+	tm.tm_min = pAVR->sdParams.minutesLastTO;
+	tm.tm_hour = pAVR->sdParams.hoursLastTO;
+	// дата
+	tm.tm_mday = pAVR->sdParams.dateLastTO;
+	tm.tm_mon = pAVR->sdParams.monthLastTO;
+	tm.tm_year = pAVR->sdParams.yearLastTO;
+
+	// Переводим в Unix-время (в UTC)
+	time_t unix_lastTO = mktime(&tm);
+		
+		
+	// если пора делать ТО по истечению даты
+	if((unix_realTime > (unix_lastTO + INTERVAL_DATA_TO_UNIX)) ||
+		(pAVR->sdParams.engineHoursTO > INTERVAL_TO_HOURS))	// или по истечению моточасов
+	{
+		setWarn(WARN_NECESSITY_TECH_INSP);
+	}
+}
 
 uint8_t initTFT(void)
 {

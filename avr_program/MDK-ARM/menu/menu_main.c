@@ -220,6 +220,7 @@ void menuMain (void)
 			flagStatusEngine = RESET;
 			menuChangeState(MAIN_MENU);	
 		}
+		
 		return;
 	}
 	// проверка нужно ли включать / выключать зарядку
@@ -324,7 +325,7 @@ void menuMain (void)
 		default:	strncpy(day_the_week, "ХЗ", sizeof(day_the_week) - 1);
 			break;
 	}
-	snprintf(buf, BUF_LEN, "  %d:%d:%d  %d-%d-20%d-%s", sTime.Hours, sTime.Minutes, sTime.Seconds, DateToUpdate.Date, DateToUpdate.Month, DateToUpdate.Year, day_the_week);	
+	snprintf(buf, BUF_LEN, " %02d:%02d:%02d  %02d-%02d-20%02d-%s", sTime.Hours, sTime.Minutes, sTime.Seconds, DateToUpdate.Date, DateToUpdate.Month, DateToUpdate.Year, day_the_week);	
 	ILI9341_WriteString(x, y, buf, Font_11x18, WHITE, MYFON);
 	y += yInc + 5;
 	

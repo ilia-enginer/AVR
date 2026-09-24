@@ -47,6 +47,10 @@
 #define BUF_LEN_SD_PARAM				((NUM_VARIABLES_HISTORI*4) + NUM_VARIABLES_HISTORI)						// объем буфера для хранения параметров, считанных из флеш
 #define INIT_HISTORY_FILE_SIGNATURE (2092942078)			// признак инициализации файла истории параметров на sd карте
 
+// ТО
+#define INTERVAL_DATA_TO_UNIX		(7889229)	// интервал меж ТО в юниксе (3 месяца)
+#define INTERVAL_TO_HOURS				(50)			// интервал меж ТО в моточасах
+
 
 
 /* Exported types ------------------------------------------------------------*/
@@ -192,7 +196,9 @@ typedef struct {
 	// моточасы				
 	uint32_t engineHoursTotal;						// моточасы всего
 	uint32_t engineHoursTO;								// моточасы после ТО
+	uint32_t engineMinutesTO;							// мотоминуты после ТО
 	uint32_t hoursBeforeTO;								// моточасы до ТО
+	uint32_t minutesBeforeTO;							// мотоминуты до ТО
 					
 	// ТО				
 	uint32_t hoursLastTO;									// час последнего ТО

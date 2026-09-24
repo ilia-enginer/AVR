@@ -43,4 +43,4 @@ avr_program/work.o: Src/work.c \
   ../Middlewares/Third_Party/FatFs/src/integer.h \
   ../FATFS/Target\ffconf.h \
   C:\Keil_v5\ARM\ARMCLANG\Bin\..\include\stdlib.h \
-  ../Middlewares/Third_Party/FatFs/src\diskio.h
+  ../Middlewares/Third_Party/FatFs/src\diskio.h menu\popUpWindow.h
