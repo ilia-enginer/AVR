@@ -11,6 +11,7 @@
 #include "popUpWindow.h"
 #include "menu_main.h"
 #include "warn_err.h"
+#include "work.h"
 
 
 // смена менюшки
@@ -173,7 +174,6 @@ void menuMain (void)
 		if(status == YES)
 		{
 			if(pAVR->avr_states.powerAutoManual == AVR_AUTO)	{
-				pAVR->avr_states.powerAutoManual = AVR_MANUAL;
 				setWarn(WARN_MANUAL_CONTROL_EN);
 			}
 			else if(pAVR->avr_states.powerAutoManual == AVR_MANUAL)	{
@@ -212,7 +212,6 @@ void menuMain (void)
 			}
 			
 			flagStatusEngine = RESET;	
-			pAVR->avr_states.powerAutoManual = AVR_MANUAL;
 			setWarn(WARN_MANUAL_CONTROL_EN);
 		}
 		else if(status == NO)
@@ -245,7 +244,6 @@ void menuMain (void)
 			}
 			
 			flagCharge = RESET;	
-			pAVR->avr_states.powerAutoManual = AVR_MANUAL;	
 			setWarn(WARN_MANUAL_CONTROL_EN);
 		}
 		else if(status == NO)
@@ -497,9 +495,7 @@ uint8_t switchAvrAutomatic (void)
 				default:										recLog("Пользователь - переключение силового автомата авр. ошибка переключения"); 
 					break;
 			}
-			
-			pAVR->avr_states.power_grid_mode = power_grid_mode;
-			pAVR->avr_states.powerAutoManual = AVR_MANUAL;
+			switchPowerCircuitBreaker(power_grid_mode);
 			setWarn(WARN_MANUAL_CONTROL_EN);
 			flag_status_block = RESET;
 			flag_block = RESET;
@@ -580,8 +576,7 @@ uint8_t switchAvrAutomatic (void)
 							break;
 					}
 			
-					pAVR->avr_states.power_grid_mode = power_grid_mode;
-					pAVR->avr_states.powerAutoManual = AVR_MANUAL;
+					switchPowerCircuitBreaker(power_grid_mode);
 					setWarn(WARN_MANUAL_CONTROL_EN);
 					flag_status_block = RESET;
 					flag_block = RESET;

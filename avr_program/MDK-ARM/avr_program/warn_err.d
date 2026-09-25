@@ -35,8 +35,8 @@ avr_program/warn_err.o: Src/warn_err.c Inc\warn_err.h Inc/defs.h \
   ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_rtc_ex.h \
   ../Drivers/STM32F4xx_HAL_Driver/Inc\stm32f4xx_hal_spi.h \
   ../Drivers/STM32F4xx_HAL_Driver/Inc\stm32f4xx_hal_tim.h \
-  ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim_ex.h Inc\init.h \
-  Inc\work.h menu\menu_main.h Inc\defs.h Inc\fatfs_sd.h \
+  ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim_ex.h Inc\defs.h \
+  Inc\init.h Inc\work.h menu\menu_main.h Inc\fatfs_sd.h \
   ../Middlewares/Third_Party/FatFs/src\ff.h \
   ../Middlewares/Third_Party/FatFs/src/integer.h \
   ../FATFS/Target\ffconf.h \

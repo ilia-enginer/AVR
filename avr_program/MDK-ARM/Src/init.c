@@ -1,7 +1,6 @@
 
 #include <string.h>
 #include <stdio.h>
-
 #include <time.h>
 
 #include "init.h"
@@ -10,8 +9,9 @@
 #include "menu_main.h"
 #include "ILI9341_GFX.h"
 #include "touch.h"
-
 #include "fatfs_sd.h"
+#include "work.h"
+
 
 static char historyParamBuf[BUF_LEN_SD_PARAM] = {0, };
 static uint32_t numbers[NUM_VARIABLES_HISTORI]; // Массив для чисел
@@ -22,7 +22,6 @@ uint8_t initDevice(void)
 	HAL_RTC_GetDate(&hrtc, &DateToUpdate, RTC_FORMAT_BIN);
 	
 	// ------------- структура прибора ------------
-	pAVR->touch.flag_hold = 0;
 	pAVR->touch.flag_press = 0;
 	pAVR->touch.flag_release = 0;
 	pAVR->touch.x = 0;
@@ -35,13 +34,13 @@ uint8_t initDevice(void)
 	resetErrors();
 	resetWarning();
 	
-	// ------------- дисплей ------------
-	initTFT();
-	menuChangeState(MAIN_MENU);
-	
 	// ------------- переферия ------------
 	outputInit();	// выхода (светодиоды, реле и.т.д.)
 	
+	// ------------- дисплей ------------
+	initTFT();
+	menuChangeState(MAIN_MENU);
+		
 	// ------------- sd card ------------
 	SD_Init();
 	
@@ -528,7 +527,7 @@ void checkInfoTO (void)
 		
 	// если пора делать ТО по истечению даты
 	if((unix_realTime > (unix_lastTO + INTERVAL_DATA_TO_UNIX)) ||
-		(pAVR->sdParams.engineHoursTO > INTERVAL_TO_HOURS))	// или по истечению моточасов
+		(pAVR->sdParams.engineHoursTO > INTERVAL_TO_HOURS))					// или по истечению моточасов
 	{
 		setWarn(WARN_NECESSITY_TECH_INSP);
 	}
@@ -561,7 +560,7 @@ uint8_t initTFT(void)
 //		ILI9341_Draw_Rectangle(32, 220, i, 8, OLIVE);
 //		HAL_Delay(20);
 //  }
-
+	
 	return 1;
 }
 
@@ -579,9 +578,7 @@ uint8_t outputInit(void)
 	RELE_ZAJIG_OFF();		// реле зажигания выкл
 	RELE_STARTER_OFF();	// реле стартер выкл
 	RELE_PODSOS_OFF();	// реле подсоса выкл
-	RELE_SOST_0_OFF();	// реле 0 положения сети выкл
-	RELE_SOST_1_OFF();	// реле 1 положения сети выкл
-	RELE_SOST_2_OFF();	// реле 2 положения сети выкл
+	switchPowerCircuitBreaker(EXTERNAL_POWER);	// питание от внешней сети
 	LED_ON();						// светодиод работы вкл
 	LED_ERROR_OFF();		// светодиод аварии выкл
 	CHARGE_OFF();				// зарядка акб выкл

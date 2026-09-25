@@ -8,16 +8,35 @@
 
 void checkWarn(void)
 {
+	//WARN_NECESSITY_TECH_INSP	// необходимо провести тех. осмотр - проверяется раз в сутки по срабатыванию будильника
 
-//WARN_MANUAL_CONTROL_EN						// Включен ручной режим работы
-//WARN_NECESSITY_TECH_INSP,					// необходимо провести тех. осмотр
-//WARN_CHARGE_AKB,									// необходимо зарядить акб
+	// Включен ручной режим работы
+	if((pAVR->avr_states.powerAutoManual == AVR_MANUAL) && 
+			(!pAVR->warn.array_flags[WARN_MANUAL_CONTROL_EN]))
+			setWarn(WARN_MANUAL_CONTROL_EN);
+
+	// необходимо зарядить акб - выставить предупреждение
+	if((pAVR->v_t.v_bat <= U_AKB_MIN_1) && 
+			(!pAVR->warn.array_flags[WARN_CHARGE_AKB]))
+			setWarn(WARN_CHARGE_AKB);
+	// удалить предупреждение
+	if((pAVR->v_t.v_bat > U_AKB_MIN_1) && 
+			(pAVR->warn.array_flags[WARN_CHARGE_AKB]))
+			delWarn(WARN_CHARGE_AKB);
 }
 
 
 void checkErr(void)
 {
-
+//    ERR_MAX_LAUNCH_ATTEMP = 0,				// превышено максимальное кол-во попыток запуска
+//		ERR_STARTER_RELE_SHUTDOWN,				// ошибка отключения реле стартера
+//		ERR_STARTER_RELE_ACTIVATION,			// ошибка включения реле стартера
+//		ERR_LOW_VOLTAGE_AKB,							// низкое напряжение акб
+//		ERR_HIGHT_VOLTAGE_AKB,						// высокое напряжение акб
+//		ERR_CHARG_CIRCUIT,								// неисправность цепи зарядки
+//		ERR_HARD_RESET,										// был хард ресет
+//		ERR_WATCH_DOG,										// был сброс по вачдогу
+//		ERR_ENGINE_STALLED,								// двигатель неуправляемо остановлен (заглох)
 
 }
 
@@ -29,6 +48,7 @@ void setWarn(WARN_WARIANTS warn)
 		// включен ручной режим работы
 		case WARN_MANUAL_CONTROL_EN:
 			if(!pAVR->warn.array_flags[WARN_MANUAL_CONTROL_EN]) {
+				pAVR->avr_states.powerAutoManual = AVR_MANUAL;
 				pAVR->warn.array_flags[WARN_MANUAL_CONTROL_EN] = SET;
 				pAVR->warn.counter++;
 				notification("Предупреждение", "Включен ручной режим работы", 10, pAVR->avr_states.menu_state);

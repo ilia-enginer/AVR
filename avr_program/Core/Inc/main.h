@@ -33,11 +33,11 @@ extern "C" {
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 
+#include "defs.h"
 #include "init.h"
 #include "work.h"
 #include "menu_main.h"
 #include "warn_err.h"
-#include "defs.h"
 #include "fatfs_sd.h"
 
 /* USER CODE END Includes */

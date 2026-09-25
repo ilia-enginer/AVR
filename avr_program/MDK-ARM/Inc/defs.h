@@ -18,6 +18,8 @@
 #define U_AKB_MIN_1 				(12.3f)						// вольт первый порог низкого напряжения (порог предупреждения)
 #define U_AKB_MIN_0 				(12.1f) 					// вольт нулевой порог низкого напряжения (порог ошибки)
 #define U_AKB_MAX 					(15.0f)						//верхний порог напряжения	(порог ошибки)
+#define U_GYST							(0.1f)						// гистерезис напряжений для проверки
+
 
 // Полная формула вычисления измеряемого напряжения будет выглядеть так: U= (опорное напряжение*значение АЦП*коэффициент делителя)/число разрядов АЦП
 #define R1_EXT_V						(5100.0f)					// Om
@@ -51,6 +53,12 @@
 #define INTERVAL_DATA_TO_UNIX		(7889229)	// интервал меж ТО в юниксе (3 месяца)
 #define INTERVAL_TO_HOURS				(50)			// интервал меж ТО в моточасах
 
+// для экрана
+#define BUF_LEN  (100)
+
+#define LONG_PRESS_RESET				(10000)		// 10c если нажатие на экран дольше этого - перезагрузится проц
+#define LONG_PRESS_MAIN_MENU		(5000)		// 5c если нажатие на экран дольше этого - переход в главное меню
+#define LONG_NO_PRESS_MAIN_MENU	(300000)	// 5мин. если в течение этого времени не было нажатия на экран - перейти в главное меню
 
 
 /* Exported types ------------------------------------------------------------*/
@@ -72,13 +80,13 @@ typedef enum {
 } MENU_STATE;
 
 
-// вариатны питания дома
-typedef enum  {
+// варианты питания дома
+typedef enum {
     POWER_IS_OFF = 0,				// питание откл
 		EXTERNAL_POWER,					// питание от внешней сети
 		POWERED_BY_GENERATOR,		// питание от генератора
 		
-}POWER_GRID_MODE;
+} POWER_GRID_MODE;
 
 // вариатны ошибок
 typedef enum  {
@@ -123,13 +131,10 @@ typedef enum  {
 // структура работы с тачем
 typedef struct {
     
-	uint8_t flag_press;										// флаг нажатия на экран
-	uint32_t time_press;									// время удержания
-								
+	uint8_t flag_press;										// флаг нажатия на экран							
 	uint8_t	flag_release;									// флаг отпускания
 								
-	uint8_t flag_hold;										// флаг удержания
-	uint32_t timme_hold;									// время удержания
+	uint32_t time_press;									// время нажатия в сис. тиках
 									
 	uint16_t x;														// координаты
 	uint16_t y;
@@ -263,6 +268,7 @@ extern SPI_HandleTypeDef hspi2;
 extern TIM_HandleTypeDef htim2;
 extern ADC_HandleTypeDef hadc1;
 extern RTC_HandleTypeDef hrtc;
+
 
 
 #endif /* DEFS_H_ */

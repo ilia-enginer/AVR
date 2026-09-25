@@ -471,7 +471,7 @@ static void MX_SPI2_Init(void)
   hspi2.Init.CLKPolarity = SPI_POLARITY_LOW;
   hspi2.Init.CLKPhase = SPI_PHASE_1EDGE;
   hspi2.Init.NSS = SPI_NSS_SOFT;
-  hspi2.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_8;
+  hspi2.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_4;
   hspi2.Init.FirstBit = SPI_FIRSTBIT_MSB;
   hspi2.Init.TIMode = SPI_TIMODE_DISABLE;
   hspi2.Init.CRCCalculation = SPI_CRCCALCULATION_DISABLE;
@@ -698,10 +698,17 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 	// прерывание при нажатии/отпускании экрана
 	if (GPIO_Pin == TOUCH_IRQ_Pin) { 
 			// если нажато на экран
-			if((TOUCH_IRQ_GPIO_Port->IDR & GPIO_Pin) != (uint32_t)GPIO_PIN_RESET)
-				pAVR->touch.flag_release = SET;			// отпущен
-			else
-				pAVR->touch.flag_press = SET;				// нажат
+			if((TOUCH_IRQ_GPIO_Port->IDR & GPIO_Pin) != (uint32_t)GPIO_PIN_RESET){
+				if(!pAVR->touch.flag_release){
+						pAVR->touch.flag_release = SET;			// отпущен
+				}
+			}
+			else {
+				if(!pAVR->touch.flag_press){
+					pAVR->touch.flag_press = SET;				// нажат
+					pAVR->touch.time_press = HAL_GetTick();
+				}
+			}
 	}
 }
 

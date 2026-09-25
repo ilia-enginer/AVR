@@ -51,17 +51,35 @@ uint8_t getTouch (void)
 			__HAL_SPI_ENABLE(DISP_SPI_PTR);
 			DISP_CS_SELECT;	
 			
+			// ----------- длительное нажатие -----------
+			// если нажат достаточно долго для перезагрузки
+			if((HAL_GetTick() - pAVR->touch.time_press) > LONG_PRESS_RESET)
+				NVIC_SystemReset();
+			// если нажат достаточно долго для перехода в главное меню
+			else if((HAL_GetTick() - pAVR->touch.time_press) > LONG_PRESS_MAIN_MENU){
+				if(pAVR->avr_states.menu_state != MAIN_MENU)	menuChangeState(MAIN_MENU);
+			}
+			
 			// если координаты получены
 			if(pAVR->touch.x || pAVR->touch.y)
 				return PRESS;
 	}
 	// если отпущен
-	else if(pAVR->touch.flag_release == SET)
+	else if((pAVR->touch.flag_release == SET) && (pAVR->touch.flag_press == SET))
 	{
 		pAVR->touch.flag_press = RESET;
 		pAVR->touch.flag_release = RESET;
 		time_press = HAL_GetTick();
 		return NO_PRESS;
+	}
+	else if(pAVR->touch.flag_release == SET)
+	{
+		pAVR->touch.flag_release = RESET;
+	}
+	
+	// если в течение длительного времени не было нажатия на экран - перейти в главное меню
+	if((HAL_GetTick() - pAVR->touch.time_press) > LONG_NO_PRESS_MAIN_MENU){
+		if(pAVR->avr_states.menu_state != MAIN_MENU)	menuChangeState(MAIN_MENU);
 	}
 			
 	return NONE;

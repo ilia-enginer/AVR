@@ -41,6 +41,5 @@ avr_program/fatfs_sd.o: Src/fatfs_sd.c \
   ../Middlewares/Third_Party/FatFs/src\diskio.h \
   ../Middlewares/Third_Party/FatFs/src/integer.h Inc\fatfs_sd.h \
   ../Middlewares/Third_Party/FatFs/src\ff.h ../FATFS/Target\ffconf.h \
-  ../Core/Inc\main.h Inc\init.h Inc\work.h menu\menu_main.h \
-  Inc\warn_err.h Inc/defs.h \
-  C:\Keil_v5\ARM\ARMCLANG\Bin\..\include\stdlib.h
+  ../Core/Inc\main.h Inc\defs.h Inc\init.h Inc\work.h menu\menu_main.h \
+  Inc\warn_err.h C:\Keil_v5\ARM\ARMCLANG\Bin\..\include\stdlib.h

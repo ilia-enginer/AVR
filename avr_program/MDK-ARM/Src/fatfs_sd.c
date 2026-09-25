@@ -362,7 +362,7 @@ uint8_t SD_Init(void)
 	//HAL_Delay(500);	// эта задержка уже есть в инициализации tft
 	
 	if(!SD_Card_Test())	{
-		DESELECT();
+		setErr(ERR_SD_CARD);
 //		_Error_Handler(__FILE__, __LINE__);
 		return 0;
 	}
@@ -381,7 +381,6 @@ uint8_t recLog(char* text)
 	
 	if(!recFileSdCard ("logFile.txt", buff, 0))
 	{
-		DESELECT();
 		setErr(ERR_SD_CARD);
 		return 0;
 	}
@@ -399,7 +398,6 @@ uint8_t readFileSdCard (char* nameFile, char* buf)
     //------------------[ Mount The SD Card ]--------------------
     FR_Status = f_mount(&FatFs, "", 1);
     if (FR_Status != FR_OK) {
-			DESELECT();
 			return 0;
 		}
 
@@ -410,7 +408,6 @@ uint8_t readFileSdCard (char* nameFile, char* buf)
     // свободное пространство менее 1 КБ 
 		if(FreeSpace < 1)
 		{
-			DESELECT();
 			setErr(ERR_SD_FREE_SPACE_NULL);
 			return 0;
 		}
@@ -419,7 +416,6 @@ uint8_t readFileSdCard (char* nameFile, char* buf)
     // Open The File
     FR_Status = f_open(&Fil, nameFile, FA_OPEN_ALWAYS | FA_READ);
     if(FR_Status != FR_OK){
-			DESELECT();
 			return 0;
 		}
 			
@@ -433,7 +429,6 @@ uint8_t readFileSdCard (char* nameFile, char* buf)
   //------------------[ Отключите SD-карту ]--------------------
   FR_Status = f_mount(NULL, "", 0);
   if (FR_Status != FR_OK){
-		DESELECT();
 		return 0;
 	}
   else
@@ -452,7 +447,6 @@ uint8_t recFileSdCard (char* nameFile, char* text, uint8_t flagOverwrite)
     //------------------[ Mount The SD Card ]--------------------
     FR_Status = f_mount(&FatFs, "", 1);
     if (FR_Status != FR_OK) {
-			DESELECT();
 			return 0;
 		}
 
@@ -463,7 +457,6 @@ uint8_t recFileSdCard (char* nameFile, char* text, uint8_t flagOverwrite)
     // свободное пространство менее 1 КБ 
 		if(FreeSpace < 1)
 		{
-			DESELECT();
 			setErr(ERR_SD_FREE_SPACE_NULL);
 			return 0;
 		}
@@ -482,7 +475,6 @@ uint8_t recFileSdCard (char* nameFile, char* text, uint8_t flagOverwrite)
 		if(flagOverwrite) {
 			FR_Status = f_open(&Fil, nameFile, FA_WRITE | FA_READ | FA_CREATE_ALWAYS);	
 			if(FR_Status != FR_OK){
-				DESELECT();
 				return 0;
 			}
 		}
@@ -490,13 +482,11 @@ uint8_t recFileSdCard (char* nameFile, char* text, uint8_t flagOverwrite)
 		else {
 			FR_Status = f_open(&Fil, nameFile, FA_WRITE | FA_READ | FA_OPEN_ALWAYS);
 			if(FR_Status != FR_OK){
-				DESELECT();
 				return 0;	
 			}
 
 			FR_Status = f_lseek(&Fil, f_size(&Fil)); // Переместить указатель файла к EOF (End-Of-File, конец файла)
 			if(FR_Status != FR_OK){
-				DESELECT();
 				return 0;
 			}
 		}
@@ -515,7 +505,6 @@ uint8_t recFileSdCard (char* nameFile, char* text, uint8_t flagOverwrite)
   //------------------[ Отключите SD-карту ]--------------------
   FR_Status = f_mount(NULL, "", 0);
   if (FR_Status != FR_OK){
-		DESELECT();
 		return 0;
 	}
   else

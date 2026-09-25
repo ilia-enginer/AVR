@@ -243,7 +243,6 @@ void manualRelaySwitchMenu(void)
 			flag_main_rele = RESET;
 			if(!flag_change){
 				flag_change = SET;
-				pAVR->avr_states.powerAutoManual = AVR_MANUAL;
 				setWarn(WARN_MANUAL_CONTROL_EN);
 			}
 			else
@@ -270,7 +269,6 @@ void manualRelaySwitchMenu(void)
 			flag_zazhig_rele = RESET;
 			if(!flag_change){
 				flag_change = SET;
-				pAVR->avr_states.powerAutoManual = AVR_MANUAL;
 				setWarn(WARN_MANUAL_CONTROL_EN);
 			}
 			else
@@ -297,7 +295,6 @@ void manualRelaySwitchMenu(void)
 			flag_starter_rele = RESET;
 			if(!flag_change){
 				flag_change = SET;
-				pAVR->avr_states.powerAutoManual = AVR_MANUAL;
 				setWarn(WARN_MANUAL_CONTROL_EN);
 			}
 			else
@@ -324,7 +321,6 @@ void manualRelaySwitchMenu(void)
 			flag_podsos_rele = RESET;
 			if(!flag_change){
 				flag_change = SET;
-				pAVR->avr_states.powerAutoManual = AVR_MANUAL;
 				setWarn(WARN_MANUAL_CONTROL_EN);
 			}
 			else

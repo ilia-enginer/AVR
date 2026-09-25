@@ -4,7 +4,7 @@
 
 #include <stdint.h>
 
-#define BUF_LEN  (100)
+//#define BUF_LEN  (100)
 
 
 // вариатны возвращаемые функцией подтверждения

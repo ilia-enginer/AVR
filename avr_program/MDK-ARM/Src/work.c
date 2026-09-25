@@ -3,7 +3,6 @@
 #include <stm32f4xx_ll_adc.h>
 #include "work.h"
 #include "warn_err.h"
-#include "menu_main.h"
 #include "popUpWindow.h"
 
 
@@ -74,4 +73,35 @@ float exponentialRunningAverage(float value, float valueNew, float koff)
 	return valueNew * koff + value * (1.0 - koff);
 }
 
-
+// переключает главный рубильник
+void switchPowerCircuitBreaker(uint32_t status)
+{
+	// отключить питание дома
+	if(status == POWER_IS_OFF)
+	{
+		RELE_SOST_1_OFF();
+		RELE_SOST_2_OFF();
+		HAL_Delay(1);
+		RELE_SOST_0_ON();
+		pAVR->avr_states.power_grid_mode = POWER_IS_OFF;
+		recLog("Переключение силового автомата авр, POWER_IS_OFF");
+	}
+	// питание от внешней сети
+	else if(status == EXTERNAL_POWER)
+	{
+		RELE_SOST_0_OFF();
+		RELE_SOST_2_OFF();
+		HAL_Delay(1);
+		RELE_SOST_1_ON();
+		recLog("Переключение силового автомата авр, EXTERNAL_POWER");
+	}
+	// питание от генератора
+	else if(status == POWERED_BY_GENERATOR)
+	{
+		RELE_SOST_0_OFF();
+		RELE_SOST_1_OFF();
+		HAL_Delay(1);
+		RELE_SOST_2_ON();
+		recLog("Переключение силового автомата авр, POWERED_BY_GENERATOR");
+	}
+}
