@@ -37,10 +37,13 @@ avr_program/work.o: Src/work.c \
   ../Drivers/STM32F4xx_HAL_Driver/Inc\stm32f4xx_hal_spi.h \
   ../Drivers/STM32F4xx_HAL_Driver/Inc\stm32f4xx_hal_tim.h \
   ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim_ex.h Inc\work.h \
-  Inc\warn_err.h Inc/defs.h ../Core/Inc\main.h Inc\defs.h Inc\init.h \
-  menu\menu_main.h Inc\fatfs_sd.h \
+  Inc\warn_err.h Inc/defs.h \
+  C:\Keil_v5\ARM\ARMCLANG\Bin\..\include\time.h ../Core/Inc\main.h \
+  Inc\defs.h Inc\init.h menu\menu_main.h Inc\fatfs_sd.h \
   ../Middlewares/Third_Party/FatFs/src\ff.h \
   ../Middlewares/Third_Party/FatFs/src/integer.h \
   ../FATFS/Target\ffconf.h \
   C:\Keil_v5\ARM\ARMCLANG\Bin\..\include\stdlib.h \
-  ../Middlewares/Third_Party/FatFs/src\diskio.h menu\popUpWindow.h
+  ../Middlewares/Third_Party/FatFs/src\diskio.h \
+  Inc\powerCircuitBreaker.h Inc\recalcculating.h Inc\engine.h \
+  menu\popUpWindow.h

@@ -577,6 +577,21 @@
               <FileType>5</FileType>
               <FilePath>.\Inc\fatfs_sd.h</FilePath>
             </File>
+            <File>
+              <FileName>powerCircuitBreaker.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\Inc\powerCircuitBreaker.h</FilePath>
+            </File>
+            <File>
+              <FileName>recalcculating.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\Inc\recalcculating.h</FilePath>
+            </File>
+            <File>
+              <FileName>engine.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\Inc\engine.h</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -616,6 +631,21 @@
               <FileName>fatfs_sd.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\Src\fatfs_sd.c</FilePath>
+            </File>
+            <File>
+              <FileName>powerCircuitBreaker.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Src\powerCircuitBreaker.c</FilePath>
+            </File>
+            <File>
+              <FileName>recalcculating.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Src\recalcculating.c</FilePath>
+            </File>
+            <File>
+              <FileName>engine.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Src\engine.c</FilePath>
             </File>
           </Files>
         </Group>

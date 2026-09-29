@@ -45,5 +45,6 @@ avr_program/init.o: Src/init.c \
   ../Middlewares/Third_Party/FatFs/src/integer.h \
   ../FATFS/Target\ffconf.h \
   C:\Keil_v5\ARM\ARMCLANG\Bin\..\include\stdlib.h \
-  ../Middlewares/Third_Party/FatFs/src\diskio.h Inc\ILI9341_GFX.h \
-  Inc/fonts.h menu\touch.h Inc\xpt2046_touch.h
+  ../Middlewares/Third_Party/FatFs/src\diskio.h \
+  Inc\powerCircuitBreaker.h Inc\recalcculating.h Inc\engine.h \
+  Inc\ILI9341_GFX.h Inc/fonts.h menu\touch.h Inc\xpt2046_touch.h

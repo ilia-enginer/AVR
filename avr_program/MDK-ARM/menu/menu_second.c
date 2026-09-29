@@ -178,14 +178,14 @@ void powerOutageGet(void)
 {
 	char buf[160] = {0,};
 	snprintf(header, BUF_LEN, "Откл эл-ва инфо"); 
-	snprintf(buf, 160, "Последнее отключение\nВремя          %d.%d.%d\nДата           %d.%d.%d\nБез эл-ва        %d\nВсего без эл-ва  %d", 
+	snprintf(buf, 160, "Последнее отключение\nВремя          %d.%d.%d\nДата           %d.%d.%d\nБез эл-ва (мин)  %d\nВсего без эл-ва  %d", 
 																																																																				pAVR->sdParams.hoursWithoutElectric, 
 																																																																				pAVR->sdParams.minutesWithoutElectric, 
 																																																																				pAVR->sdParams.secondsWithoutElectric, 
 																																																																				pAVR->sdParams.dateWithoutElectric, 
 																																																																				pAVR->sdParams.monthWithoutElectric, 
 																																																																				pAVR->sdParams.yearWithoutElectric, 
-																																																																				pAVR->sdParams.hoursLastWithoutElectric, 
+																																																																				pAVR->sdParams.minutesLastWithoutElectric, 
 																																																																				pAVR->sdParams.hoursALLWithoutElectric);		
 	notification(header, buf, 0, SECOND_MENU);
 }

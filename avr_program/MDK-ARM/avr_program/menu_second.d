@@ -2,7 +2,8 @@ avr_program/menu_second.o: menu/menu_second.c \
   C:\Keil_v5\ARM\ARMCLANG\Bin\..\include\stdint.h \
   C:\Keil_v5\ARM\ARMCLANG\Bin\..\include\stdio.h \
   C:\Keil_v5\ARM\ARMCLANG\Bin\..\include\stdlib.h menu/menu_main.h \
-  Inc\init.h Inc\warn_err.h Inc/defs.h ../Core/Inc\main.h \
+  Inc\init.h Inc\warn_err.h Inc/defs.h \
+  C:\Keil_v5\ARM\ARMCLANG\Bin\..\include\time.h ../Core/Inc\main.h \
   ../Drivers/STM32F4xx_HAL_Driver/Inc\stm32f4xx_hal.h \
   ../Core/Inc\stm32f4xx_hal_conf.h \
   ../Drivers/STM32F4xx_HAL_Driver/Inc\stm32f4xx_hal_rcc.h \
@@ -42,5 +43,6 @@ avr_program/menu_second.o: menu/menu_second.c \
   Inc\work.h Inc\fatfs_sd.h ../Middlewares/Third_Party/FatFs/src\ff.h \
   ../Middlewares/Third_Party/FatFs/src/integer.h \
   ../FATFS/Target\ffconf.h ../Middlewares/Third_Party/FatFs/src\diskio.h \
+  Inc\powerCircuitBreaker.h Inc\recalcculating.h Inc\engine.h \
   menu/menu_second.h menu/popUpWindow.h menu/touch.h Inc\xpt2046_touch.h \
   Inc/ILI9341_GFX.h Inc/fonts.h

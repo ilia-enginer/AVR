@@ -2,11 +2,12 @@
 #ifndef DEFS_H_
 #define DEFS_H_
 
+#include <time.h>
 #include "main.h"
 
 
 /* defines -----------------------------------------------------------*/
-// ADC
+// ------- ADC ---------
 #define OPORA_ADC						(3.3f)						// напряжение опоры ацп
 #define ADC_CHANELS					(6)								// кол-во каналов ацп в массиве
 #define FULL_RANGE_f				(4096.0f)
@@ -14,11 +15,12 @@
 #define KOFF_FILTR					(0.1f)						// коэфициент фильтра для пересчета значений ацп
 		 
 
-// напряжение
+// ------- напряжение -------
 #define U_AKB_MIN_1 				(12.3f)						// вольт первый порог низкого напряжения (порог предупреждения)
 #define U_AKB_MIN_0 				(12.1f) 					// вольт нулевой порог низкого напряжения (порог ошибки)
-#define U_AKB_MAX 					(15.0f)						//верхний порог напряжения	(порог ошибки)
+#define U_AKB_MAX 					(15.0f)						// верхний порог напряжения	(порог ошибки)
 #define U_GYST							(0.1f)						// гистерезис напряжений для проверки
+#define U_V_OUT_MIN					(10.0f)						// нижний порог входного напряжения
 
 
 // Полная формула вычисления измеряемого напряжения будет выглядеть так: U= (опорное напряжение*значение АЦП*коэффициент делителя)/число разрядов АЦП
@@ -40,11 +42,11 @@
 #define	K_REL_STARTER	(R2_REL_STARTER/(R1_REL_STARTER + R2_REL_STARTER))			// Коэфициент делителя напряжения
 
 
-// ошибки и предупреждения
+// ------- ошибки и предупреждения -------
 #define MAX_ERR_AND_WARN	(32)							// макс. кол-во ошибок и предупреждений
 
 
-// для хранения истории настроек на sd карте
+// ------- для хранения истории настроек на sd карте -------
 #define NUM_VARIABLES_HISTORI		(26)						// кол-во переменных в структуре истории
 #define BUF_LEN_SD_PARAM				((NUM_VARIABLES_HISTORI*4) + NUM_VARIABLES_HISTORI)						// объем буфера для хранения параметров, считанных из флеш
 #define INIT_HISTORY_FILE_SIGNATURE (2092942078)			// признак инициализации файла истории параметров на sd карте
@@ -53,7 +55,7 @@
 #define INTERVAL_DATA_TO_UNIX		(7889229)	// интервал меж ТО в юниксе (3 месяца)
 #define INTERVAL_TO_HOURS				(50)			// интервал меж ТО в моточасах
 
-// для экрана
+// ------- для экрана -------
 #define BUF_LEN  (100)
 
 #define LONG_PRESS_RESET				(10000)		// 10c если нажатие на экран дольше этого - перезагрузится проц
@@ -63,7 +65,7 @@
 
 /* Exported types ------------------------------------------------------------*/
 
-// виды меню
+// ------- виды меню -------
 typedef enum {
     MAIN_MENU = 0,				// главное меню
 		SERVISE_TOUCH,				// сервисное меню тача
@@ -80,7 +82,7 @@ typedef enum {
 } MENU_STATE;
 
 
-// варианты питания дома
+// ------- варианты питания дома -------
 typedef enum {
     POWER_IS_OFF = 0,				// питание откл
 		EXTERNAL_POWER,					// питание от внешней сети
@@ -88,7 +90,14 @@ typedef enum {
 		
 } POWER_GRID_MODE;
 
-// вариатны ошибок
+// ------- внешнее питание есть / нет -------
+typedef enum  {
+    EXT_POWER_OFF = 0,				// нет
+		EXT_POWER_ON,							// есть
+		
+}STATUS_EXT_POWER;
+
+// ------- вариатны ошибок -------
 typedef enum  {
     ERR_MAX_LAUNCH_ATTEMP = 0,				// превышено максимальное кол-во попыток запуска
 		ERR_STARTER_RELE_SHUTDOWN,				// ошибка отключения реле стартера
@@ -104,7 +113,7 @@ typedef enum  {
 
 }ERR_WARIANTS;
 
-// вариатны предупреждений
+// ------- вариатны предупреждений -------
 typedef enum  {
     WARN_MANUAL_CONTROL_EN = 0,				// включен ручной режим работы
 		WARN_NECESSITY_TECH_INSP,					// необходимо провести тех. осмотр
@@ -112,7 +121,7 @@ typedef enum  {
 
 }WARN_WARIANTS;
 
-// вариатны работы устройства(мозгов) 
+// ------- вариатны работы устройства(мозгов) -------
 typedef enum  {
     AVR_AUTO = 0,				// автоматический режим
 		AVR_MANUAL,					// ручной режим	
@@ -120,15 +129,37 @@ typedef enum  {
 }MANAGEMENT_WORK;
 
 
-// внешнее питание есть / нет
+// ------- статусы двигателя -------
 typedef enum  {
-    EXT_POWER_OFF = 0,				// нет
-		EXT_POWER_ON,							// есть
+    ENGINE_STOPPED = 0,				// остановлен
+		ENGINE_START,							// запуск
+		ENGINE_STARTER_REST,			// отдых стартера
+		ENGINE_WARM_UP,						// прогрев
+		ENGINE_WORK,							// работа (запущен)
+		ENGINE_COOLING,						// охлаждение
+		ENGINE_STOP,							// остановка
+		ENGINE_TIMEOUT,						// перерыв
 		
-}STATUS_EXT_POWER;
+}STATUS_ENGINE;
+
+// структура двигателя
+typedef struct {
+    
+	STATUS_ENGINE status;						// статус двигателя			
+	time_t starterRotationTime;			// время вращения стартером c
+	time_t starterTimeoutTime;			// время отдыха стартера в с
+	uint8_t launchAttempts;					// кол-во попыток последнего запуска
+	time_t startTimeStop;						// время начала остановки в с
+	time_t warmUpTime;							// время прогрева в с
+	time_t collingTime;							// время охлаждения в с
+	time_t workingTime;							// время работы в с
+	time_t engineTimeoutTime;				// время перерыва(охлаждения генератора)
+	
+} EngineDef;
 
 
-// структура работы с тачем
+
+// ------- структура работы с тачем -------
 typedef struct {
     
 	uint8_t flag_press;										// флаг нажатия на экран							
@@ -143,7 +174,7 @@ typedef struct {
 
 
 
-// данные ацп
+// ------- данные ацп -------
 typedef struct ADC_data {
 		
 		uint16_t ravADC[ADC_CHANELS];				//сырые данные ацп, 
@@ -156,7 +187,7 @@ typedef struct ADC_data {
 } ADC_data;
 
 
-// посчитанные параметры напряжения, температуры
+// ------- посчитанные параметры напряжения, температуры -------
 typedef struct Vparam_Type {
 		
 		float v_out;												// внешнее напряжение
@@ -169,22 +200,21 @@ typedef struct Vparam_Type {
 } Vparam_Type;
 
 
-// автоматы и флаги прибора
+// ------- автоматы и флаги прибора -------
 typedef struct automats_devices {
 
 		MENU_STATE				menu_state;					// автомат менюшки на экране
-		uint8_t						program_state;			// програмный автомат
 		POWER_GRID_MODE		power_grid_mode;		// режим работы (нечего / сеть / генератор)
 		uint8_t						flagCharge;					// заряжка акб выкл /  вкл
 		MANAGEMENT_WORK		powerAutoManual;		// режим работы управления авто / ручной
-		uint8_t						statusEngine;				// работа ДВС генератора выключен / включен
+		uint8_t						statusEngine;				// работа ДВС генератора выключен / включен и.т.д.
 		STATUS_EXT_POWER	extPowerSupply;			// наличие внешнего питания
 		uint8_t						flagSaveInfoSD;			// флаг сохранения информации о работе генератора на sd карту
 		
 } automats_devices;
 
 
-// структура для ошибок и предупреждений
+// ------- структура для ошибок и предупреждений -------
 typedef struct {
     
 	uint8_t counter;											// счетчик
@@ -192,7 +222,7 @@ typedef struct {
 	
 } ErrWarnType;
 
-// структура параметров которые хранятся на sd карте
+// ------- структура параметров которые хранятся на sd карте -------
 typedef struct {
   
 	// проверка
@@ -227,9 +257,10 @@ typedef struct {
 	uint32_t dateWithoutElectric;					// дата последнего отключения
 	uint32_t monthWithoutElectric;				// месяц последнего отключения
 	uint32_t yearWithoutElectric;					// год последнего отключения
-	uint32_t hoursLastWithoutElectric;		// часы без эл-ва за последний раз	
+	uint32_t minutesLastWithoutElectric;	// минуты без эл-ва за последний раз	
 	
 	uint32_t hoursALLWithoutElectric;			// общее кол-во часов без эл-ва
+	uint32_t minutesALLWithoutElectric;		// общее кол-во минут без эл-ва
 	
 	// запуск ДВС инфо
 	uint32_t numSuccessLaunch;						// кол-во удачных запусков
@@ -238,7 +269,7 @@ typedef struct {
 } SdParametersType;
 
 		
-// тип данных для параметров всего прибора
+// ------- тип данных для параметров всего прибора -------
 typedef struct Device_Type {
 
 	automats_devices	avr_states;		// автоматы и флаги прибора
@@ -248,6 +279,7 @@ typedef struct Device_Type {
 	ErrWarnType				err;					// структура ошибок
 	ErrWarnType				warn;					// структура предупреждений
 	SdParametersType	sdParams;			// структура параметров которые хранятся на sd карте
+	EngineDef					engine;				// структура двигателя
 	
 } Device_Type;
 

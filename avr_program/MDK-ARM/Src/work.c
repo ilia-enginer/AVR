@@ -8,12 +8,12 @@
 
 void work (void)
 {
-	dataCalcADC();		// пересчет значений ацп
-	checkWarn();			// поиск предупреждений
-	checkErr();				// поиск ошибок
-	menuSwich();			// экранное меню
-	
-	
+	dataCalcADC();						// пересчет значений ацп
+	checkWarn();							// поиск предупреждений
+	checkErr();								// поиск ошибок
+	menuSwich();							// экранное меню
+	engineWork();							// управление двигателем
+	powerAutomationControl();	// управление силовым автоматом
 	
 	// если необходимо сохранить всю инфу на флеш
 	if(pAVR->avr_states.flagSaveInfoSD == SET)
@@ -43,6 +43,7 @@ void dataCalcADC(void)
 
 	// напряжение c обмотки возбуждения
 	voltage = ((pAVR->adc.ravADC[2] / FULL_RANGE_f * OPORA_ADC) / K_ENGINE) - V_FALL_DIODE;
+	if(voltage < 0.0f) voltage = 0.0f;
 	pAVR->v_t.v_motor = exponentialRunningAverage(pAVR->v_t.v_motor, voltage, KOFF_FILTR);
 
 	// напряжение питания реле стартера
@@ -68,40 +69,6 @@ void dataCalcADC(void)
 }
 
 
-float exponentialRunningAverage(float value, float valueNew, float koff)
-{
-	return valueNew * koff + value * (1.0 - koff);
-}
 
-// переключает главный рубильник
-void switchPowerCircuitBreaker(uint32_t status)
-{
-	// отключить питание дома
-	if(status == POWER_IS_OFF)
-	{
-		RELE_SOST_1_OFF();
-		RELE_SOST_2_OFF();
-		HAL_Delay(1);
-		RELE_SOST_0_ON();
-		pAVR->avr_states.power_grid_mode = POWER_IS_OFF;
-		recLog("Переключение силового автомата авр, POWER_IS_OFF");
-	}
-	// питание от внешней сети
-	else if(status == EXTERNAL_POWER)
-	{
-		RELE_SOST_0_OFF();
-		RELE_SOST_2_OFF();
-		HAL_Delay(1);
-		RELE_SOST_1_ON();
-		recLog("Переключение силового автомата авр, EXTERNAL_POWER");
-	}
-	// питание от генератора
-	else if(status == POWERED_BY_GENERATOR)
-	{
-		RELE_SOST_0_OFF();
-		RELE_SOST_1_OFF();
-		HAL_Delay(1);
-		RELE_SOST_2_ON();
-		recLog("Переключение силового автомата авр, POWERED_BY_GENERATOR");
-	}
-}
+
+

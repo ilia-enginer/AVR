@@ -33,7 +33,9 @@ uint8_t initDevice(void)
 	pAVR->avr_states.extPowerSupply 	= EXT_POWER_OFF;	// нет
 	resetErrors();
 	resetWarning();
-	
+	pAVR->engine.status = ENGINE_STOPPED;
+	pAVR->engine.launchAttempts = 0;
+
 	// ------------- переферия ------------
 	outputInit();	// выхода (светодиоды, реле и.т.д.)
 	
@@ -86,9 +88,10 @@ uint8_t initDevice(void)
 			pAVR->sdParams.monthWithoutElectric			= 0;	// месяц последнего отключения
 			pAVR->sdParams.yearWithoutElectric			= 0;	// год последнего отключения
 
-			pAVR->sdParams.hoursLastWithoutElectric = 0;	// часы без эл-ва за последний раз	
-			pAVR->sdParams.hoursALLWithoutElectric	= 0;	// общее кол-во часов без эл-ва
-
+			pAVR->sdParams.minutesLastWithoutElectric = 0;// минуты без эл-ва за последний раз	
+			pAVR->sdParams.hoursALLWithoutElectric		= 0;	// общее кол-во часов без эл-ва
+			pAVR->sdParams.minutesALLWithoutElectric	= 0;	// общее кол-во минут без эл-ва
+			
 			// запуск ДВС инфо
 			pAVR->sdParams.numSuccessLaunch					= 0;	// кол-во удачных запусков
 			pAVR->sdParams.numLaunchAttempt					= 0;	// кол-во попыток запуска
@@ -104,6 +107,15 @@ uint8_t initDevice(void)
 	// ------------- ацп ------------
 	HAL_ADC_Start_DMA(&hadc1, (uint32_t*)&AVR.adc, ADC_CHANELS);	// запуск ацп
 		
+	HAL_Delay(2);			// ожидание преобразования
+	dataCalcADC();		// пересчет значений ацп
+	// определить какое питание и выставить флаг
+	if(pAVR->v_t.v_out > U_V_OUT_MIN)
+		pAVR->avr_states.extPowerSupply = EXT_POWER_ON;
+	else
+		pAVR->avr_states.extPowerSupply = EXT_POWER_OFF;
+		
+	
 //	// для проверки ошибок и предупреждений	
 //	for(uint8_t i = 0; i < MAX_ERR_AND_WARN; i++)	{
 //		pAVR->err.counter++;
@@ -177,8 +189,9 @@ uint8_t getFillStructureStoryParameters(void)
 	pAVR->sdParams.dateWithoutElectric			= numbers[i++];
 	pAVR->sdParams.monthWithoutElectric			= numbers[i++];
 	pAVR->sdParams.yearWithoutElectric			= numbers[i++];
-	pAVR->sdParams.hoursLastWithoutElectric = numbers[i++];
+	pAVR->sdParams.minutesLastWithoutElectric = numbers[i++];
 	pAVR->sdParams.hoursALLWithoutElectric	= numbers[i++];
+	pAVR->sdParams.minutesALLWithoutElectric = numbers[i++];
 	pAVR->sdParams.numSuccessLaunch					= numbers[i++];
 	pAVR->sdParams.numLaunchAttempt					= numbers[i++];
 	
@@ -227,8 +240,9 @@ uint8_t setFillStructureStoryParameters(void)
 	numbers[i++] = pAVR->sdParams.monthWithoutElectric;			// месяц последнего отключения
 	numbers[i++] = pAVR->sdParams.yearWithoutElectric;				// год последнего отключения
 
-	numbers[i++] = pAVR->sdParams.hoursLastWithoutElectric;	// часы без эл-ва за последний раз	
+	numbers[i++] = pAVR->sdParams.minutesLastWithoutElectric;	// минуты без эл-ва за последний раз	
 	numbers[i++] = pAVR->sdParams.hoursALLWithoutElectric;		// общее кол-во часов без эл-ва
+	numbers[i++] = pAVR->sdParams.minutesALLWithoutElectric;	// общее кол-во минут без эл-ва
 
 	// запуск ДВС инфо
 	numbers[i++] = pAVR->sdParams.numSuccessLaunch;					// кол-во удачных запусков
@@ -405,13 +419,19 @@ uint8_t setFillStructureStoryParameters(void)
 		return 0;
 	}
 	memset(historyParamBuf,'\0',sizeof(historyParamBuf)); 
-	sprintf(historyParamBuf + strlen(historyParamBuf), "%d - часы без эл-ва за последний раз\n", pAVR->sdParams.hoursLastWithoutElectric);
+	sprintf(historyParamBuf + strlen(historyParamBuf), "%d - минуты без эл-ва за последний раз\n", pAVR->sdParams.minutesLastWithoutElectric);
 	if(!recFileSdCard ("historyUserFile.txt", historyParamBuf, 0)){
 		setErr(ERR_SD_CARD);
 		return 0;
 	}
 	memset(historyParamBuf,'\0',sizeof(historyParamBuf)); 
 	sprintf(historyParamBuf + strlen(historyParamBuf), "%d - общее кол-во часов без эл-ва\n", pAVR->sdParams.hoursALLWithoutElectric);
+	if(!recFileSdCard ("historyUserFile.txt", historyParamBuf, 0)){
+		setErr(ERR_SD_CARD);
+		return 0;
+	}
+	memset(historyParamBuf,'\0',sizeof(historyParamBuf)); 
+	sprintf(historyParamBuf + strlen(historyParamBuf), "%d - общее кол-во минут без эл-ва\n", pAVR->sdParams.minutesALLWithoutElectric);
 	if(!recFileSdCard ("historyUserFile.txt", historyParamBuf, 0)){
 		setErr(ERR_SD_CARD);
 		return 0;
@@ -445,25 +465,8 @@ uint8_t setFillStructureStoryParameters(void)
 // след ТО
 void updateInfoTO (void)
 {
-	struct tm tmm = {0}; // Инициализируем нулями
-	
-	// прочитать дату, время
-	HAL_RTC_GetTime(&hrtc, &sTime, RTC_FORMAT_BIN); 				
-	HAL_RTC_GetDate(&hrtc, &DateToUpdate, RTC_FORMAT_BIN);
-	
-	//------ реальное время ---------
-	// дата
-	tmm.tm_year = DateToUpdate.Year + 2000 - 1900;	// т.к. хранятся только 2 последние цифры года
-	tmm.tm_mon = DateToUpdate.Month-1;
-	tmm.tm_mday = DateToUpdate.Date;
-	// Заполняем структуру временем 
-	tmm.tm_hour = sTime.Hours;
-	tmm.tm_min = sTime.Minutes;
-	tmm.tm_sec = sTime.Seconds;
-	tmm.tm_isdst = -1; // Пусть система решит сама
-
-	// Переводим в Unix-время (в UTC)
-	time_t unix_realTime = mktime(&tmm);
+	// Перевожу в Unix-время (в UTC)
+	time_t unix_realTime = realToUnix();
 	
 	unix_realTime += INTERVAL_DATA_TO_UNIX;	// прибавляю интервал ТО
 	

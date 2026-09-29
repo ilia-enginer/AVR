@@ -3,11 +3,11 @@
 <title>Static Call Graph - [avr_program\avr_program.axf]</title></head>
 <body><HR>
 <H1>Static Call Graph for image avr_program\avr_program.axf</H1><HR>
-<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 6100100: Last Updated: Fri Sep 25 14:35:38 2026
+<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 6100100: Last Updated: Tue Sep 29 17:21:17 2026
 <BR><P>
 <H3>Maximum Stack Usage =        776 bytes + Unknown(Cycles, Untraceable Function Pointers)</H3><H3>
 Call chain for Maximum Stack Depth:</H3>
-main &rArr; work &rArr; menuSwich &rArr; secondMain &rArr; updateInfoTO &rArr; setFillStructureStoryParameters &rArr; recLog &rArr; recFileSdCard &rArr; setErr &rArr;  recLog (Cycle)
+main &rArr; work &rArr; menuSwich &rArr; secondMain &rArr; powerOutageGet &rArr; notification &rArr; ILI9341_WriteStringLen &rArr; ILI9341_WriteString &rArr; ILI9341_Draw_Char &rArr; ILI9341_Set_Address
 <P>
 <H3>
 Mutually Recursive functions
@@ -58,7 +58,7 @@ Function Pointers
  <LI><a href="#[4e]">HAL_GPIO_WritePin</a> from stm32f4xx_hal_gpio.o(.text.HAL_GPIO_WritePin) referenced from ili9341_gfx.o(.text.ILI9341_Reset)
  <LI><a href="#[4e]">HAL_GPIO_WritePin</a> from stm32f4xx_hal_gpio.o(.text.HAL_GPIO_WritePin) referenced from main.o(.text.main)
  <LI><a href="#[4e]">HAL_GPIO_WritePin</a> from stm32f4xx_hal_gpio.o(.text.HAL_GPIO_WritePin) referenced from init.o(.text.outputInit)
- <LI><a href="#[4e]">HAL_GPIO_WritePin</a> from stm32f4xx_hal_gpio.o(.text.HAL_GPIO_WritePin) referenced from work.o(.text.switchPowerCircuitBreaker)
+ <LI><a href="#[4e]">HAL_GPIO_WritePin</a> from stm32f4xx_hal_gpio.o(.text.HAL_GPIO_WritePin) referenced from powercircuitbreaker.o(.text.switchPowerCircuitBreaker)
  <LI><a href="#[2]">HardFault_Handler</a> from stm32f4xx_it.o(.text.HardFault_Handler) referenced from startup_stm32f411xe.o(RESET)
  <LI><a href="#[26]">I2C1_ER_IRQHandler</a> from startup_stm32f411xe.o(.text) referenced from startup_stm32f411xe.o(RESET)
  <LI><a href="#[25]">I2C1_EV_IRQHandler</a> from startup_stm32f411xe.o(.text) referenced from startup_stm32f411xe.o(RESET)
@@ -136,7 +136,7 @@ Function Pointers
  <LI><a href="#[45]">__main</a> from entry.o(.ARM.Collect$$$$00000000) referenced from startup_stm32f411xe.o(.text)
  <LI><a href="#[58]">_snputc</a> from printfa.o(i._snputc) referenced from printfa.o(i.__0snprintf)
  <LI><a href="#[59]">_sputc</a> from printfa.o(i._sputc) referenced from printfa.o(i.__0sprintf)
- <LI><a href="#[50]">exponentialRunningAverage</a> from work.o(.text.exponentialRunningAverage) referenced from work.o(.text.dataCalcADC)
+ <LI><a href="#[50]">exponentialRunningAverage</a> from recalcculating.o(.text.exponentialRunningAverage) referenced from work.o(.text.dataCalcADC)
  <LI><a href="#[43]">main</a> from main.o(.text.main) referenced from entry9a.o(.ARM.Collect$$$$0000000B)
  <LI><a href="#[46]">prvGetRegistersFromStack</a> from main.o(.text.prvGetRegistersFromStack) referenced from main.o(.text.Error_Handler)
 </UL>
@@ -147,7 +147,7 @@ Global Symbols
 <P><STRONG><a name="[45]"></a>__main</STRONG> (Thumb, 0 bytes, Stack size unknown bytes, entry.o(.ARM.Collect$$$$00000000))
 <BR>[Address Reference Count : 1]<UL><LI> startup_stm32f411xe.o(.text)
 </UL>
-<P><STRONG><a name="[14c]"></a>_main_stk</STRONG> (Thumb, 0 bytes, Stack size unknown bytes, entry2.o(.ARM.Collect$$$$00000001))
+<P><STRONG><a name="[150]"></a>_main_stk</STRONG> (Thumb, 0 bytes, Stack size unknown bytes, entry2.o(.ARM.Collect$$$$00000001))
 
 <P><STRONG><a name="[5f]"></a>_main_scatterload</STRONG> (Thumb, 0 bytes, Stack size unknown bytes, entry5.o(.ARM.Collect$$$$00000004))
 <BR><BR>[Calls]<UL><LI><a href="#[60]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__scatterload
@@ -157,15 +157,15 @@ Global Symbols
 <BR><BR>[Called By]<UL><LI><a href="#[60]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__scatterload
 </UL>
 
-<P><STRONG><a name="[14d]"></a>_main_clock</STRONG> (Thumb, 0 bytes, Stack size unknown bytes, entry7b.o(.ARM.Collect$$$$00000008))
+<P><STRONG><a name="[151]"></a>_main_clock</STRONG> (Thumb, 0 bytes, Stack size unknown bytes, entry7b.o(.ARM.Collect$$$$00000008))
 
-<P><STRONG><a name="[14e]"></a>_main_cpp_init</STRONG> (Thumb, 0 bytes, Stack size unknown bytes, entry8b.o(.ARM.Collect$$$$0000000A))
+<P><STRONG><a name="[152]"></a>_main_cpp_init</STRONG> (Thumb, 0 bytes, Stack size unknown bytes, entry8b.o(.ARM.Collect$$$$0000000A))
 
-<P><STRONG><a name="[14f]"></a>_main_init</STRONG> (Thumb, 0 bytes, Stack size unknown bytes, entry9a.o(.ARM.Collect$$$$0000000B))
+<P><STRONG><a name="[153]"></a>_main_init</STRONG> (Thumb, 0 bytes, Stack size unknown bytes, entry9a.o(.ARM.Collect$$$$0000000B))
 
-<P><STRONG><a name="[150]"></a>__rt_final_cpp</STRONG> (Thumb, 0 bytes, Stack size unknown bytes, entry10a.o(.ARM.Collect$$$$0000000D))
+<P><STRONG><a name="[154]"></a>__rt_final_cpp</STRONG> (Thumb, 0 bytes, Stack size unknown bytes, entry10a.o(.ARM.Collect$$$$0000000D))
 
-<P><STRONG><a name="[151]"></a>__rt_final_exit</STRONG> (Thumb, 0 bytes, Stack size unknown bytes, entry11a.o(.ARM.Collect$$$$0000000F))
+<P><STRONG><a name="[155]"></a>__rt_final_exit</STRONG> (Thumb, 0 bytes, Stack size unknown bytes, entry11a.o(.ARM.Collect$$$$0000000F))
 
 <P><STRONG><a name="[0]"></a>Reset_Handler</STRONG> (Thumb, 8 bytes, Stack size 0 bytes, startup_stm32f411xe.o(.text))
 <BR>[Address Reference Count : 1]<UL><LI> startup_stm32f411xe.o(RESET)
@@ -343,8 +343,8 @@ Global Symbols
 <LI><a href="#[63]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_llsl
 </UL>
 <BR>[Called By]<UL><LI><a href="#[9e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_RCC_GetSysClockFreq
-<LI><a href="#[145]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_printf_core
-<LI><a href="#[147]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_fp_digits
+<LI><a href="#[149]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_printf_core
+<LI><a href="#[14b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_fp_digits
 </UL>
 
 <P><STRONG><a name="[64]"></a>mktime</STRONG> (Thumb, 150 bytes, Stack size 16 bytes, mktime.o(.text))
@@ -352,27 +352,27 @@ Global Symbols
 </UL>
 <BR>[Calls]<UL><LI><a href="#[65]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_localtime
 </UL>
-<BR>[Called By]<UL><LI><a href="#[12a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;updateInfoTO
+<BR>[Called By]<UL><LI><a href="#[13d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;realToUnix
 <LI><a href="#[ec]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;checkInfoTO
 </UL>
 
 <P><STRONG><a name="[d3]"></a>__aeabi_memcpy</STRONG> (Thumb, 36 bytes, Stack size 0 bytes, memcpya.o(.text))
-<BR><BR>[Called By]<UL><LI><a href="#[13f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;setFillStructureStoryParameters
+<BR><BR>[Called By]<UL><LI><a href="#[142]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;setFillStructureStoryParameters
 <LI><a href="#[cd]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SD_Init
 </UL>
 
-<P><STRONG><a name="[152]"></a>__aeabi_memcpy4</STRONG> (Thumb, 0 bytes, Stack size 0 bytes, memcpya.o(.text), UNUSED)
+<P><STRONG><a name="[156]"></a>__aeabi_memcpy4</STRONG> (Thumb, 0 bytes, Stack size 0 bytes, memcpya.o(.text), UNUSED)
 
-<P><STRONG><a name="[153]"></a>__aeabi_memcpy8</STRONG> (Thumb, 0 bytes, Stack size 0 bytes, memcpya.o(.text), UNUSED)
+<P><STRONG><a name="[157]"></a>__aeabi_memcpy8</STRONG> (Thumb, 0 bytes, Stack size 0 bytes, memcpya.o(.text), UNUSED)
 
 <P><STRONG><a name="[67]"></a>__aeabi_memset</STRONG> (Thumb, 14 bytes, Stack size 0 bytes, memseta.o(.text))
 <BR><BR>[Called By]<UL><LI><a href="#[68]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_memset$wrapper
 <LI><a href="#[66]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_memclr
 </UL>
 
-<P><STRONG><a name="[154]"></a>__aeabi_memset4</STRONG> (Thumb, 0 bytes, Stack size 0 bytes, memseta.o(.text), UNUSED)
+<P><STRONG><a name="[158]"></a>__aeabi_memset4</STRONG> (Thumb, 0 bytes, Stack size 0 bytes, memseta.o(.text), UNUSED)
 
-<P><STRONG><a name="[155]"></a>__aeabi_memset8</STRONG> (Thumb, 0 bytes, Stack size 0 bytes, memseta.o(.text), UNUSED)
+<P><STRONG><a name="[159]"></a>__aeabi_memset8</STRONG> (Thumb, 0 bytes, Stack size 0 bytes, memseta.o(.text), UNUSED)
 
 <P><STRONG><a name="[66]"></a>__aeabi_memclr</STRONG> (Thumb, 4 bytes, Stack size 0 bytes, memseta.o(.text))
 <BR><BR>[Calls]<UL><LI><a href="#[67]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_memset
@@ -393,16 +393,16 @@ Global Symbols
 <LI><a href="#[f5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;confirmClick
 <LI><a href="#[c9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ILI9341_WriteStringLen
 <LI><a href="#[fc]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;notification
-<LI><a href="#[12a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;updateInfoTO
-<LI><a href="#[13f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;setFillStructureStoryParameters
-<LI><a href="#[13e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;recFileSdCard
+<LI><a href="#[142]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;setFillStructureStoryParameters
+<LI><a href="#[141]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;recFileSdCard
+<LI><a href="#[13d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;realToUnix
 <LI><a href="#[120]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;getFillStructureStoryParameters
 <LI><a href="#[ec]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;checkInfoTO
 <LI><a href="#[cd]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SD_Init
-<LI><a href="#[13c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;powerOutageGet
+<LI><a href="#[13f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;powerOutageGet
 </UL>
 
-<P><STRONG><a name="[156]"></a>__aeabi_memclr8</STRONG> (Thumb, 0 bytes, Stack size 0 bytes, memseta.o(.text), UNUSED)
+<P><STRONG><a name="[15a]"></a>__aeabi_memclr8</STRONG> (Thumb, 0 bytes, Stack size 0 bytes, memseta.o(.text), UNUSED)
 
 <P><STRONG><a name="[68]"></a>_memset$wrapper</STRONG> (Thumb, 18 bytes, Stack size 8 bytes, memseta.o(.text), UNUSED)
 <BR><BR>[Calls]<UL><LI><a href="#[67]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_memset
@@ -416,8 +416,8 @@ Global Symbols
 </UL>
 
 <P><STRONG><a name="[d4]"></a>strlen</STRONG> (Thumb, 14 bytes, Stack size 0 bytes, strlen.o(.text))
-<BR><BR>[Called By]<UL><LI><a href="#[13f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;setFillStructureStoryParameters
-<LI><a href="#[13e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;recFileSdCard
+<BR><BR>[Called By]<UL><LI><a href="#[142]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;setFillStructureStoryParameters
+<LI><a href="#[141]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;recFileSdCard
 <LI><a href="#[cd]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SD_Init
 </UL>
 
@@ -439,10 +439,10 @@ Global Symbols
 <LI><a href="#[70]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_double_round
 <LI><a href="#[6f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_double_epilogue
 </UL>
-<BR>[Called By]<UL><LI><a href="#[50]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;exponentialRunningAverage
-<LI><a href="#[71]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_dsub
-<LI><a href="#[147]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_fp_digits
+<BR>[Called By]<UL><LI><a href="#[71]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_dsub
+<LI><a href="#[50]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;exponentialRunningAverage
 <LI><a href="#[72]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_drsub
+<LI><a href="#[14b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_fp_digits
 </UL>
 
 <P><STRONG><a name="[71]"></a>__aeabi_dsub</STRONG> (Thumb, 6 bytes, Stack size 0 bytes, dadd.o(.text))
@@ -463,10 +463,10 @@ Global Symbols
 <BR>[Calls]<UL><LI><a href="#[6f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_double_epilogue
 </UL>
 <BR>[Called By]<UL><LI><a href="#[50]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;exponentialRunningAverage
-<LI><a href="#[13e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;recFileSdCard
+<LI><a href="#[141]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;recFileSdCard
 <LI><a href="#[121]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;readFileSdCard
 <LI><a href="#[cd]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SD_Init
-<LI><a href="#[147]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_fp_digits
+<LI><a href="#[14b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_fp_digits
 </UL>
 
 <P><STRONG><a name="[74]"></a>__aeabi_ui2d</STRONG> (Thumb, 26 bytes, Stack size 16 bytes, dfltui.o(.text))
@@ -474,7 +474,7 @@ Global Symbols
 </UL>
 <BR>[Calls]<UL><LI><a href="#[6f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_double_epilogue
 </UL>
-<BR>[Called By]<UL><LI><a href="#[13e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;recFileSdCard
+<BR>[Called By]<UL><LI><a href="#[141]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;recFileSdCard
 <LI><a href="#[121]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;readFileSdCard
 <LI><a href="#[cd]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SD_Init
 </UL>
@@ -484,7 +484,7 @@ Global Symbols
 </UL>
 <BR>[Calls]<UL><LI><a href="#[62]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_llsr
 </UL>
-<BR>[Called By]<UL><LI><a href="#[13e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;recFileSdCard
+<BR>[Called By]<UL><LI><a href="#[141]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;recFileSdCard
 <LI><a href="#[121]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;readFileSdCard
 <LI><a href="#[cd]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SD_Init
 </UL>
@@ -503,35 +503,35 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[50]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;exponentialRunningAverage
 </UL>
 
-<P><STRONG><a name="[157]"></a>__aeabi_uidiv</STRONG> (Thumb, 0 bytes, Stack size 12 bytes, uidiv.o(.text), UNUSED)
+<P><STRONG><a name="[15b]"></a>__aeabi_uidiv</STRONG> (Thumb, 0 bytes, Stack size 12 bytes, uidiv.o(.text), UNUSED)
 
-<P><STRONG><a name="[14b]"></a>__aeabi_uidivmod</STRONG> (Thumb, 44 bytes, Stack size 12 bytes, uidiv.o(.text), UNUSED)
-<BR><BR>[Called By]<UL><LI><a href="#[145]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_printf_core
+<P><STRONG><a name="[14f]"></a>__aeabi_uidivmod</STRONG> (Thumb, 44 bytes, Stack size 12 bytes, uidiv.o(.text), UNUSED)
+<BR><BR>[Called By]<UL><LI><a href="#[149]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_printf_core
 </UL>
 
 <P><STRONG><a name="[63]"></a>__aeabi_llsl</STRONG> (Thumb, 30 bytes, Stack size 0 bytes, llshl.o(.text))
 <BR><BR>[Called By]<UL><LI><a href="#[6d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_dadd
-<LI><a href="#[7b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_d2ulz
 <LI><a href="#[61]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_uldivmod
 <LI><a href="#[6f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_double_epilogue
+<LI><a href="#[7b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_d2ulz
 </UL>
 
-<P><STRONG><a name="[158]"></a>_ll_shift_l</STRONG> (Thumb, 0 bytes, Stack size 0 bytes, llshl.o(.text), UNUSED)
+<P><STRONG><a name="[15c]"></a>_ll_shift_l</STRONG> (Thumb, 0 bytes, Stack size 0 bytes, llshl.o(.text), UNUSED)
 
 <P><STRONG><a name="[62]"></a>__aeabi_llsr</STRONG> (Thumb, 32 bytes, Stack size 0 bytes, llushr.o(.text))
 <BR><BR>[Called By]<UL><LI><a href="#[75]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_d2uiz
-<LI><a href="#[7b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_d2ulz
 <LI><a href="#[61]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_uldivmod
 <LI><a href="#[6f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_double_epilogue
+<LI><a href="#[7b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_d2ulz
 </UL>
 
-<P><STRONG><a name="[159]"></a>_ll_ushift_r</STRONG> (Thumb, 0 bytes, Stack size 0 bytes, llushr.o(.text), UNUSED)
+<P><STRONG><a name="[15d]"></a>_ll_ushift_r</STRONG> (Thumb, 0 bytes, Stack size 0 bytes, llushr.o(.text), UNUSED)
 
 <P><STRONG><a name="[6e]"></a>__aeabi_lasr</STRONG> (Thumb, 36 bytes, Stack size 0 bytes, llsshr.o(.text))
 <BR><BR>[Called By]<UL><LI><a href="#[6d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_dadd
 </UL>
 
-<P><STRONG><a name="[15a]"></a>_ll_sshift_r</STRONG> (Thumb, 0 bytes, Stack size 0 bytes, llsshr.o(.text), UNUSED)
+<P><STRONG><a name="[15e]"></a>_ll_sshift_r</STRONG> (Thumb, 0 bytes, Stack size 0 bytes, llsshr.o(.text), UNUSED)
 
 <P><STRONG><a name="[6a]"></a>__rt_ctype_table</STRONG> (Thumb, 4 bytes, Stack size 0 bytes, ctype_o.o(.text))
 <BR><BR>[Called By]<UL><LI><a href="#[69]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;strtol
@@ -561,20 +561,20 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[69]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;strtol
 </UL>
 
-<P><STRONG><a name="[15b]"></a>__I$use$fp</STRONG> (Thumb, 0 bytes, Stack size 0 bytes, iusefp.o(.text), UNUSED)
+<P><STRONG><a name="[15f]"></a>__I$use$fp</STRONG> (Thumb, 0 bytes, Stack size 0 bytes, iusefp.o(.text), UNUSED)
 
 <P><STRONG><a name="[77]"></a>_float_round</STRONG> (Thumb, 18 bytes, Stack size 0 bytes, fepilogue.o(.text))
 <BR><BR>[Called By]<UL><LI><a href="#[76]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_d2f
 </UL>
 
-<P><STRONG><a name="[15c]"></a>_float_epilogue</STRONG> (Thumb, 92 bytes, Stack size 4 bytes, fepilogue.o(.text), UNUSED)
+<P><STRONG><a name="[160]"></a>_float_epilogue</STRONG> (Thumb, 92 bytes, Stack size 4 bytes, fepilogue.o(.text), UNUSED)
 
 <P><STRONG><a name="[70]"></a>_double_round</STRONG> (Thumb, 30 bytes, Stack size 8 bytes, depilogue.o(.text))
 <BR><BR>[Stack]<UL><LI>Max Depth = 8<LI>Call Chain = _double_round
 </UL>
 <BR>[Called By]<UL><LI><a href="#[6d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_dadd
-<LI><a href="#[7a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_ddiv
 <LI><a href="#[6f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_double_epilogue
+<LI><a href="#[7a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_ddiv
 </UL>
 
 <P><STRONG><a name="[6f]"></a>_double_epilogue</STRONG> (Thumb, 156 bytes, Stack size 32 bytes, depilogue.o(.text))
@@ -584,26 +584,26 @@ Global Symbols
 <LI><a href="#[63]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_llsl
 <LI><a href="#[70]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_double_round
 </UL>
-<BR>[Called By]<UL><LI><a href="#[74]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_ui2d
+<BR>[Called By]<UL><LI><a href="#[6d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_dadd
+<LI><a href="#[74]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_ui2d
 <LI><a href="#[73]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_dmul
-<LI><a href="#[6d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_dadd
 </UL>
 
 <P><STRONG><a name="[7a]"></a>__aeabi_ddiv</STRONG> (Thumb, 222 bytes, Stack size 32 bytes, ddiv.o(.text), UNUSED)
 <BR><BR>[Calls]<UL><LI><a href="#[70]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_double_round
 </UL>
-<BR>[Called By]<UL><LI><a href="#[147]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_fp_digits
+<BR>[Called By]<UL><LI><a href="#[14b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_fp_digits
 </UL>
 
 <P><STRONG><a name="[7b]"></a>__aeabi_d2ulz</STRONG> (Thumb, 48 bytes, Stack size 0 bytes, dfixul.o(.text), UNUSED)
 <BR><BR>[Calls]<UL><LI><a href="#[62]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_llsr
 <LI><a href="#[63]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_llsl
 </UL>
-<BR>[Called By]<UL><LI><a href="#[147]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_fp_digits
+<BR>[Called By]<UL><LI><a href="#[14b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_fp_digits
 </UL>
 
-<P><STRONG><a name="[148]"></a>__aeabi_cdrcmple</STRONG> (Thumb, 48 bytes, Stack size 0 bytes, cdrcmple.o(.text), UNUSED)
-<BR><BR>[Called By]<UL><LI><a href="#[147]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_fp_digits
+<P><STRONG><a name="[14c]"></a>__aeabi_cdrcmple</STRONG> (Thumb, 48 bytes, Stack size 0 bytes, cdrcmple.o(.text), UNUSED)
+<BR><BR>[Called By]<UL><LI><a href="#[14b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_fp_digits
 </UL>
 
 <P><STRONG><a name="[60]"></a>__scatterload</STRONG> (Thumb, 28 bytes, Stack size 0 bytes, init.o(.text))
@@ -612,7 +612,7 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[5f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_main_scatterload
 </UL>
 
-<P><STRONG><a name="[15d]"></a>__scatterload_rt2</STRONG> (Thumb, 0 bytes, Stack size 0 bytes, init.o(.text), UNUSED)
+<P><STRONG><a name="[161]"></a>__scatterload_rt2</STRONG> (Thumb, 0 bytes, Stack size 0 bytes, init.o(.text), UNUSED)
 
 <P><STRONG><a name="[79]"></a>_chval</STRONG> (Thumb, 28 bytes, Stack size 0 bytes, _chval.o(.text))
 <BR><BR>[Called By]<UL><LI><a href="#[6b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_strtoul
@@ -768,7 +768,8 @@ Global Symbols
 </UL>
 <BR>[Calls]<UL><LI><a href="#[91]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_GetTick
 </UL>
-<BR>[Called By]<UL><LI><a href="#[dc]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SELECT
+<BR>[Called By]<UL><LI><a href="#[125]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;initDevice
+<LI><a href="#[dc]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SELECT
 <LI><a href="#[80]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;DESELECT
 <LI><a href="#[c5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ILI9341_Reset
 <LI><a href="#[13b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;switchPowerCircuitBreaker
@@ -832,7 +833,7 @@ Global Symbols
 <BR>[Address Reference Count : 4]<UL><LI> main.o(.text.main)
 <LI> ili9341_gfx.o(.text.ILI9341_Reset)
 <LI> init.o(.text.outputInit)
-<LI> work.o(.text.switchPowerCircuitBreaker)
+<LI> powercircuitbreaker.o(.text.switchPowerCircuitBreaker)
 </UL>
 <P><STRONG><a name="[91]"></a>HAL_GetTick</STRONG> (Thumb, 12 bytes, Stack size 0 bytes, stm32f4xx_hal.o(.text.HAL_GetTick))
 <BR><BR>[Called By]<UL><LI><a href="#[9f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_RCC_OscConfig
@@ -962,24 +963,26 @@ Global Symbols
 </UL>
 <BR>[Called By]<UL><LI><a href="#[43]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
 <LI><a href="#[125]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;initDevice
-<LI><a href="#[137]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;setTime
 <LI><a href="#[138]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;setData
 <LI><a href="#[134]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;menuMain
-<LI><a href="#[12a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;updateInfoTO
+<LI><a href="#[13c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;powerAutomationControl
 <LI><a href="#[da]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;recLog
+<LI><a href="#[13d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;realToUnix
 <LI><a href="#[ec]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;checkInfoTO
+<LI><a href="#[137]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;setTime
 </UL>
 
 <P><STRONG><a name="[ed]"></a>HAL_RTC_GetTime</STRONG> (Thumb, 114 bytes, Stack size 8 bytes, stm32f4xx_hal_rtc.o(.text.HAL_RTC_GetTime))
 <BR><BR>[Stack]<UL><LI>Max Depth = 8<LI>Call Chain = HAL_RTC_GetTime
 </UL>
 <BR>[Called By]<UL><LI><a href="#[125]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;initDevice
-<LI><a href="#[137]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;setTime
 <LI><a href="#[138]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;setData
 <LI><a href="#[134]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;menuMain
-<LI><a href="#[12a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;updateInfoTO
+<LI><a href="#[13c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;powerAutomationControl
 <LI><a href="#[da]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;recLog
+<LI><a href="#[13d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;realToUnix
 <LI><a href="#[ec]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;checkInfoTO
+<LI><a href="#[137]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;setTime
 </UL>
 
 <P><STRONG><a name="[a3]"></a>HAL_RTC_Init</STRONG> (Thumb, 152 bytes, Stack size 8 bytes, stm32f4xx_hal_rtc.o(.text.HAL_RTC_Init))
@@ -1183,9 +1186,9 @@ Global Symbols
 </UL>
 <BR>[Calls]<UL><LI><a href="#[4b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ILI9341_Draw_Pixel
 </UL>
-<BR>[Called By]<UL><LI><a href="#[139]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;switchAvrAutomatic
-<LI><a href="#[136]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;serviseTouch
+<BR>[Called By]<UL><LI><a href="#[136]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;serviseTouch
 <LI><a href="#[131]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;manualRelaySwitchMenu
+<LI><a href="#[139]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;switchAvrAutomatic
 </UL>
 <BR>[Address Reference Count : 1]<UL><LI> menu_main.o(.text.switchAvrAutomatic)
 </UL>
@@ -1194,15 +1197,15 @@ Global Symbols
 </UL>
 <BR>[Calls]<UL><LI><a href="#[54]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ILI9341_Draw_Rectangle
 </UL>
-<BR>[Called By]<UL><LI><a href="#[139]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;switchAvrAutomatic
-<LI><a href="#[137]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;setTime
-<LI><a href="#[138]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;setData
+<BR>[Called By]<UL><LI><a href="#[138]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;setData
 <LI><a href="#[133]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;menuGetWarnings
 <LI><a href="#[132]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;menuGetErrors
 <LI><a href="#[131]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;manualRelaySwitchMenu
 <LI><a href="#[124]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;get_v_menu
 <LI><a href="#[f5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;confirmClick
 <LI><a href="#[fc]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;notification
+<LI><a href="#[139]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;switchAvrAutomatic
+<LI><a href="#[137]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;setTime
 </UL>
 
 <P><STRONG><a name="[56]"></a>ILI9341_Draw_Hollow_Circle</STRONG> (Thumb, 248 bytes, Stack size 96 bytes, ili9341_gfx.o(.text.ILI9341_Draw_Hollow_Circle))
@@ -1219,8 +1222,8 @@ Global Symbols
 <LI><a href="#[4b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ILI9341_Draw_Pixel
 <LI><a href="#[c1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ILI9341_Draw_Horizontal_Line
 </UL>
-<BR>[Called By]<UL><LI><a href="#[137]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;setTime
-<LI><a href="#[138]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;setData
+<BR>[Called By]<UL><LI><a href="#[138]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;setData
+<LI><a href="#[137]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;setTime
 </UL>
 <BR>[Address Reference Count : 2]<UL><LI> settdatatime.o(.text.setTime)
 <LI> settdatatime.o(.text.setData)
@@ -1272,14 +1275,14 @@ Global Symbols
 <BR>[Calls]<UL><LI><a href="#[be]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ILI9341_Set_Address
 <LI><a href="#[bf]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ILI9341_Draw_Colour_Burst
 </UL>
-<BR>[Called By]<UL><LI><a href="#[137]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;setTime
-<LI><a href="#[138]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;setData
+<BR>[Called By]<UL><LI><a href="#[138]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;setData
 <LI><a href="#[136]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;serviseTouch
 <LI><a href="#[133]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;menuGetWarnings
 <LI><a href="#[132]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;menuGetErrors
 <LI><a href="#[131]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;manualRelaySwitchMenu
 <LI><a href="#[122]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;menuChangeState
 <LI><a href="#[129]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;initTFT
+<LI><a href="#[137]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;setTime
 </UL>
 
 <P><STRONG><a name="[c4]"></a>ILI9341_Init</STRONG> (Thumb, 392 bytes, Stack size 16 bytes, ili9341_gfx.o(.text.ILI9341_Init))
@@ -1342,8 +1345,7 @@ Global Symbols
 <LI><a href="#[be]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ILI9341_Set_Address
 <LI><a href="#[bd]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ILI9341_Draw_Char
 </UL>
-<BR>[Called By]<UL><LI><a href="#[137]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;setTime
-<LI><a href="#[138]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;setData
+<BR>[Called By]<UL><LI><a href="#[138]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;setData
 <LI><a href="#[136]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;serviseTouch
 <LI><a href="#[134]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;menuMain
 <LI><a href="#[133]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;menuGetWarnings
@@ -1352,6 +1354,7 @@ Global Symbols
 <LI><a href="#[f5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;confirmClick
 <LI><a href="#[c9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ILI9341_WriteStringLen
 <LI><a href="#[fc]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;notification
+<LI><a href="#[137]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;setTime
 </UL>
 <BR>[Address Reference Count : 8]<UL><LI> menu_main.o(.text.switchAvrAutomatic)
 <LI> menu_second.o(.text.manualRelaySwitchMenu)
@@ -1460,8 +1463,8 @@ Global Symbols
 <LI><a href="#[d0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;f_getfree
 <LI><a href="#[d6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;f_close
 <LI><a href="#[74]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_ui2d
-<LI><a href="#[75]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_d2uiz
 <LI><a href="#[73]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_dmul
+<LI><a href="#[75]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_d2uiz
 <LI><a href="#[da]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;recLog
 <LI><a href="#[d4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;strlen
 <LI><a href="#[8b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_memclr4
@@ -1606,7 +1609,7 @@ Global Symbols
 </UL>
 <BR>[Address Reference Count : 1]<UL><LI> startup_stm32f411xe.o(RESET)
 </UL>
-<P><STRONG><a name="[143]"></a>checkErr</STRONG> (Thumb, 2 bytes, Stack size 0 bytes, warn_err.o(.text.checkErr))
+<P><STRONG><a name="[146]"></a>checkErr</STRONG> (Thumb, 2 bytes, Stack size 0 bytes, warn_err.o(.text.checkErr))
 <BR><BR>[Called By]<UL><LI><a href="#[130]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;work
 </UL>
 
@@ -1640,26 +1643,27 @@ Global Symbols
 <LI><a href="#[52]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ILI9341_WriteString
 <LI><a href="#[c0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ILI9341_Draw_Filled_Rectangle_Coord
 <LI><a href="#[f6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;lineAlignment
-<LI><a href="#[51]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__2snprintf
 <LI><a href="#[8b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_memclr4
+<LI><a href="#[51]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__2snprintf
 </UL>
-<BR>[Called By]<UL><LI><a href="#[139]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;switchAvrAutomatic
-<LI><a href="#[137]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;setTime
-<LI><a href="#[138]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;setData
+<BR>[Called By]<UL><LI><a href="#[138]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;setData
 <LI><a href="#[136]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;serviseTouch
 <LI><a href="#[13a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;secondMain
 <LI><a href="#[134]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;menuMain
 <LI><a href="#[133]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;menuGetWarnings
 <LI><a href="#[132]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;menuGetErrors
 <LI><a href="#[131]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;manualRelaySwitchMenu
+<LI><a href="#[139]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;switchAvrAutomatic
+<LI><a href="#[137]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;setTime
 </UL>
 
-<P><STRONG><a name="[fb]"></a>dataCalcADC</STRONG> (Thumb, 372 bytes, Stack size 56 bytes, work.o(.text.dataCalcADC))
+<P><STRONG><a name="[fb]"></a>dataCalcADC</STRONG> (Thumb, 424 bytes, Stack size 56 bytes, work.o(.text.dataCalcADC))
 <BR><BR>[Stack]<UL><LI>Max Depth = 104<LI>Call Chain = dataCalcADC &rArr; HAL_ADC_Start_DMA &rArr; HAL_DMA_Start_IT &rArr; DMA_SetConfig
 </UL>
 <BR>[Calls]<UL><LI><a href="#[8e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_ADC_Start_DMA
 </UL>
 <BR>[Called By]<UL><LI><a href="#[130]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;work
+<LI><a href="#[125]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;initDevice
 </UL>
 
 <P><STRONG><a name="[f1]"></a>delWarn</STRONG> (Thumb, 184 bytes, Stack size 8 bytes, warn_err.o(.text.delWarn))
@@ -1717,14 +1721,18 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[13a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;secondMain
 </UL>
 
-<P><STRONG><a name="[50]"></a>exponentialRunningAverage</STRONG> (Thumb, 112 bytes, Stack size 40 bytes, work.o(.text.exponentialRunningAverage))
+<P><STRONG><a name="[147]"></a>engineWork</STRONG> (Thumb, 2 bytes, Stack size 0 bytes, engine.o(.text.engineWork))
+<BR><BR>[Called By]<UL><LI><a href="#[130]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;work
+</UL>
+
+<P><STRONG><a name="[50]"></a>exponentialRunningAverage</STRONG> (Thumb, 112 bytes, Stack size 40 bytes, recalcculating.o(.text.exponentialRunningAverage))
 <BR><BR>[Stack]<UL><LI>Max Depth = 128<LI>Call Chain = exponentialRunningAverage &rArr; __aeabi_dsub &rArr; __aeabi_dadd &rArr; _double_epilogue &rArr; _double_round
 </UL>
 <BR>[Calls]<UL><LI><a href="#[106]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_f2d
 <LI><a href="#[71]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_dsub
-<LI><a href="#[73]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_dmul
 <LI><a href="#[6d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_dadd
 <LI><a href="#[76]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_d2f
+<LI><a href="#[73]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_dmul
 </UL>
 <BR>[Address Reference Count : 1]<UL><LI> work.o(.text.dataCalcADC)
 </UL>
@@ -1735,7 +1743,7 @@ Global Symbols
 <LI><a href="#[108]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;validate
 <LI><a href="#[109]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;dec_lock
 </UL>
-<BR>[Called By]<UL><LI><a href="#[13e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;recFileSdCard
+<BR>[Called By]<UL><LI><a href="#[141]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;recFileSdCard
 <LI><a href="#[121]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;readFileSdCard
 <LI><a href="#[cd]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SD_Init
 </UL>
@@ -1748,7 +1756,7 @@ Global Symbols
 <LI><a href="#[f9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;get_fat
 <LI><a href="#[10a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;find_volume
 </UL>
-<BR>[Called By]<UL><LI><a href="#[13e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;recFileSdCard
+<BR>[Called By]<UL><LI><a href="#[141]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;recFileSdCard
 <LI><a href="#[121]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;readFileSdCard
 <LI><a href="#[cd]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SD_Init
 </UL>
@@ -1772,7 +1780,7 @@ Global Symbols
 <LI><a href="#[102]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;clust2sect
 <LI><a href="#[10b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;clmt_clust
 </UL>
-<BR>[Called By]<UL><LI><a href="#[13e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;recFileSdCard
+<BR>[Called By]<UL><LI><a href="#[141]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;recFileSdCard
 <LI><a href="#[cd]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SD_Init
 </UL>
 
@@ -1783,7 +1791,7 @@ Global Symbols
 <LI><a href="#[10a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;find_volume
 <LI><a href="#[10f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;clear_lock
 </UL>
-<BR>[Called By]<UL><LI><a href="#[13e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;recFileSdCard
+<BR>[Called By]<UL><LI><a href="#[141]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;recFileSdCard
 <LI><a href="#[121]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;readFileSdCard
 <LI><a href="#[cd]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SD_Init
 </UL>
@@ -1807,7 +1815,7 @@ Global Symbols
 <LI><a href="#[102]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;clust2sect
 <LI><a href="#[111]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;chk_lock
 </UL>
-<BR>[Called By]<UL><LI><a href="#[13e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;recFileSdCard
+<BR>[Called By]<UL><LI><a href="#[141]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;recFileSdCard
 <LI><a href="#[121]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;readFileSdCard
 <LI><a href="#[cd]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SD_Init
 </UL>
@@ -1862,7 +1870,7 @@ Global Symbols
 <LI><a href="#[102]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;clust2sect
 <LI><a href="#[10b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;clmt_clust
 </UL>
-<BR>[Called By]<UL><LI><a href="#[13e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;recFileSdCard
+<BR>[Called By]<UL><LI><a href="#[141]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;recFileSdCard
 <LI><a href="#[cd]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SD_Init
 <LI><a href="#[118]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;putc_flush
 <LI><a href="#[117]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;putc_bfd
@@ -1878,7 +1886,7 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[fd]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;dir_find
 </UL>
 
-<P><STRONG><a name="[120]"></a>getFillStructureStoryParameters</STRONG> (Thumb, 248 bytes, Stack size 32 bytes, init.o(.text.getFillStructureStoryParameters))
+<P><STRONG><a name="[120]"></a>getFillStructureStoryParameters</STRONG> (Thumb, 260 bytes, Stack size 32 bytes, init.o(.text.getFillStructureStoryParameters))
 <BR><BR>[Stack]<UL><LI>Max Depth = 472<LI>Call Chain = getFillStructureStoryParameters &rArr; readFileSdCard &rArr; setErr &rArr;  recLog (Cycle)
 </UL>
 <BR>[Calls]<UL><LI><a href="#[cf]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;setErr
@@ -1895,13 +1903,11 @@ Global Symbols
 <BR>[Calls]<UL><LI><a href="#[ac]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_SPI_Init
 <LI><a href="#[91]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_GetTick
 <LI><a href="#[aa]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_SPI_DeInit
-<LI><a href="#[123]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__NVIC_SystemReset
 <LI><a href="#[c7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ILI9341_TouchGetCoordinates
 <LI><a href="#[122]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;menuChangeState
+<LI><a href="#[123]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__NVIC_SystemReset
 </UL>
-<BR>[Called By]<UL><LI><a href="#[139]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;switchAvrAutomatic
-<LI><a href="#[137]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;setTime
-<LI><a href="#[138]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;setData
+<BR>[Called By]<UL><LI><a href="#[138]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;setData
 <LI><a href="#[136]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;serviseTouch
 <LI><a href="#[13a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;secondMain
 <LI><a href="#[134]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;menuMain
@@ -1911,6 +1917,8 @@ Global Symbols
 <LI><a href="#[124]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;get_v_menu
 <LI><a href="#[f5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;confirmClick
 <LI><a href="#[fc]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;notification
+<LI><a href="#[139]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;switchAvrAutomatic
+<LI><a href="#[137]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;setTime
 </UL>
 
 <P><STRONG><a name="[112]"></a>get_fattime</STRONG> (Thumb, 4 bytes, Stack size 0 bytes, fatfs.o(.text.get_fattime))
@@ -1923,19 +1931,20 @@ Global Symbols
 </UL>
 <BR>[Calls]<UL><LI><a href="#[91]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_GetTick
 <LI><a href="#[f7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;getTouch
-<LI><a href="#[c0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ILI9341_Draw_Filled_Rectangle_Coord
 <LI><a href="#[106]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_f2d
+<LI><a href="#[c0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ILI9341_Draw_Filled_Rectangle_Coord
 <LI><a href="#[122]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;menuChangeState
 </UL>
 <BR>[Called By]<UL><LI><a href="#[135]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;menuSwich
 </UL>
 
-<P><STRONG><a name="[125]"></a>initDevice</STRONG> (Thumb, 212 bytes, Stack size 24 bytes, init.o(.text.initDevice))
-<BR><BR>[Stack]<UL><LI>Max Depth = 632<LI>Call Chain = initDevice &rArr; updateInfoTO &rArr; setFillStructureStoryParameters &rArr; recLog &rArr; recFileSdCard &rArr; setErr &rArr;  recLog (Cycle)
+<P><STRONG><a name="[125]"></a>initDevice</STRONG> (Thumb, 280 bytes, Stack size 32 bytes, init.o(.text.initDevice))
+<BR><BR>[Stack]<UL><LI>Max Depth = 608<LI>Call Chain = initDevice &rArr; checkInfoTO &rArr; setWarn &rArr; recLog &rArr; recFileSdCard &rArr; setErr &rArr;  recLog (Cycle)
 </UL>
 <BR>[Calls]<UL><LI><a href="#[ee]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_RTC_GetDate
 <LI><a href="#[8e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_ADC_Start_DMA
 <LI><a href="#[ed]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_RTC_GetTime
+<LI><a href="#[81]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_Delay
 <LI><a href="#[12a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;updateInfoTO
 <LI><a href="#[127]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;resetWarning
 <LI><a href="#[126]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;resetErrors
@@ -1944,6 +1953,7 @@ Global Symbols
 <LI><a href="#[122]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;menuChangeState
 <LI><a href="#[129]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;initTFT
 <LI><a href="#[120]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;getFillStructureStoryParameters
+<LI><a href="#[fb]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;dataCalcADC
 <LI><a href="#[ec]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;checkInfoTO
 <LI><a href="#[cd]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SD_Init
 <LI><a href="#[8b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_memclr4
@@ -1981,7 +1991,7 @@ Global Symbols
 </UL>
 
 <P><STRONG><a name="[43]"></a>main</STRONG> (Thumb, 1108 bytes, Stack size 120 bytes, main.o(.text.main))
-<BR><BR>[Stack]<UL><LI>Max Depth = 776<LI>Call Chain = main &rArr; work &rArr; menuSwich &rArr; secondMain &rArr; updateInfoTO &rArr; setFillStructureStoryParameters &rArr; recLog &rArr; recFileSdCard &rArr; setErr &rArr;  recLog (Cycle)
+<BR><BR>[Stack]<UL><LI>Max Depth = 776<LI>Call Chain = main &rArr; work &rArr; menuSwich &rArr; secondMain &rArr; powerOutageGet &rArr; notification &rArr; ILI9341_WriteStringLen &rArr; ILI9341_WriteString &rArr; ILI9341_Draw_Char &rArr; ILI9341_Set_Address
 </UL>
 <BR>[Calls]<UL><LI><a href="#[130]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;work
 <LI><a href="#[125]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;initDevice
@@ -2037,8 +2047,6 @@ Global Symbols
 </UL>
 <BR>[Called By]<UL><LI><a href="#[cf]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;setErr
 <LI><a href="#[125]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;initDevice
-<LI><a href="#[139]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;switchAvrAutomatic
-<LI><a href="#[137]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;setTime
 <LI><a href="#[138]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;setData
 <LI><a href="#[136]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;serviseTouch
 <LI><a href="#[13a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;secondMain
@@ -2050,6 +2058,8 @@ Global Symbols
 <LI><a href="#[f7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;getTouch
 <LI><a href="#[fc]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;notification
 <LI><a href="#[ef]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;setWarn
+<LI><a href="#[139]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;switchAvrAutomatic
+<LI><a href="#[137]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;setTime
 </UL>
 
 <P><STRONG><a name="[132]"></a>menuGetErrors</STRONG> (Thumb, 1248 bytes, Stack size 48 bytes, menu_warn_err.o(.text.menuGetErrors))
@@ -2094,9 +2104,9 @@ Global Symbols
 <LI><a href="#[ed]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_RTC_GetTime
 <LI><a href="#[f7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;getTouch
 <LI><a href="#[f5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;confirmClick
+<LI><a href="#[106]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_f2d
 <LI><a href="#[f1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;delWarn
 <LI><a href="#[52]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ILI9341_WriteString
-<LI><a href="#[106]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_f2d
 <LI><a href="#[ef]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;setWarn
 <LI><a href="#[da]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;recLog
 <LI><a href="#[122]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;menuChangeState
@@ -2106,11 +2116,9 @@ Global Symbols
 </UL>
 
 <P><STRONG><a name="[135]"></a>menuSwich</STRONG> (Thumb, 92 bytes, Stack size 0 bytes, menu_main.o(.text.menuSwich))
-<BR><BR>[Stack]<UL><LI>Max Depth = 648<LI>Call Chain = menuSwich &rArr; secondMain &rArr; updateInfoTO &rArr; setFillStructureStoryParameters &rArr; recLog &rArr; recFileSdCard &rArr; setErr &rArr;  recLog (Cycle)
+<BR><BR>[Stack]<UL><LI>Max Depth = 648<LI>Call Chain = menuSwich &rArr; secondMain &rArr; powerOutageGet &rArr; notification &rArr; ILI9341_WriteStringLen &rArr; ILI9341_WriteString &rArr; ILI9341_Draw_Char &rArr; ILI9341_Set_Address
 </UL>
-<BR>[Calls]<UL><LI><a href="#[139]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;switchAvrAutomatic
-<LI><a href="#[137]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;setTime
-<LI><a href="#[138]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;setData
+<BR>[Calls]<UL><LI><a href="#[138]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;setData
 <LI><a href="#[136]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;serviseTouch
 <LI><a href="#[13a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;secondMain
 <LI><a href="#[134]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;menuMain
@@ -2119,6 +2127,8 @@ Global Symbols
 <LI><a href="#[131]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;manualRelaySwitchMenu
 <LI><a href="#[124]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;get_v_menu
 <LI><a href="#[fc]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;notification
+<LI><a href="#[139]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;switchAvrAutomatic
+<LI><a href="#[137]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;setTime
 </UL>
 <BR>[Called By]<UL><LI><a href="#[130]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;work
 </UL>
@@ -2133,8 +2143,8 @@ Global Symbols
 <LI><a href="#[c0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ILI9341_Draw_Filled_Rectangle_Coord
 <LI><a href="#[122]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;menuChangeState
 <LI><a href="#[f6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;lineAlignment
-<LI><a href="#[51]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__2snprintf
 <LI><a href="#[8b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_memclr4
+<LI><a href="#[51]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__2snprintf
 </UL>
 <BR>[Called By]<UL><LI><a href="#[130]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;work
 <LI><a href="#[cf]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;setErr
@@ -2142,9 +2152,9 @@ Global Symbols
 <LI><a href="#[f1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;delWarn
 <LI><a href="#[135]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;menuSwich
 <LI><a href="#[ef]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;setWarn
-<LI><a href="#[141]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;startEngineGet
-<LI><a href="#[140]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;serviseWorkGet
-<LI><a href="#[13c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;powerOutageGet
+<LI><a href="#[144]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;startEngineGet
+<LI><a href="#[143]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;serviseWorkGet
+<LI><a href="#[13f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;powerOutageGet
 <LI><a href="#[105]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;engineHoursGet
 </UL>
 
@@ -2156,18 +2166,31 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[125]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;initDevice
 </UL>
 
-<P><STRONG><a name="[13c]"></a>powerOutageGet</STRONG> (Thumb, 128 bytes, Stack size 216 bytes, menu_second.o(.text.powerOutageGet))
+<P><STRONG><a name="[13c]"></a>powerAutomationControl</STRONG> (Thumb, 380 bytes, Stack size 32 bytes, powercircuitbreaker.o(.text.powerAutomationControl))
+<BR><BR>[Stack]<UL><LI>Max Depth = 544<LI>Call Chain = powerAutomationControl &rArr; switchPowerCircuitBreaker &rArr; recLog &rArr; recFileSdCard &rArr; setErr &rArr;  recLog (Cycle)
+</UL>
+<BR>[Calls]<UL><LI><a href="#[ee]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_RTC_GetDate
+<LI><a href="#[ed]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_RTC_GetTime
+<LI><a href="#[13e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;startStopEngine
+<LI><a href="#[13b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;switchPowerCircuitBreaker
+<LI><a href="#[da]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;recLog
+<LI><a href="#[13d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;realToUnix
+</UL>
+<BR>[Called By]<UL><LI><a href="#[130]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;work
+</UL>
+
+<P><STRONG><a name="[13f]"></a>powerOutageGet</STRONG> (Thumb, 128 bytes, Stack size 216 bytes, menu_second.o(.text.powerOutageGet))
 <BR><BR>[Stack]<UL><LI>Max Depth = 608<LI>Call Chain = powerOutageGet &rArr; notification &rArr; ILI9341_WriteStringLen &rArr; ILI9341_WriteString &rArr; ILI9341_Draw_Char &rArr; ILI9341_Set_Address
 </UL>
 <BR>[Calls]<UL><LI><a href="#[fc]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;notification
-<LI><a href="#[51]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__2snprintf
 <LI><a href="#[8b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_memclr4
+<LI><a href="#[51]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__2snprintf
 </UL>
 <BR>[Called By]<UL><LI><a href="#[13a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;secondMain
 </UL>
 
 <P><STRONG><a name="[46]"></a>prvGetRegistersFromStack</STRONG> (Thumb, 60 bytes, Stack size 0 bytes, main.o(.text.prvGetRegistersFromStack))
-<BR><BR>[Calls]<UL><LI><a href="#[13d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__NVIC_SystemReset
+<BR><BR>[Calls]<UL><LI><a href="#[140]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__NVIC_SystemReset
 </UL>
 <BR>[Address Reference Count : 1]<UL><LI> main.o(.text.Error_Handler)
 </UL>
@@ -2181,13 +2204,25 @@ Global Symbols
 <LI><a href="#[d0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;f_getfree
 <LI><a href="#[d6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;f_close
 <LI><a href="#[74]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_ui2d
-<LI><a href="#[75]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_d2uiz
 <LI><a href="#[73]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_dmul
+<LI><a href="#[75]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_d2uiz
 </UL>
 <BR>[Called By]<UL><LI><a href="#[120]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;getFillStructureStoryParameters
 </UL>
 
-<P><STRONG><a name="[13e]"></a>recFileSdCard</STRONG> (Thumb, 324 bytes, Stack size 48 bytes, fatfs_sd.o(.text.recFileSdCard))
+<P><STRONG><a name="[13d]"></a>realToUnix</STRONG> (Thumb, 100 bytes, Stack size 64 bytes, recalcculating.o(.text.realToUnix))
+<BR><BR>[Stack]<UL><LI>Max Depth = 88<LI>Call Chain = realToUnix &rArr; mktime &rArr; _localtime
+</UL>
+<BR>[Calls]<UL><LI><a href="#[ee]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_RTC_GetDate
+<LI><a href="#[ed]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_RTC_GetTime
+<LI><a href="#[8b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_memclr4
+<LI><a href="#[64]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;mktime
+</UL>
+<BR>[Called By]<UL><LI><a href="#[13c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;powerAutomationControl
+<LI><a href="#[12a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;updateInfoTO
+</UL>
+
+<P><STRONG><a name="[141]"></a>recFileSdCard</STRONG> (Thumb, 324 bytes, Stack size 48 bytes, fatfs_sd.o(.text.recFileSdCard))
 <BR><BR>[Stack]<UL><LI>Max Depth = 448<LI>Call Chain = recFileSdCard &rArr; setErr &rArr;  recLog (Cycle)
 </UL>
 <BR>[Calls]<UL><LI><a href="#[cf]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;setErr
@@ -2198,13 +2233,13 @@ Global Symbols
 <LI><a href="#[d0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;f_getfree
 <LI><a href="#[d6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;f_close
 <LI><a href="#[74]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_ui2d
-<LI><a href="#[75]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_d2uiz
 <LI><a href="#[73]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_dmul
-<LI><a href="#[51]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__2snprintf
+<LI><a href="#[75]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_d2uiz
 <LI><a href="#[d4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;strlen
 <LI><a href="#[8b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_memclr4
+<LI><a href="#[51]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__2snprintf
 </UL>
-<BR>[Called By]<UL><LI><a href="#[13f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;setFillStructureStoryParameters
+<BR>[Called By]<UL><LI><a href="#[142]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;setFillStructureStoryParameters
 <LI><a href="#[da]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;recLog
 </UL>
 
@@ -2214,13 +2249,11 @@ Global Symbols
 <BR>[Calls]<UL><LI><a href="#[cf]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;setErr
 <LI><a href="#[ee]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_RTC_GetDate
 <LI><a href="#[ed]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_RTC_GetTime
-<LI><a href="#[13e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;recFileSdCard
+<LI><a href="#[141]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;recFileSdCard
 <LI><a href="#[51]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__2snprintf
 </UL>
 <BR>[Called By]<UL><LI><a href="#[cf]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;setErr
 <LI><a href="#[125]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;initDevice
-<LI><a href="#[139]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;switchAvrAutomatic
-<LI><a href="#[137]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;setTime
 <LI><a href="#[138]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;setData
 <LI><a href="#[13a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;secondMain
 <LI><a href="#[134]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;menuMain
@@ -2228,10 +2261,13 @@ Global Symbols
 <LI><a href="#[132]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;menuGetErrors
 <LI><a href="#[131]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;manualRelaySwitchMenu
 <LI><a href="#[f1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;delWarn
+<LI><a href="#[13c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;powerAutomationControl
 <LI><a href="#[13b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;switchPowerCircuitBreaker
 <LI><a href="#[ef]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;setWarn
-<LI><a href="#[13f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;setFillStructureStoryParameters
+<LI><a href="#[142]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;setFillStructureStoryParameters
 <LI><a href="#[cd]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SD_Init
+<LI><a href="#[139]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;switchAvrAutomatic
+<LI><a href="#[137]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;setTime
 </UL>
 
 <P><STRONG><a name="[126]"></a>resetErrors</STRONG> (Thumb, 136 bytes, Stack size 32 bytes, warn_err.o(.text.resetErrors))
@@ -2250,7 +2286,7 @@ Global Symbols
 </UL>
 
 <P><STRONG><a name="[13a]"></a>secondMain</STRONG> (Thumb, 768 bytes, Stack size 40 bytes, menu_second.o(.text.secondMain))
-<BR><BR>[Stack]<UL><LI>Max Depth = 648<LI>Call Chain = secondMain &rArr; updateInfoTO &rArr; setFillStructureStoryParameters &rArr; recLog &rArr; recFileSdCard &rArr; setErr &rArr;  recLog (Cycle)
+<BR><BR>[Stack]<UL><LI>Max Depth = 648<LI>Call Chain = secondMain &rArr; powerOutageGet &rArr; notification &rArr; ILI9341_WriteStringLen &rArr; ILI9341_WriteString &rArr; ILI9341_Draw_Char &rArr; ILI9341_Set_Address
 </UL>
 <BR>[Calls]<UL><LI><a href="#[91]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_GetTick
 <LI><a href="#[f7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;getTouch
@@ -2258,12 +2294,12 @@ Global Symbols
 <LI><a href="#[f1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;delWarn
 <LI><a href="#[fc]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;notification
 <LI><a href="#[12a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;updateInfoTO
-<LI><a href="#[13f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;setFillStructureStoryParameters
+<LI><a href="#[142]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;setFillStructureStoryParameters
 <LI><a href="#[da]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;recLog
 <LI><a href="#[122]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;menuChangeState
-<LI><a href="#[141]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;startEngineGet
-<LI><a href="#[140]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;serviseWorkGet
-<LI><a href="#[13c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;powerOutageGet
+<LI><a href="#[144]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;startEngineGet
+<LI><a href="#[143]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;serviseWorkGet
+<LI><a href="#[13f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;powerOutageGet
 <LI><a href="#[105]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;engineHoursGet
 </UL>
 <BR>[Called By]<UL><LI><a href="#[135]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;menuSwich
@@ -2283,7 +2319,7 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[135]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;menuSwich
 </UL>
 
-<P><STRONG><a name="[140]"></a>serviseWorkGet</STRONG> (Thumb, 100 bytes, Stack size 48 bytes, menu_second.o(.text.serviseWorkGet))
+<P><STRONG><a name="[143]"></a>serviseWorkGet</STRONG> (Thumb, 100 bytes, Stack size 48 bytes, menu_second.o(.text.serviseWorkGet))
 <BR><BR>[Stack]<UL><LI>Max Depth = 440<LI>Call Chain = serviseWorkGet &rArr; notification &rArr; ILI9341_WriteStringLen &rArr; ILI9341_WriteString &rArr; ILI9341_Draw_Char &rArr; ILI9341_Set_Address
 </UL>
 <BR>[Calls]<UL><LI><a href="#[fc]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;notification
@@ -2322,24 +2358,24 @@ Global Symbols
 <LI><a href="#[da]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;recLog
 <LI><a href="#[122]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;menuChangeState
 </UL>
-<BR>[Called By]<UL><LI><a href="#[13f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;setFillStructureStoryParameters
+<BR>[Called By]<UL><LI><a href="#[142]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;setFillStructureStoryParameters
 <LI><a href="#[da]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;recLog
-<LI><a href="#[13e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;recFileSdCard
+<LI><a href="#[141]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;recFileSdCard
 <LI><a href="#[121]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;readFileSdCard
 <LI><a href="#[120]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;getFillStructureStoryParameters
 <LI><a href="#[cd]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SD_Init
 </UL>
 
-<P><STRONG><a name="[13f]"></a>setFillStructureStoryParameters</STRONG> (Thumb, 1912 bytes, Stack size 40 bytes, init.o(.text.setFillStructureStoryParameters))
+<P><STRONG><a name="[142]"></a>setFillStructureStoryParameters</STRONG> (Thumb, 1968 bytes, Stack size 40 bytes, init.o(.text.setFillStructureStoryParameters))
 <BR><BR>[Stack]<UL><LI>Max Depth = 536<LI>Call Chain = setFillStructureStoryParameters &rArr; recLog &rArr; recFileSdCard &rArr; setErr &rArr;  recLog (Cycle)
 </UL>
 <BR>[Calls]<UL><LI><a href="#[cf]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;setErr
 <LI><a href="#[da]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;recLog
-<LI><a href="#[13e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;recFileSdCard
-<LI><a href="#[142]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__2sprintf
+<LI><a href="#[141]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;recFileSdCard
 <LI><a href="#[d4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;strlen
 <LI><a href="#[8b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_memclr4
 <LI><a href="#[d3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_memcpy
+<LI><a href="#[145]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__2sprintf
 </UL>
 <BR>[Called By]<UL><LI><a href="#[130]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;work
 <LI><a href="#[13a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;secondMain
@@ -2372,20 +2408,24 @@ Global Symbols
 <LI><a href="#[da]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;recLog
 <LI><a href="#[122]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;menuChangeState
 </UL>
-<BR>[Called By]<UL><LI><a href="#[139]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;switchAvrAutomatic
-<LI><a href="#[134]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;menuMain
+<BR>[Called By]<UL><LI><a href="#[134]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;menuMain
 <LI><a href="#[131]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;manualRelaySwitchMenu
 <LI><a href="#[f0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;checkWarn
 <LI><a href="#[ec]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;checkInfoTO
+<LI><a href="#[139]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;switchAvrAutomatic
 </UL>
 
-<P><STRONG><a name="[141]"></a>startEngineGet</STRONG> (Thumb, 136 bytes, Stack size 24 bytes, menu_second.o(.text.startEngineGet))
+<P><STRONG><a name="[144]"></a>startEngineGet</STRONG> (Thumb, 136 bytes, Stack size 24 bytes, menu_second.o(.text.startEngineGet))
 <BR><BR>[Stack]<UL><LI>Max Depth = 416<LI>Call Chain = startEngineGet &rArr; notification &rArr; ILI9341_WriteStringLen &rArr; ILI9341_WriteString &rArr; ILI9341_Draw_Char &rArr; ILI9341_Set_Address
 </UL>
 <BR>[Calls]<UL><LI><a href="#[fc]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;notification
 <LI><a href="#[51]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__2snprintf
 </UL>
 <BR>[Called By]<UL><LI><a href="#[13a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;secondMain
+</UL>
+
+<P><STRONG><a name="[13e]"></a>startStopEngine</STRONG> (Thumb, 4 bytes, Stack size 0 bytes, engine.o(.text.startStopEngine))
+<BR><BR>[Called By]<UL><LI><a href="#[13c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;powerAutomationControl
 </UL>
 
 <P><STRONG><a name="[139]"></a>switchAvrAutomatic</STRONG> (Thumb, 996 bytes, Stack size 48 bytes, menu_main.o(.text.switchAvrAutomatic))
@@ -2403,55 +2443,54 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[135]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;menuSwich
 </UL>
 
-<P><STRONG><a name="[13b]"></a>switchPowerCircuitBreaker</STRONG> (Thumb, 176 bytes, Stack size 16 bytes, work.o(.text.switchPowerCircuitBreaker))
+<P><STRONG><a name="[13b]"></a>switchPowerCircuitBreaker</STRONG> (Thumb, 176 bytes, Stack size 16 bytes, powercircuitbreaker.o(.text.switchPowerCircuitBreaker))
 <BR><BR>[Stack]<UL><LI>Max Depth = 512<LI>Call Chain = switchPowerCircuitBreaker &rArr; recLog &rArr; recFileSdCard &rArr; setErr &rArr;  recLog (Cycle)
 </UL>
 <BR>[Calls]<UL><LI><a href="#[81]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_Delay
 <LI><a href="#[da]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;recLog
 </UL>
-<BR>[Called By]<UL><LI><a href="#[139]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;switchAvrAutomatic
+<BR>[Called By]<UL><LI><a href="#[13c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;powerAutomationControl
 <LI><a href="#[128]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;outputInit
+<LI><a href="#[139]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;switchAvrAutomatic
 </UL>
 
-<P><STRONG><a name="[12a]"></a>updateInfoTO</STRONG> (Thumb, 188 bytes, Stack size 72 bytes, init.o(.text.updateInfoTO))
-<BR><BR>[Stack]<UL><LI>Max Depth = 608<LI>Call Chain = updateInfoTO &rArr; setFillStructureStoryParameters &rArr; recLog &rArr; recFileSdCard &rArr; setErr &rArr;  recLog (Cycle)
+<P><STRONG><a name="[12a]"></a>updateInfoTO</STRONG> (Thumb, 92 bytes, Stack size 16 bytes, init.o(.text.updateInfoTO))
+<BR><BR>[Stack]<UL><LI>Max Depth = 552<LI>Call Chain = updateInfoTO &rArr; setFillStructureStoryParameters &rArr; recLog &rArr; recFileSdCard &rArr; setErr &rArr;  recLog (Cycle)
 </UL>
-<BR>[Calls]<UL><LI><a href="#[ee]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_RTC_GetDate
-<LI><a href="#[ed]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_RTC_GetTime
-<LI><a href="#[13f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;setFillStructureStoryParameters
-<LI><a href="#[8b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_memclr4
-<LI><a href="#[64]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;mktime
+<BR>[Calls]<UL><LI><a href="#[142]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;setFillStructureStoryParameters
+<LI><a href="#[13d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;realToUnix
 <LI><a href="#[78]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;localtime
 </UL>
 <BR>[Called By]<UL><LI><a href="#[125]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;initDevice
 <LI><a href="#[13a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;secondMain
 </UL>
 
-<P><STRONG><a name="[130]"></a>work</STRONG> (Thumb, 108 bytes, Stack size 8 bytes, work.o(.text.work))
-<BR><BR>[Stack]<UL><LI>Max Depth = 656<LI>Call Chain = work &rArr; menuSwich &rArr; secondMain &rArr; updateInfoTO &rArr; setFillStructureStoryParameters &rArr; recLog &rArr; recFileSdCard &rArr; setErr &rArr;  recLog (Cycle)
+<P><STRONG><a name="[130]"></a>work</STRONG> (Thumb, 116 bytes, Stack size 8 bytes, work.o(.text.work))
+<BR><BR>[Stack]<UL><LI>Max Depth = 656<LI>Call Chain = work &rArr; menuSwich &rArr; secondMain &rArr; powerOutageGet &rArr; notification &rArr; ILI9341_WriteStringLen &rArr; ILI9341_WriteString &rArr; ILI9341_Draw_Char &rArr; ILI9341_Set_Address
 </UL>
-<BR>[Calls]<UL><LI><a href="#[fc]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;notification
+<BR>[Calls]<UL><LI><a href="#[13c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;powerAutomationControl
+<LI><a href="#[fc]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;notification
 <LI><a href="#[135]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;menuSwich
-<LI><a href="#[fb]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;dataCalcADC
+<LI><a href="#[147]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;engineWork
 <LI><a href="#[f0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;checkWarn
-<LI><a href="#[143]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;checkErr
-<LI><a href="#[13f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;setFillStructureStoryParameters
+<LI><a href="#[146]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;checkErr
+<LI><a href="#[142]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;setFillStructureStoryParameters
+<LI><a href="#[fb]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;dataCalcADC
 <LI><a href="#[ec]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;checkInfoTO
 </UL>
 <BR>[Called By]<UL><LI><a href="#[43]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
 </UL>
 
-<P><STRONG><a name="[144]"></a>__0snprintf</STRONG> (Thumb, 44 bytes, Stack size 32 bytes, printfa.o(i.__0snprintf), UNUSED)
-<BR><BR>[Calls]<UL><LI><a href="#[145]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_printf_core
+<P><STRONG><a name="[148]"></a>__0snprintf</STRONG> (Thumb, 44 bytes, Stack size 32 bytes, printfa.o(i.__0snprintf), UNUSED)
+<BR><BR>[Calls]<UL><LI><a href="#[149]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_printf_core
 </UL>
 
-<P><STRONG><a name="[15e]"></a>__1snprintf</STRONG> (Thumb, 0 bytes, Stack size 32 bytes, printfa.o(i.__0snprintf), UNUSED)
+<P><STRONG><a name="[162]"></a>__1snprintf</STRONG> (Thumb, 0 bytes, Stack size 32 bytes, printfa.o(i.__0snprintf), UNUSED)
 
 <P><STRONG><a name="[51]"></a>__2snprintf</STRONG> (Thumb, 0 bytes, Stack size 32 bytes, printfa.o(i.__0snprintf))
 <BR><BR>[Stack]<UL><LI>Max Depth = 32<LI>Call Chain = __2snprintf
 </UL>
-<BR>[Called By]<UL><LI><a href="#[137]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;setTime
-<LI><a href="#[138]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;setData
+<BR>[Called By]<UL><LI><a href="#[138]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;setData
 <LI><a href="#[136]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;serviseTouch
 <LI><a href="#[134]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;menuMain
 <LI><a href="#[133]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;menuGetWarnings
@@ -2460,11 +2499,12 @@ Global Symbols
 <LI><a href="#[f5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;confirmClick
 <LI><a href="#[fc]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;notification
 <LI><a href="#[da]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;recLog
-<LI><a href="#[13e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;recFileSdCard
-<LI><a href="#[141]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;startEngineGet
-<LI><a href="#[140]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;serviseWorkGet
-<LI><a href="#[13c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;powerOutageGet
+<LI><a href="#[141]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;recFileSdCard
+<LI><a href="#[144]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;startEngineGet
+<LI><a href="#[143]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;serviseWorkGet
+<LI><a href="#[13f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;powerOutageGet
 <LI><a href="#[105]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;engineHoursGet
+<LI><a href="#[137]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;setTime
 </UL>
 <BR>[Address Reference Count : 9]<UL><LI> menu_main.o(.text.menuMain)
 <LI> menu_main.o(.text.switchAvrAutomatic)
@@ -2476,44 +2516,44 @@ Global Symbols
 <LI> menu_warn_err.o(.text.menuGetErrors)
 <LI> menu_warn_err.o(.text.menuGetWarnings)
 </UL>
-<P><STRONG><a name="[15f]"></a>__c89snprintf</STRONG> (Thumb, 0 bytes, Stack size 32 bytes, printfa.o(i.__0snprintf), UNUSED)
+<P><STRONG><a name="[163]"></a>__c89snprintf</STRONG> (Thumb, 0 bytes, Stack size 32 bytes, printfa.o(i.__0snprintf), UNUSED)
 
-<P><STRONG><a name="[160]"></a>snprintf</STRONG> (Thumb, 0 bytes, Stack size 32 bytes, printfa.o(i.__0snprintf), UNUSED)
+<P><STRONG><a name="[164]"></a>snprintf</STRONG> (Thumb, 0 bytes, Stack size 32 bytes, printfa.o(i.__0snprintf), UNUSED)
 
-<P><STRONG><a name="[146]"></a>__0sprintf</STRONG> (Thumb, 34 bytes, Stack size 24 bytes, printfa.o(i.__0sprintf), UNUSED)
+<P><STRONG><a name="[14a]"></a>__0sprintf</STRONG> (Thumb, 34 bytes, Stack size 24 bytes, printfa.o(i.__0sprintf), UNUSED)
 <BR><BR>[Calls]<UL><LI><a href="#[59]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_sputc
-<LI><a href="#[145]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_printf_core
+<LI><a href="#[149]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_printf_core
 </UL>
 
-<P><STRONG><a name="[161]"></a>__1sprintf</STRONG> (Thumb, 0 bytes, Stack size 24 bytes, printfa.o(i.__0sprintf), UNUSED)
+<P><STRONG><a name="[165]"></a>__1sprintf</STRONG> (Thumb, 0 bytes, Stack size 24 bytes, printfa.o(i.__0sprintf), UNUSED)
 
-<P><STRONG><a name="[142]"></a>__2sprintf</STRONG> (Thumb, 0 bytes, Stack size 24 bytes, printfa.o(i.__0sprintf))
+<P><STRONG><a name="[145]"></a>__2sprintf</STRONG> (Thumb, 0 bytes, Stack size 24 bytes, printfa.o(i.__0sprintf))
 <BR><BR>[Stack]<UL><LI>Max Depth = 24<LI>Call Chain = __2sprintf
 </UL>
-<BR>[Called By]<UL><LI><a href="#[13f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;setFillStructureStoryParameters
+<BR>[Called By]<UL><LI><a href="#[142]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;setFillStructureStoryParameters
 </UL>
 
-<P><STRONG><a name="[162]"></a>__c89sprintf</STRONG> (Thumb, 0 bytes, Stack size 24 bytes, printfa.o(i.__0sprintf), UNUSED)
+<P><STRONG><a name="[166]"></a>__c89sprintf</STRONG> (Thumb, 0 bytes, Stack size 24 bytes, printfa.o(i.__0sprintf), UNUSED)
 
-<P><STRONG><a name="[163]"></a>sprintf</STRONG> (Thumb, 0 bytes, Stack size 24 bytes, printfa.o(i.__0sprintf), UNUSED)
+<P><STRONG><a name="[167]"></a>sprintf</STRONG> (Thumb, 0 bytes, Stack size 24 bytes, printfa.o(i.__0sprintf), UNUSED)
 
 <P><STRONG><a name="[6c]"></a>__aeabi_errno_addr</STRONG> (Thumb, 4 bytes, Stack size 0 bytes, errno.o(i.__aeabi_errno_addr))
 <BR><BR>[Called By]<UL><LI><a href="#[6b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_strtoul
 <LI><a href="#[69]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;strtol
 </UL>
 
-<P><STRONG><a name="[164]"></a>__rt_errno_addr</STRONG> (Thumb, 0 bytes, Stack size 0 bytes, errno.o(i.__aeabi_errno_addr), UNUSED)
+<P><STRONG><a name="[168]"></a>__rt_errno_addr</STRONG> (Thumb, 0 bytes, Stack size 0 bytes, errno.o(i.__aeabi_errno_addr), UNUSED)
 
-<P><STRONG><a name="[165]"></a>__scatterload_copy</STRONG> (Thumb, 14 bytes, Stack size unknown bytes, handlers.o(i.__scatterload_copy), UNUSED)
+<P><STRONG><a name="[169]"></a>__scatterload_copy</STRONG> (Thumb, 14 bytes, Stack size unknown bytes, handlers.o(i.__scatterload_copy), UNUSED)
 
-<P><STRONG><a name="[166]"></a>__scatterload_null</STRONG> (Thumb, 2 bytes, Stack size unknown bytes, handlers.o(i.__scatterload_null), UNUSED)
+<P><STRONG><a name="[16a]"></a>__scatterload_null</STRONG> (Thumb, 2 bytes, Stack size unknown bytes, handlers.o(i.__scatterload_null), UNUSED)
 
-<P><STRONG><a name="[167]"></a>__scatterload_zeroinit</STRONG> (Thumb, 14 bytes, Stack size unknown bytes, handlers.o(i.__scatterload_zeroinit), UNUSED)
+<P><STRONG><a name="[16b]"></a>__scatterload_zeroinit</STRONG> (Thumb, 14 bytes, Stack size unknown bytes, handlers.o(i.__scatterload_zeroinit), UNUSED)
 <P>
 <H3>
 Local Symbols
 </H3>
-<P><STRONG><a name="[13d]"></a>__NVIC_SystemReset</STRONG> (Thumb, 36 bytes, Stack size 0 bytes, main.o(.text.__NVIC_SystemReset))
+<P><STRONG><a name="[140]"></a>__NVIC_SystemReset</STRONG> (Thumb, 36 bytes, Stack size 0 bytes, main.o(.text.__NVIC_SystemReset))
 <BR><BR>[Called By]<UL><LI><a href="#[46]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;prvGetRegistersFromStack
 </UL>
 
@@ -2988,41 +3028,41 @@ Local Symbols
 <LI><a href="#[107]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;f_sync
 </UL>
 
-<P><STRONG><a name="[147]"></a>_fp_digits</STRONG> (Thumb, 366 bytes, Stack size 64 bytes, printfa.o(i._fp_digits), UNUSED)
-<BR><BR>[Calls]<UL><LI><a href="#[73]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_dmul
-<LI><a href="#[6d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_dadd
+<P><STRONG><a name="[14b]"></a>_fp_digits</STRONG> (Thumb, 366 bytes, Stack size 64 bytes, printfa.o(i._fp_digits), UNUSED)
+<BR><BR>[Calls]<UL><LI><a href="#[6d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_dadd
+<LI><a href="#[73]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_dmul
+<LI><a href="#[61]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_uldivmod
 <LI><a href="#[7a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_ddiv
 <LI><a href="#[7b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_d2ulz
-<LI><a href="#[148]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_cdrcmple
-<LI><a href="#[61]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_uldivmod
+<LI><a href="#[14c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_cdrcmple
 </UL>
-<BR>[Called By]<UL><LI><a href="#[145]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_printf_core
-</UL>
-
-<P><STRONG><a name="[145]"></a>_printf_core</STRONG> (Thumb, 1744 bytes, Stack size 136 bytes, printfa.o(i._printf_core), UNUSED)
-<BR><BR>[Calls]<UL><LI><a href="#[149]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_printf_pre_padding
-<LI><a href="#[14a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_printf_post_padding
-<LI><a href="#[147]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_fp_digits
-<LI><a href="#[61]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_uldivmod
-<LI><a href="#[14b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_uidivmod
-</UL>
-<BR>[Called By]<UL><LI><a href="#[146]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__0sprintf
-<LI><a href="#[144]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__0snprintf
+<BR>[Called By]<UL><LI><a href="#[149]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_printf_core
 </UL>
 
-<P><STRONG><a name="[14a]"></a>_printf_post_padding</STRONG> (Thumb, 36 bytes, Stack size 24 bytes, printfa.o(i._printf_post_padding), UNUSED)
-<BR><BR>[Called By]<UL><LI><a href="#[145]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_printf_core
+<P><STRONG><a name="[149]"></a>_printf_core</STRONG> (Thumb, 1744 bytes, Stack size 136 bytes, printfa.o(i._printf_core), UNUSED)
+<BR><BR>[Calls]<UL><LI><a href="#[61]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_uldivmod
+<LI><a href="#[14f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_uidivmod
+<LI><a href="#[14d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_printf_pre_padding
+<LI><a href="#[14e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_printf_post_padding
+<LI><a href="#[14b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_fp_digits
+</UL>
+<BR>[Called By]<UL><LI><a href="#[14a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__0sprintf
+<LI><a href="#[148]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__0snprintf
 </UL>
 
-<P><STRONG><a name="[149]"></a>_printf_pre_padding</STRONG> (Thumb, 46 bytes, Stack size 24 bytes, printfa.o(i._printf_pre_padding), UNUSED)
-<BR><BR>[Called By]<UL><LI><a href="#[145]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_printf_core
+<P><STRONG><a name="[14e]"></a>_printf_post_padding</STRONG> (Thumb, 36 bytes, Stack size 24 bytes, printfa.o(i._printf_post_padding), UNUSED)
+<BR><BR>[Called By]<UL><LI><a href="#[149]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_printf_core
+</UL>
+
+<P><STRONG><a name="[14d]"></a>_printf_pre_padding</STRONG> (Thumb, 46 bytes, Stack size 24 bytes, printfa.o(i._printf_pre_padding), UNUSED)
+<BR><BR>[Called By]<UL><LI><a href="#[149]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_printf_core
 </UL>
 
 <P><STRONG><a name="[58]"></a>_snputc</STRONG> (Thumb, 22 bytes, Stack size 0 bytes, printfa.o(i._snputc))
 <BR>[Address Reference Count : 1]<UL><LI> printfa.o(i.__0snprintf)
 </UL>
 <P><STRONG><a name="[59]"></a>_sputc</STRONG> (Thumb, 10 bytes, Stack size 0 bytes, printfa.o(i._sputc))
-<BR><BR>[Called By]<UL><LI><a href="#[146]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__0sprintf
+<BR><BR>[Called By]<UL><LI><a href="#[14a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__0sprintf
 </UL>
 <BR>[Address Reference Count : 1]<UL><LI> printfa.o(i.__0sprintf)
 </UL><P>

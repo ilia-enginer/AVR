@@ -39,8 +39,10 @@ avr_program/ili9341_gfx.o: Src/ILI9341_GFX.c \
   ../Drivers/STM32F4xx_HAL_Driver/Inc\stm32f4xx_hal_spi.h \
   ../Drivers/STM32F4xx_HAL_Driver/Inc\stm32f4xx_hal_tim.h \
   ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim_ex.h Inc\defs.h \
-  Inc\init.h Inc\work.h menu\menu_main.h Inc\warn_err.h Inc\fatfs_sd.h \
+  C:\Keil_v5\ARM\ARMCLANG\Bin\..\include\time.h Inc\init.h Inc\work.h \
+  menu\menu_main.h Inc\warn_err.h Inc\fatfs_sd.h \
   ../Middlewares/Third_Party/FatFs/src\ff.h \
   ../Middlewares/Third_Party/FatFs/src/integer.h \
   ../FATFS/Target\ffconf.h ../Middlewares/Third_Party/FatFs/src\diskio.h \
+  Inc\powerCircuitBreaker.h Inc\recalcculating.h Inc\engine.h \
   Inc/fonts.h
