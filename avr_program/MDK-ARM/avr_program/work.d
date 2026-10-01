@@ -46,4 +46,4 @@ avr_program/work.o: Src/work.c \
   C:\Keil_v5\ARM\ARMCLANG\Bin\..\include\stdlib.h \
   ../Middlewares/Third_Party/FatFs/src\diskio.h \
   Inc\powerCircuitBreaker.h Inc\recalcculating.h Inc\engine.h \
-  menu\popUpWindow.h
+  menu\popUpWindow.h Inc\ILI9341_GFX.h Inc/fonts.h

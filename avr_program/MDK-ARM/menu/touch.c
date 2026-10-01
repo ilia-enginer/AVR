@@ -53,8 +53,10 @@ uint8_t getTouch (void)
 			
 			// ----------- длительное нажатие -----------
 			// если нажат достаточно долго для перезагрузки
-			if((HAL_GetTick() - pAVR->touch.time_press) > LONG_PRESS_RESET)
+			if((HAL_GetTick() - pAVR->touch.time_press) > LONG_PRESS_RESET){
+				set_BKP0R(0);
 				NVIC_SystemReset();
+			}
 			// если нажат достаточно долго для перехода в главное меню
 			else if((HAL_GetTick() - pAVR->touch.time_press) > LONG_PRESS_MAIN_MENU){
 				if(pAVR->avr_states.menu_state != MAIN_MENU)	menuChangeState(MAIN_MENU);
@@ -77,9 +79,10 @@ uint8_t getTouch (void)
 		pAVR->touch.flag_release = RESET;
 	}
 	
-	// если в течение длительного времени не было нажатия на экран - перейти в главное меню
+	// если в течение длительного времени не было нажатия на экран - перейти в главное меню, выключить экран
 	if((HAL_GetTick() - pAVR->touch.time_press) > LONG_NO_PRESS_MAIN_MENU){
 		if(pAVR->avr_states.menu_state != MAIN_MENU)	menuChangeState(MAIN_MENU);
+		ledTFT_ON_OFF(RESET);
 	}
 			
 	return NONE;

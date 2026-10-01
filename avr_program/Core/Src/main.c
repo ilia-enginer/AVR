@@ -569,7 +569,7 @@ static void MX_TIM2_Init(void)
 
   /* USER CODE END TIM2_Init 1 */
   htim2.Instance = TIM2;
-  htim2.Init.Prescaler = 50000;
+  htim2.Init.Prescaler = 50;
   htim2.Init.CounterMode = TIM_COUNTERMODE_UP;
   htim2.Init.Period = 1000;
   htim2.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
@@ -697,13 +697,19 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 {
 	// прерывание при нажатии/отпускании экрана
 	if (GPIO_Pin == TOUCH_IRQ_Pin) { 
-			// если нажато на экран
 			if((TOUCH_IRQ_GPIO_Port->IDR & GPIO_Pin) != (uint32_t)GPIO_PIN_RESET){
 				if(!pAVR->touch.flag_release){
 						pAVR->touch.flag_release = SET;			// отпущен
 				}
 			}
+			// если нажато на экран
 			else {
+				if(BRIGHTNESS_GET_TFT == NULL_BRIGHTNESS)
+				{
+					pAVR->touch.time_press = HAL_GetTick();
+					ledTFT_ON_OFF(SET);
+					return;
+				}
 				if(!pAVR->touch.flag_press){
 					pAVR->touch.flag_press = SET;				// нажат
 					pAVR->touch.time_press = HAL_GetTick();

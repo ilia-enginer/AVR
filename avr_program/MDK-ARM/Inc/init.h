@@ -9,7 +9,7 @@
 #define TIM_LED_TFT     			(&htim2)
 #define	TIM_CHANEL_LED_TFT		(TIM_CHANNEL_1)
 #define BRIGHTNESS_TFT(x)			(__HAL_TIM_SET_COMPARE(TIM_LED_TFT, TIM_CHANEL_LED_TFT, x))	
-
+#define	BRIGHTNESS_GET_TFT		(__HAL_TIM_GET_COMPARE(TIM_LED_TFT, TIM_CHANEL_LED_TFT))
 
 
 #define RELE_OBSH_ON()				HAL_GPIO_WritePin(RELE_OBSH_GPIO_Port, RELE_OBSH_Pin, GPIO_PIN_RESET);
@@ -52,6 +52,7 @@ uint8_t setFillStructureStoryParameters(void);
 void updateInfoTO (void);
 void checkInfoTO (void);
 uint8_t initTFT(void);
+uint8_t ledTFT_ON_OFF(uint8_t status);
 uint8_t ledTFTInit(void);
 uint8_t outputInit(void);
 

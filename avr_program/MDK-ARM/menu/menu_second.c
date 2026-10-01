@@ -236,6 +236,7 @@ void manualRelaySwitchMenu(void)
 		}
 		return;
 	}
+	// главное реле
 	else if(flag_main_rele)
 	{
 		status = confirmClick("Переключить главное реле?");
@@ -252,9 +253,10 @@ void manualRelaySwitchMenu(void)
 				RELE_OBSH_ON();
 				recLog("Пользователь - включено главное реле");
 			}
-			else
+			else{
 				RELE_OBSH_OFF();
 				recLog("Пользователь - отключено главное реле");
+			}
 		}
 		else if(status == NO)	{
 			flag_main_rele = RESET;
@@ -262,6 +264,7 @@ void manualRelaySwitchMenu(void)
 		}
 		return;
 	}
+	// реле зажигания
 	else if(flag_zazhig_rele)
 	{
 		status = confirmClick("Переключить реле зажигания?");
@@ -275,12 +278,13 @@ void manualRelaySwitchMenu(void)
 				ILI9341_Fill_Screen(MYFON);	// залить экран
 				
 			if(HAL_GPIO_ReadPin(RELE_OBSH_GPIO_Port, RELE_ZAJIG_Pin)){
-				RELE_ZAJIG_OFF();
+				releZajigOnOff(RESET);
 				recLog("Пользователь - выключено реле зажигания");
 			}
-			else
-				RELE_ZAJIG_ON();
+			else{
+				releZajigOnOff(SET);
 				recLog("Пользователь - включено реле зажигания");
+			}
 		}
 		else if(status == NO)	{
 			flag_zazhig_rele = RESET;
@@ -288,6 +292,7 @@ void manualRelaySwitchMenu(void)
 		}
 		return;
 	}
+	// реле стартера
 	else if(flag_starter_rele)
 	{
 		status = confirmClick("Переключить реле стартера?");
@@ -302,11 +307,16 @@ void manualRelaySwitchMenu(void)
 				
 			if(HAL_GPIO_ReadPin(RELE_STARTER_GPIO_Port, RELE_STARTER_Pin)){
 				RELE_STARTER_OFF();
+				pAVR->engine.starterRotationTime = 0;
 				recLog("Пользователь - выключено реле стартера");
 			}
-			else
+			else{
+				pAVR->engine.starterRotationTime = realToUnix();	// засечь время начала вращения стартером
+				// если включена зарядка - выключить
+				charge_ON_OFF(RESET);
 				RELE_STARTER_ON();
 				recLog("Пользователь - включено реле стартера");
+			}
 		}
 		else if(status == NO)	{
 			flag_starter_rele = RESET;
@@ -314,6 +324,7 @@ void manualRelaySwitchMenu(void)
 		}
 		return;
 	}
+	// реле подсоса
 	else if(flag_podsos_rele)
 	{
 		status = confirmClick("Переключить реле подсоса?");
@@ -330,9 +341,10 @@ void manualRelaySwitchMenu(void)
 				RELE_PODSOS_OFF();
 				recLog("Пользователь - выключено реле подсоса");
 			}
-			else
+			else{
 				RELE_PODSOS_ON();
 				recLog("Пользователь - включено реле подсоса");
+			}
 		}
 		else if(status == NO)	{
 			flag_podsos_rele = RESET;

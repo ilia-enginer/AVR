@@ -16,7 +16,7 @@
 		 
 
 // ------- напряжение -------
-#define U_AKB_MIN_1 				(12.3f)						// вольт первый порог низкого напряжения (порог предупреждения)
+#define U_AKB_MIN_1 				(12.4f)						// вольт первый порог низкого напряжения (порог предупреждения)
 #define U_AKB_MIN_0 				(12.1f) 					// вольт нулевой порог низкого напряжения (порог ошибки)
 #define U_AKB_MAX 					(15.0f)						// верхний порог напряжения	(порог ошибки)
 #define U_GYST							(0.1f)						// гистерезис напряжений для проверки
@@ -58,9 +58,30 @@
 // ------- для экрана -------
 #define BUF_LEN  (100)
 
+#define NULL_BRIGHTNESS					(0)				// нулевая яркость экрана
+#define MIN_BRIGHTNESS					(100)			// минимальная яркость экрана
+#define MAX_BRIGHTNESS					(1000)		// максимальная яркость экрана
+
 #define LONG_PRESS_RESET				(10000)		// 10c если нажатие на экран дольше этого - перезагрузится проц
 #define LONG_PRESS_MAIN_MENU		(5000)		// 5c если нажатие на экран дольше этого - переход в главное меню
 #define LONG_NO_PRESS_MAIN_MENU	(300000)	// 5мин. если в течение этого времени не было нажатия на экран - перейти в главное меню
+
+
+// ------- двигатель -------
+#define ENGINE_CONTINUOUS_TIME			(4 * 3600)// время непрерывной работы двигателя (в часах)
+#define TIME_BREAK_ENGINE						(30 * 60)	// время отдыха генератора в мин
+#define MAX_STARTER_OPERATING_TIME	(5)				// максимальное время работы стартера
+#define MAX_LAUNCH_ATTEMPTS					(3)				// макс. кол-во попыток запуска
+#define WINTER_MODE_TEMPERATURE			(8.0f)		// температура ниже которой переходит на зимний режим
+#define MAX_STARTER_BREAK_TIME			(3)				// макс. время перерыва стартера (в сек)
+#define START_DETECT_VOLTAGE				(30.0f) 	// напряжение определения запуска
+#define STOP_DETECT_VOLTAGE 				(2.0f)		// напряжение определения остановки
+#define WARM_UP_TIME								(3 * 60) 	// время прогрева (в мин)
+#define COLDING_TIME								(3 * 60)	// время охлаждения генератора в мин
+
+
+// ------- зарядка -------
+#define TIME_CHARGE									(3 * 3600)// время зарядки в часах
 
 
 /* Exported types ------------------------------------------------------------*/
@@ -118,6 +139,7 @@ typedef enum  {
     WARN_MANUAL_CONTROL_EN = 0,				// включен ручной режим работы
 		WARN_NECESSITY_TECH_INSP,					// необходимо провести тех. осмотр
 		WARN_CHARGE_AKB,									// необходимо зарядить акб
+		WARN_BREAK_ENGINE,								// необходим перерыв двигателя
 
 }WARN_WARIANTS;
 
@@ -154,6 +176,7 @@ typedef struct {
 	time_t collingTime;							// время охлаждения в с
 	time_t workingTime;							// время работы в с
 	time_t engineTimeoutTime;				// время перерыва(охлаждения генератора)
+	uint8_t flagTimeout;						// флаг работы с перерывами
 	
 } EngineDef;
 
@@ -205,11 +228,12 @@ typedef struct automats_devices {
 
 		MENU_STATE				menu_state;					// автомат менюшки на экране
 		POWER_GRID_MODE		power_grid_mode;		// режим работы (нечего / сеть / генератор)
-		uint8_t						flagCharge;					// заряжка акб выкл /  вкл
+		uint8_t						flagCharge;					// зарядка акб выкл /  вкл
+		time_t						timeChargeStart;		// время начала зарядки
 		MANAGEMENT_WORK		powerAutoManual;		// режим работы управления авто / ручной
-		uint8_t						statusEngine;				// работа ДВС генератора выключен / включен и.т.д.
 		STATUS_EXT_POWER	extPowerSupply;			// наличие внешнего питания
 		uint8_t						flagSaveInfoSD;			// флаг сохранения информации о работе генератора на sd карту
+		uint8_t						oledWork;						// флаг работы экрана
 		
 } automats_devices;
 
@@ -226,7 +250,7 @@ typedef struct {
 typedef struct {
   
 	// проверка
-	uint32_t checkNum;						// проверочное число инициализации
+	uint32_t checkNum;										// проверочное число инициализации
 	
 	// моточасы				
 	uint32_t engineHoursTotal;						// моточасы всего

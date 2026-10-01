@@ -4,6 +4,7 @@
 #include "work.h"
 #include "warn_err.h"
 #include "popUpWindow.h"
+#include "ILI9341_GFX.h"
 
 
 void work (void)
@@ -11,15 +12,24 @@ void work (void)
 	dataCalcADC();						// пересчет значений ацп
 	checkWarn();							// поиск предупреждений
 	checkErr();								// поиск ошибок
-	menuSwich();							// экранное меню
+	
+	if(BRIGHTNESS_GET_TFT != NULL_BRIGHTNESS){
+		if(!pAVR->avr_states.oledWork)
+			ili9341_SleepOff();
+
+		menuSwich();							// экранное меню
+	}
+	
 	engineWork();							// управление двигателем
 	powerAutomationControl();	// управление силовым автоматом
+	chargeAkb();							// зарядка акб
+	ledChange();							// моргать светодиодом
 	
 	// если необходимо сохранить всю инфу на флеш
 	if(pAVR->avr_states.flagSaveInfoSD == SET)
 	{
 		checkInfoTO();
-		notification("SAVE SD", "Сохранение данных", 5, pAVR->avr_states.menu_state);
+		notification("SAVE SD", "Сохранение данных", 15, pAVR->avr_states.menu_state);
 		// записать на sd
 		setFillStructureStoryParameters();
 		pAVR->avr_states.flagSaveInfoSD = RESET;
@@ -69,6 +79,74 @@ void dataCalcADC(void)
 }
 
 
+void charge_ON_OFF(uint8_t status)
+{
+	if(status == RESET)
+	{
+		if(HAL_GPIO_ReadPin(CHARGE_ON_OFF_GPIO_Port, CHARGE_ON_OFF_Pin))
+		{
+			CHARGE_OFF();
+			pAVR->avr_states.flagCharge = RESET;
+			recLog("Зарядка отключена");
+		}		
+	}
+	else if(status == SET)
+	{
+		if(!HAL_GPIO_ReadPin(CHARGE_ON_OFF_GPIO_Port, CHARGE_ON_OFF_Pin))
+		{
+			CHARGE_ON();
+			pAVR->avr_states.flagCharge = SET;
+			recLog("Зарядка включена");
+		}		
+	}
+}
 
+uint32_t ledChangeTime = 0;
+void ledChange(void)
+{
+	// моргать раз в сек
+	if((HAL_GetTick() - ledChangeTime) > 1000)
+	{
+		// красным - если ошибка
+		if(pAVR->err.counter){
+			LED_ERROR_TOGGLE();
+		}
+		// в остальных случаях зеленым
+		else {
+			LED_ERROR_OFF();
+			LED_TOGGLE();
+		}
+		ledChangeTime = HAL_GetTick();
+	}
+}
+
+void chargeAkb(void)
+{
+	// заряжать только если разряжен и двигатель остановлен
+	// и не более Х часов
+	if((pAVR->v_t.v_bat < U_AKB_MIN_1) &&
+		((pAVR->engine.status == ENGINE_STOPPED) || (pAVR->engine.status == ENGINE_TIMEOUT)) &&
+		(pAVR->avr_states.extPowerSupply == EXT_POWER_ON) &&
+		(!pAVR->avr_states.flagCharge))
+	{
+		charge_ON_OFF(SET);
+		// засечь время
+		pAVR->avr_states.timeChargeStart = realToUnix();
+	}
+	
+	// если прошло Х часов - отключить зарядку
+	if((pAVR->avr_states.flagCharge) &&
+		((realToUnix() - pAVR->avr_states.timeChargeStart) > TIME_CHARGE))
+	{
+		charge_ON_OFF(RESET);
+	}
+	
+	// если напряжение высокое - отключить зарядку
+	if((pAVR->avr_states.flagCharge) && 
+			(pAVR->v_t.v_bat > U_AKB_MAX))
+	{
+		charge_ON_OFF(RESET);
+	}
+}
 
 

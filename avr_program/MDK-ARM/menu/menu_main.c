@@ -138,6 +138,11 @@ void menuMain (void)
 		if(status == YES)
 		{
 			flagSetTime = RESET;
+			if(pAVR->engine.status != ENGINE_STOPPED)
+			{
+				notification("Уведомление", "Настройка времени возможна только при остановленном двигателе", 15, MAIN_MENU);
+				return;
+			}
 			menuChangeState(SET_TIME);	
 		}
 		else if(status == NO)
@@ -153,8 +158,13 @@ void menuMain (void)
 		status = confirmClick("Настроить дату?");
 		if(status == YES)
 		{
-			menuChangeState(SET_DATA);	
 			flagSetData = RESET;	
+			if(pAVR->engine.status != ENGINE_STOPPED)
+			{
+				notification("Уведомление", "Настройка даты возможна только при остановленном двигателе", 15, MAIN_MENU);
+				return;
+			}
+			menuChangeState(SET_DATA);	
 		}
 		else if(status == NO)
 		{
@@ -192,23 +202,53 @@ void menuMain (void)
 		}
 		return;
 	}
+
 	// проверка нужно ли заводить / глушить генератор
 	else if(flagStatusEngine)
 	{
-		if(pAVR->avr_states.statusEngine == RESET)
+		if((pAVR->engine.status == ENGINE_STOPPED) ||
+			(pAVR->engine.status == ENGINE_COOLING))
 			status = confirmClick("Запустить двигатель?");
-		else if(pAVR->avr_states.statusEngine == SET)
+		else if(pAVR->engine.status == ENGINE_TIMEOUT)
+			status = confirmClick("ДВС остывает. Запустить двигатель?");
+		else if((pAVR->engine.status == ENGINE_START) ||
+			(pAVR->engine.status == ENGINE_STARTER_REST) ||
+			(pAVR->engine.status == ENGINE_WARM_UP) ||
+			(pAVR->engine.status == ENGINE_WORK))
 			status = confirmClick("Заглушить двигатель?");
+		else
+			notification("Уведомление", "Временно недоступно", 15, MAIN_MENU);
 			
 		if(status == YES)
 		{
-			if(pAVR->avr_states.statusEngine == RESET){
-				pAVR->avr_states.statusEngine = SET;
-				recLog("Пользователь - запуск двигателя");
+			if((pAVR->engine.status == ENGINE_STOPPED) ||
+				(pAVR->engine.status == ENGINE_COOLING) ||
+				(pAVR->engine.status == ENGINE_TIMEOUT))
+			{
+				// если двигатель в ошибке - запретить запуск
+				if(checkErrEngine())
+				{
+					notification("Ошибка", "Запуск невозможен. Ошибка ДВС.", 15, MAIN_MENU);
+					recLog("Система запретила запуск двигателя для пользователя");
+				}
+				if(startStopEngine(SET))
+					recLog("Пользователь - запуск двигателя");
+				else{
+					recLog("Пользователь - запуск двигателя невозможен");
+					notification("Уведомление", "Временно недоступно", 15, MAIN_MENU);
+				}
 			}
-			else if(pAVR->avr_states.statusEngine == SET)	{
-				pAVR->avr_states.statusEngine = RESET;
-				recLog("Пользователь - остановка двигателя");
+			else if((pAVR->engine.status == ENGINE_START) ||
+						(pAVR->engine.status == ENGINE_STARTER_REST) ||
+						(pAVR->engine.status == ENGINE_WARM_UP) ||
+						(pAVR->engine.status == ENGINE_WORK))
+			{
+				if(startStopEngine(RESET))
+					recLog("Пользователь - остановка двигателя");
+				else{
+					recLog("Пользователь - остановка двигателя невозможна");
+					notification("Уведомление", "Временно недоступно", 15, MAIN_MENU);
+				}
 			}
 			
 			flagStatusEngine = RESET;	
@@ -233,12 +273,12 @@ void menuMain (void)
 		if(status == YES)
 		{
 			if(pAVR->avr_states.flagCharge){
-				pAVR->avr_states.flagCharge = RESET;
+				charge_ON_OFF(RESET);
 				menuChangeState(MAIN_MENU);
 				recLog("Пользователь -  отключение зарядки АКБ");
 			}
 			else	{
-				pAVR->avr_states.flagCharge = SET;
+				charge_ON_OFF(SET);
 				menuChangeState(MAIN_MENU);
 				recLog("Пользователь - включение зарядки АКБ");
 			}
@@ -347,12 +387,24 @@ void menuMain (void)
 	ILI9341_WriteString(x, y, buf, Font_11x18, WHITE, MYFON);
 	y += yInc;
 	
-	//------------ статус ДВС генератора (запущен/остановлен) -----------------------
-	if(pAVR->avr_states.statusEngine == RESET)
-		snprintf(buf, BUF_LEN, "Двс               OFF");
-	else if(pAVR->avr_states.statusEngine == SET)
-		snprintf(buf, BUF_LEN, "Двс               ON");
-	else
+	//------------ статус ДВС генератора  -----------------------
+	if(pAVR->engine.status == ENGINE_STOPPED)
+		snprintf(buf, BUF_LEN, "Двс              Остановлен");
+	else if(pAVR->engine.status == ENGINE_START)
+		snprintf(buf, BUF_LEN, "Двс               Запуск");
+	else if(pAVR->engine.status == ENGINE_STARTER_REST)
+		snprintf(buf, BUF_LEN, "Двс          Отдых стартера");
+	else if(pAVR->engine.status == ENGINE_WARM_UP)
+		snprintf(buf, BUF_LEN, "Двс               Прогрев");	
+	else if(pAVR->engine.status == ENGINE_WORK)
+		snprintf(buf, BUF_LEN, "Двс               Запущен");	
+	else if(pAVR->engine.status == ENGINE_COOLING)
+		snprintf(buf, BUF_LEN, "Двс              Охлаждение");				
+	else if(pAVR->engine.status == ENGINE_STOP)
+		snprintf(buf, BUF_LEN, "Двс               Остановка");	
+	else if(pAVR->engine.status == ENGINE_TIMEOUT)
+		snprintf(buf, BUF_LEN, "Двс               Перерыв");				
+	else 
 		snprintf(buf, BUF_LEN, "Двс               Ошибка");
 	ILI9341_WriteString(x, y, buf, Font_11x18, WHITE, MYFON);
 	y += yInc;

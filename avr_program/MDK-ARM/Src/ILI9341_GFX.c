@@ -274,6 +274,34 @@ void ILI9341_Init(void)
 
 	//STARTING ROTATION
 	ILI9341_Set_Rotation(SCREEN_HORIZONTAL_2);
+	
+	pAVR->avr_states.oledWork = RESET;
+}
+
+/**
+  * @brief  Enables the Display.
+  * @param  None
+  * @retval None
+  */
+void ili9341_SleepOn(void)
+{
+  /* Display On */
+  ILI9341_Write_Command(LCD_SPLIN);
+	HAL_Delay(120);
+	pAVR->avr_states.oledWork = RESET;
+}
+
+/**
+  * @brief  Disables the Display.
+  * @param  None
+  * @retval None
+  */
+void ili9341_SleepOff(void)
+{
+  /* Display Off */
+  ILI9341_Write_Command(LCD_SLEEP_OUT);
+	HAL_Delay(120);
+	pAVR->avr_states.oledWork = SET;
 }
 
 

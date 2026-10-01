@@ -29,12 +29,12 @@ uint8_t initDevice(void)
 	pAVR->avr_states.power_grid_mode 	= POWER_IS_OFF;		// флаг о питании дома
 	pAVR->avr_states.flagCharge 			= RESET;					// флаг что заряжка откл
 	pAVR->avr_states.powerAutoManual 	= AVR_AUTO;				// автоматический режим
-	pAVR->avr_states.statusEngine 		= RESET;					// остановлен
 	pAVR->avr_states.extPowerSupply 	= EXT_POWER_OFF;	// нет
 	resetErrors();
 	resetWarning();
 	pAVR->engine.status = ENGINE_STOPPED;
 	pAVR->engine.launchAttempts = 0;
+	pAVR->engine.flagTimeout = RESET;
 
 	// ------------- переферия ------------
 	outputInit();	// выхода (светодиоды, реле и.т.д.)
@@ -45,6 +45,14 @@ uint8_t initDevice(void)
 		
 	// ------------- sd card ------------
 	SD_Init();
+	
+	// проверка ошибок перезагрузки
+	if(RTC->BKP0R == U_CONFIG_WACH_DOG_SIGNATURE)
+		setErr(ERR_WATCH_DOG);
+	if(RTC->BKP0R == U_CONFIG_HARD_FAULT_SIGNATURE)
+		setErr(ERR_HARD_RESET);	
+		
+	set_BKP0R(U_CONFIG_WACH_DOG_SIGNATURE);
 	
 	// ------------- инициализация данных с sd card ------------
 	if(getFillStructureStoryParameters()) 
@@ -570,8 +578,22 @@ uint8_t initTFT(void)
 
 uint8_t ledTFTInit(void)
 {
-	HAL_TIM_PWM_Start(TIM_LED_TFT, TIM_CHANEL_LED_TFT);
-	BRIGHTNESS_TFT(1000);		// яркость на полную
+	return ledTFT_ON_OFF(SET);
+}
+
+uint8_t ledTFT_ON_OFF(uint8_t status)
+{
+	if(status == SET)
+	{
+		BRIGHTNESS_TFT(MAX_BRIGHTNESS);		// яркость на полную
+		HAL_TIM_PWM_Start(TIM_LED_TFT, TIM_CHANEL_LED_TFT);
+	}
+	else
+	{
+		ili9341_SleepOn();
+		BRIGHTNESS_TFT(NULL_BRIGHTNESS);
+		HAL_TIM_PWM_Stop(TIM_LED_TFT, TIM_CHANEL_LED_TFT);
+	}
 	return 1;
 }
 
