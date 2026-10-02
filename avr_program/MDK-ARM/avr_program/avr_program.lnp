@@ -19,6 +19,7 @@
 "avr_program\stm32f4xx_hal_cortex.o"
 "avr_program\stm32f4xx_hal.o"
 "avr_program\stm32f4xx_hal_exti.o"
+"avr_program\stm32f4xx_hal_iwdg.o"
 "avr_program\stm32f4xx_hal_rtc.o"
 "avr_program\stm32f4xx_hal_rtc_ex.o"
 "avr_program\stm32f4xx_hal_spi.o"

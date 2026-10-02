@@ -257,6 +257,19 @@ void menuGetWarnings (void)
 		ILI9341_WriteString(x, y, buf, Font_11x18, WHITE, MYFON);
 		y += yInc;
 	}
+	if(pAVR->warn.array_flags[WARN_BREAK_ENGINE])
+	{
+		snprintf(buf, BUF_LEN, "- необходим отдых ДВС");	
+		ILI9341_WriteString(x, y, buf, Font_11x18, WHITE, MYFON);
+		y += yInc;
+	}
+	if(pAVR->warn.array_flags[WARN_NO_BREAK_ENGINE])
+	{
+		snprintf(buf, BUF_LEN, "- откл. непрерыв. работа ДВС");	
+		ILI9341_WriteString(x, y, buf, Font_11x18, WHITE, MYFON);
+		y += yInc;
+	}
+
 
 
 }

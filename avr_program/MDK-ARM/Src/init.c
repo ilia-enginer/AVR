@@ -36,13 +36,17 @@ uint8_t initDevice(void)
 	pAVR->engine.launchAttempts = 0;
 	pAVR->engine.flagTimeout = RESET;
 
+	HAL_IWDG_Refresh(&hiwdg);
+	
 	// ------------- переферия ------------
 	outputInit();	// выхода (светодиоды, реле и.т.д.)
+	HAL_IWDG_Refresh(&hiwdg);
 	
 	// ------------- дисплей ------------
 	initTFT();
 	menuChangeState(MAIN_MENU);
-		
+	HAL_IWDG_Refresh(&hiwdg);
+	
 	// ------------- sd card ------------
 	SD_Init();
 	
@@ -53,6 +57,7 @@ uint8_t initDevice(void)
 		setErr(ERR_HARD_RESET);	
 		
 	set_BKP0R(U_CONFIG_WACH_DOG_SIGNATURE);
+	HAL_IWDG_Refresh(&hiwdg);
 	
 	// ------------- инициализация данных с sd card ------------
 	if(getFillStructureStoryParameters()) 
@@ -67,6 +72,7 @@ uint8_t initDevice(void)
 
 			// моточасы				
 			pAVR->sdParams.engineHoursTotal					= 0;	// моточасы всего
+			pAVR->sdParams.engineMinutesTotal				= 0;	// мотоминуты всего
 			pAVR->sdParams.engineHoursTO						= 0;	// моточасы после ТО
 			pAVR->sdParams.engineMinutesTO					= 0;	// мотоминуты после ТО
 			pAVR->sdParams.hoursBeforeTO						= 0;	// моточасы до ТО
@@ -111,8 +117,10 @@ uint8_t initDevice(void)
 			checkInfoTO();
 		}
 	}
+	HAL_IWDG_Refresh(&hiwdg);
 	
 	// ------------- ацп ------------
+	//HAL_ADCEx_Calibration_Start(&hadc1);	// почемуто нет такой функции
 	HAL_ADC_Start_DMA(&hadc1, (uint32_t*)&AVR.adc, ADC_CHANELS);	// запуск ацп
 		
 	HAL_Delay(2);			// ожидание преобразования
@@ -175,6 +183,7 @@ uint8_t getFillStructureStoryParameters(void)
 	// перенести параметры в структуру
 	pAVR->sdParams.checkNum									= numbers[i++];
 	pAVR->sdParams.engineHoursTotal					= numbers[i++];
+	pAVR->sdParams.engineMinutesTotal				= numbers[i++];
 	pAVR->sdParams.engineMinutesTO					= numbers[i++];
 	pAVR->sdParams.engineHoursTO						= numbers[i++];
 	pAVR->sdParams.minutesBeforeTO					= numbers[i++];
@@ -220,6 +229,7 @@ uint8_t setFillStructureStoryParameters(void)
 			
 	// моточасы				
 	numbers[i++] = pAVR->sdParams.engineHoursTotal;						// моточасы всего
+	numbers[i++] = pAVR->sdParams.engineMinutesTotal;					// мотоминуты всего
 	numbers[i++] = pAVR->sdParams.engineHoursTO;							// моточасы после ТО
 	numbers[i++] = pAVR->sdParams.engineMinutesTO;						// мотоминуты после ТО
 	numbers[i++] = pAVR->sdParams.hoursBeforeTO;							// моточасы до ТО
@@ -568,6 +578,7 @@ uint8_t initTFT(void)
 //	// полоса загрузки
 //  for(uint16_t i = 0; i < ILI9341_SCREEN_HEIGHT * 0.8; i++)
 //  {
+//		HAL_IWDG_Refresh(&hiwdg);
 //		ILI9341_Draw_Rectangle(32, 220, i, 8, OLIVE);
 //		HAL_Delay(20);
 //  }

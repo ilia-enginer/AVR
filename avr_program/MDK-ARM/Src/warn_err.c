@@ -13,23 +13,44 @@ void checkWarn(void)
 	// Включен ручной режим работы
 	if((pAVR->avr_states.powerAutoManual == AVR_MANUAL) && 
 			(!pAVR->warn.array_flags[WARN_MANUAL_CONTROL_EN]))
+	{
 			setWarn(WARN_MANUAL_CONTROL_EN);
+	}
 
 	// необходимо зарядить акб и не включена зарядка - выставить предупреждение
 	if((pAVR->v_t.v_bat <= U_AKB_MIN_1) && 
 			(!pAVR->avr_states.flagCharge) &&
 			(!pAVR->warn.array_flags[WARN_CHARGE_AKB]))
+	{
 			setWarn(WARN_CHARGE_AKB);
+	}
 	// удалить предупреждение
 	if((pAVR->v_t.v_bat > U_AKB_MIN_1) && 
 			(pAVR->warn.array_flags[WARN_CHARGE_AKB]))
+	{
 			delWarn(WARN_CHARGE_AKB);
+	}
 	
 	// необходим перерыв двигателя
 	// удалить предупреждение
 	if((pAVR->warn.array_flags[WARN_BREAK_ENGINE]) &&
 		((realToUnix() - pAVR->engine.engineTimeoutTime) >= TIME_BREAK_ENGINE))
+	{
 		delWarn(WARN_BREAK_ENGINE);
+	}
+	
+	// если включена непрерывная работа двигателя
+	if((!pAVR->engine.flagTimeout) &&
+			(!pAVR->warn.array_flags[WARN_NO_BREAK_ENGINE]))
+	{
+		setWarn(WARN_NO_BREAK_ENGINE);
+	}
+	// если отключена непрерывная работа двигателя
+	if((pAVR->engine.flagTimeout) &&
+			(pAVR->warn.array_flags[WARN_NO_BREAK_ENGINE]))
+	{
+		delWarn(WARN_NO_BREAK_ENGINE);
+	}
 }
 
 
@@ -112,6 +133,15 @@ void setWarn(WARN_WARIANTS warn)
 				recLog("Предупреждение! Необходим отдых ДВС"); 
 			}	
 			break;
+		// непрерывная работа двигателя
+		case	WARN_NO_BREAK_ENGINE:
+			if(!pAVR->warn.array_flags[WARN_NO_BREAK_ENGINE]) {
+				pAVR->warn.array_flags[WARN_NO_BREAK_ENGINE] = SET;
+				pAVR->warn.counter++;
+				notification("Предупреждение", "Включена непрерывная работа двигателя", 15, pAVR->avr_states.menu_state);
+				recLog("Предупреждение! Включена непрерывная работа двигателя"); 
+			}	
+			break;
 		default:
 			notification("Предупреждение", "Ошибка вывода предупреждения", 15, pAVR->avr_states.menu_state);
 			recLog("Предупреждение! Ошибка вывода предупреждения"); 
@@ -173,6 +203,7 @@ void setErr(ERR_WARIANTS err)
 			if(!pAVR->err.array_flags[ERR_CHARG_CIRCUIT]) {
 				pAVR->err.array_flags[ERR_CHARG_CIRCUIT] = SET;
 				pAVR->err.counter++;
+				charge_ON_OFF(RESET);
 				notification("Ошибка!!!", "Неисправность цепи зарядки", 30, pAVR->avr_states.menu_state);
 				recLog("Ошибка!!! Неисправность цепи зарядки");
 			}		
@@ -261,7 +292,7 @@ void delWarn(WARN_WARIANTS warn)
 				pAVR->warn.counter--;
 			}	
 			break;
-		// необходимо зарядить акб //??? сделать отмену предупреждения
+		// необходимо зарядить акб 
 		case WARN_CHARGE_AKB:
 			if(pAVR->warn.array_flags[WARN_CHARGE_AKB]) {
 				pAVR->warn.array_flags[WARN_CHARGE_AKB] = RESET;
@@ -275,6 +306,14 @@ void delWarn(WARN_WARIANTS warn)
 				pAVR->warn.array_flags[WARN_BREAK_ENGINE] = RESET;
 				pAVR->warn.counter--;
 				recLog("Удалено предупреждение перерыве двигателя");
+			}	
+			break;
+		// непрерывная работа двигателя
+		case	WARN_NO_BREAK_ENGINE:
+			if(pAVR->warn.array_flags[WARN_NO_BREAK_ENGINE]) {
+				pAVR->warn.array_flags[WARN_NO_BREAK_ENGINE] = RESET;
+				pAVR->warn.counter--;
+				recLog("Удалено предупреждение о непрерывной работе двигателя");
 			}	
 			break;
 		default:

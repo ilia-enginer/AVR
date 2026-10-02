@@ -1,4 +1,5 @@
-avr_program/main.o: ../Core/Src/main.c ../Core/Inc\main.h \
+avr_program/stm32f4xx_hal_iwdg.o: \
+  ../Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_iwdg.c \
   ../Drivers/STM32F4xx_HAL_Driver/Inc\stm32f4xx_hal.h \
   ../Core/Inc\stm32f4xx_hal_conf.h \
   ../Drivers/STM32F4xx_HAL_Driver/Inc\stm32f4xx_hal_rcc.h \
@@ -36,15 +37,4 @@ avr_program/main.o: ../Core/Src/main.c ../Core/Inc\main.h \
   ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_rtc_ex.h \
   ../Drivers/STM32F4xx_HAL_Driver/Inc\stm32f4xx_hal_spi.h \
   ../Drivers/STM32F4xx_HAL_Driver/Inc\stm32f4xx_hal_tim.h \
-  ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim_ex.h Inc\defs.h \
-  C:\Keil_v5\ARM\ARMCLANG\Bin\..\include\time.h Inc\init.h Inc\work.h \
-  menu\menu_main.h Inc\warn_err.h Inc\fatfs_sd.h \
-  ../Middlewares/Third_Party/FatFs/src\ff.h \
-  ../Middlewares/Third_Party/FatFs/src/integer.h \
-  ../FATFS/Target\ffconf.h \
-  C:\Keil_v5\ARM\ARMCLANG\Bin\..\include\stdlib.h \
-  ../Middlewares/Third_Party/FatFs/src\diskio.h \
-  Inc\powerCircuitBreaker.h Inc\recalcculating.h Inc\engine.h \
-  ../FATFS/App\fatfs.h ../Middlewares/Third_Party/FatFs/src\ff_gen_drv.h \
-  ../FATFS/Target\user_diskio.h \
-  C:\Keil_v5\ARM\ARMCLANG\Bin\..\include\stdio.h
+  ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim_ex.h

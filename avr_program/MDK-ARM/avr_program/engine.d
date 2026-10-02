@@ -29,6 +29,7 @@ avr_program/engine.o: Src/engine.c \
   ../Drivers/STM32F4xx_HAL_Driver/Inc\stm32f4xx_hal_flash.h \
   ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_flash_ex.h \
   ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_flash_ramfunc.h \
+  ../Drivers/STM32F4xx_HAL_Driver/Inc\stm32f4xx_hal_iwdg.h \
   ../Drivers/STM32F4xx_HAL_Driver/Inc\stm32f4xx_hal_pwr.h \
   ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_pwr_ex.h \
   ../Drivers/STM32F4xx_HAL_Driver/Inc\stm32f4xx_hal_rtc.h \
@@ -44,4 +45,4 @@ avr_program/engine.o: Src/engine.c \
   ../FATFS/Target\ffconf.h \
   C:\Keil_v5\ARM\ARMCLANG\Bin\..\include\stdlib.h \
   ../Middlewares/Third_Party/FatFs/src\diskio.h \
-  Inc\powerCircuitBreaker.h Inc\recalcculating.h
+  Inc\powerCircuitBreaker.h Inc\recalcculating.h menu\popUpWindow.h

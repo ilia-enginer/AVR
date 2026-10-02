@@ -1,14 +1,19 @@
 
 #include <stdint.h>
 #include <stm32f4xx_ll_adc.h>
+
 #include "work.h"
+
 #include "warn_err.h"
 #include "popUpWindow.h"
 #include "ILI9341_GFX.h"
 
 
+
 void work (void)
 {
+	HAL_IWDG_Refresh(&hiwdg);	// отмена ресета
+	
 	dataCalcADC();						// пересчет значений ацп
 	checkWarn();							// поиск предупреждений
 	checkErr();								// поиск ошибок
@@ -28,6 +33,7 @@ void work (void)
 	// если необходимо сохранить всю инфу на флеш
 	if(pAVR->avr_states.flagSaveInfoSD == SET)
 	{
+		HAL_IWDG_Refresh(&hiwdg);
 		checkInfoTO();
 		notification("SAVE SD", "Сохранение данных", 15, pAVR->avr_states.menu_state);
 		// записать на sd
@@ -61,17 +67,18 @@ void dataCalcADC(void)
 	pAVR->v_t.v_rele_starter = exponentialRunningAverage(pAVR->v_t.v_rele_starter, voltage, KOFF_FILTR);
 
 	// напряжение питания проца
-	voltage = OPORA_ADC * Vopora / pAVR->adc.ravADC[5];
+	voltage = __LL_ADC_CALC_VREFANALOG_VOLTAGE(pAVR->adc.ravADC[5], LL_ADC_RESOLUTION_12B);
 	pAVR->v_t.v_cpu = exponentialRunningAverage(pAVR->v_t.v_cpu, voltage, KOFF_FILTR);
 
 	//напряжение опоры
 	voltage = pAVR->v_t.v_cpu / FULL_RANGE_f * pAVR->adc.ravADC[5];
 	pAVR->v_t.v_opora = exponentialRunningAverage(pAVR->v_t.v_opora, voltage, KOFF_FILTR);
 	
-	//температура проца
-	uint16_t adc_cal1 = *(volatile uint16_t *)TEMPSENSOR_CAL1_ADDR; // Калибровочное значение t1
-  uint16_t adc_cal2 = *(volatile uint16_t *)TEMPSENSOR_CAL2_ADDR; // Калибровочное значение t2
-	voltage = TEMPSENSOR_CAL1_TEMP + (TEMPSENSOR_CAL2_TEMP - TEMPSENSOR_CAL1_TEMP) * (pAVR->adc.ravADC[4] - adc_cal1) / (adc_cal2 - adc_cal1);
+	//температура проца	
+//	uint16_t adc_cal1 = *(volatile uint16_t *)TEMPSENSOR_CAL1_ADDR; // Калибровочное значение t1
+//  uint16_t adc_cal2 = *(volatile uint16_t *)TEMPSENSOR_CAL2_ADDR; // Калибровочное значение t2
+//	voltage = TEMPSENSOR_CAL1_TEMP + (TEMPSENSOR_CAL2_TEMP - TEMPSENSOR_CAL1_TEMP) * (pAVR->adc.ravADC[4] - adc_cal1) / (adc_cal2 - adc_cal1);
+	voltage = __LL_ADC_CALC_TEMPERATURE(pAVR->v_t.v_cpu, pAVR->adc.ravADC[4], LL_ADC_RESOLUTION_12B);
 	pAVR->v_t.t_cpu = exponentialRunningAverage(pAVR->v_t.t_cpu, voltage, KOFF_FILTR);
 	
 	// запуск ацп
@@ -96,19 +103,22 @@ void charge_ON_OFF(uint8_t status)
 		{
 			CHARGE_ON();
 			pAVR->avr_states.flagCharge = SET;
+			pAVR->avr_states.timeChargeStart = realToUnix();
+			delWarn(WARN_CHARGE_AKB);
 			recLog("Зарядка включена");
 		}		
 	}
 }
 
-uint32_t ledChangeTime = 0;
+time_t ledChangeTime = 0;
 void ledChange(void)
 {
 	// моргать раз в сек
-	if((HAL_GetTick() - ledChangeTime) > 1000)
+	if((realToUnix() - ledChangeTime) >= 1)
 	{
 		// красным - если ошибка
 		if(pAVR->err.counter){
+			LED_OFF();
 			LED_ERROR_TOGGLE();
 		}
 		// в остальных случаях зеленым
@@ -116,7 +126,7 @@ void ledChange(void)
 			LED_ERROR_OFF();
 			LED_TOGGLE();
 		}
-		ledChangeTime = HAL_GetTick();
+		ledChangeTime = realToUnix();
 	}
 }
 

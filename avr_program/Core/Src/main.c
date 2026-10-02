@@ -56,6 +56,8 @@ stack_bit stack = {0, };
 ADC_HandleTypeDef hadc1;
 DMA_HandleTypeDef hdma_adc1;
 
+IWDG_HandleTypeDef hiwdg;
+
 RTC_HandleTypeDef hrtc;
 
 SPI_HandleTypeDef hspi1;
@@ -84,6 +86,7 @@ static void MX_SPI2_Init(void);
 static void MX_TIM2_Init(void);
 static void MX_RTC_Init(void);
 static void MX_TIM1_Init(void);
+static void MX_IWDG_Init(void);
 /* USER CODE BEGIN PFP */
 
 /* USER CODE END PFP */
@@ -129,6 +132,7 @@ int main(void)
   MX_RTC_Init();
   MX_TIM1_Init();
   MX_FATFS_Init();
+  MX_IWDG_Init();
   /* USER CODE BEGIN 2 */
 	
 	initDevice();
@@ -140,6 +144,54 @@ int main(void)
   while (1)
   {
 		work();
+		
+		// если экран погашен и двигатель заглушен и не включена зарядка - сон на 1 мин
+		if((BRIGHTNESS_GET_TFT == NULL_BRIGHTNESS) &&
+				(pAVR->engine.status == ENGINE_STOPPED) &&
+				(!pAVR->avr_states.flagCharge))
+		{
+			// настройка WakeUp срабатывание раз в минуту
+			if(HAL_RTCEx_SetWakeUpTimer_IT(&hrtc, 60, RTC_WAKEUPCLOCK_CK_SPRE_16BITS) == HAL_OK)
+			{			
+				// 1 вариант, но часы не работают
+//				// PWR_LOWPOWERREGULATOR_ON — регулятор напряжения работает в режиме пониженного энергопотребления, но возникает дополнительная задержка при выходе из режима.
+//				// PWR_MAINREGULATOR_ON — регулятор напряжения работает в обычном режиме. Потребление энергии увеличивается, но время выхода из режима сокращается.
+//				// PWR_SLEEPENTRY_WFI — (Wait for Interrupt) — выход из режима произойдёт при возникновении прерывания.
+//				// PWR_SLEEPENTRY_WFE — (Wait for Event) — выход из режима произойдёт при возникновении события.
+//				HAL_PWR_EnterSTOPMode(PWR_LOWPOWERREGULATOR_ON, PWR_STOPENTRY_WFI); 
+//				// после wakeup'а программа стартует отсюда
+//				SystemClock_Config(); // рестартуем системный клок
+				
+				// 2 вариант
+				// если установить бит SLEEPONEXIT, то программа будет входить в этот режим только после того, как закончится обработка последнего прерывания. 
+				// Если очистить бит, то вход произойдёт сразу же после вызова HAL_PWR_EnterSLEEPMode()
+				//HAL_PWR_EnableSleepOnExit(); // установить
+				
+				// перенастройка вачдога на 62 секунды
+//				hiwdg.Instance = IWDG;
+//				hiwdg.Init.Prescaler = IWDG_PRESCALER_256;
+//				hiwdg.Init.Reload = 65000;
+//				HAL_IWDG_Init(&hiwdg);
+//				HAL_IWDG_Refresh(&hiwdg);
+				
+				// вход в сон
+				HAL_SuspendTick();	// Перед тем как войти в режим Sleep нужно вызвать функцию HAL_SuspendTick(), которая отключит прерывания от SysTick.
+				HAL_PWR_EnterSLEEPMode(PWR_MAINREGULATOR_ON, PWR_SLEEPENTRY_WFI);
+				
+				// выход из сна
+				HAL_ResumeTick();		// При выходе из режима включаем эти прерывания функцией HAL_ResumeTick()
+				HAL_IWDG_Refresh(&hiwdg);
+				
+//				// обратная перенастройка вачдога на 2с
+//				hiwdg.Instance = IWDG;
+//				hiwdg.Init.Prescaler = IWDG_PRESCALER_128;
+//				hiwdg.Init.Reload = 500;
+//				HAL_IWDG_Init(&hiwdg);
+				
+				HAL_RTCEx_DeactivateWakeUpTimer(&hrtc);	// остановить WakeUp
+			}
+		}
+		
 		
     /* USER CODE END WHILE */
 
@@ -166,9 +218,11 @@ void SystemClock_Config(void)
   /** Initializes the RCC Oscillators according to the specified parameters
   * in the RCC_OscInitTypeDef structure.
   */
-  RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSE|RCC_OSCILLATORTYPE_LSE;
+  RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_LSI|RCC_OSCILLATORTYPE_HSE
+                              |RCC_OSCILLATORTYPE_LSE;
   RCC_OscInitStruct.HSEState = RCC_HSE_ON;
   RCC_OscInitStruct.LSEState = RCC_LSE_ON;
+  RCC_OscInitStruct.LSIState = RCC_LSI_ON;
   RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;
   RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSE;
   RCC_OscInitStruct.PLL.PLLM = 12;
@@ -292,6 +346,41 @@ static void MX_ADC1_Init(void)
 }
 
 /**
+  * @brief IWDG Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_IWDG_Init(void)
+{
+
+  /* USER CODE BEGIN IWDG_Init 0 */
+	
+	// WDG тактируется от LSI RC (32кГц), 
+	// соответственно он досчитает до нуля через 1 секунду. 
+	// 32кГц / 128 = 250 тиков в секунду, 
+	// 500 / 250 = 2 сек. 
+	// Если мы не сбросим счётчик в течении этого времени, то он обресетит МК.
+	// HAL_IWDG_Refresh(&hiwdg); // сброс WatchDog'а
+	
+  /* USER CODE END IWDG_Init 0 */
+
+  /* USER CODE BEGIN IWDG_Init 1 */
+
+  /* USER CODE END IWDG_Init 1 */
+//  hiwdg.Instance = IWDG;
+//  hiwdg.Init.Prescaler = IWDG_PRESCALER_128;
+//  hiwdg.Init.Reload = 312;
+//  if (HAL_IWDG_Init(&hiwdg) != HAL_OK)
+//  {
+//    Error_Handler();
+//  }
+  /* USER CODE BEGIN IWDG_Init 2 */
+
+  /* USER CODE END IWDG_Init 2 */
+
+}
+
+/**
   * @brief RTC Initialization Function
   * @param None
   * @retval None
@@ -401,6 +490,12 @@ static void MX_RTC_Init(void)
   sAlarm.AlarmDateWeekDay = RTC_WEEKDAY_MONDAY;
   sAlarm.Alarm = RTC_ALARM_A;
   if (HAL_RTC_SetAlarm_IT(&hrtc, &sAlarm, RTC_FORMAT_BIN) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /** Enable the WakeUp
+  */
+  if (HAL_RTCEx_SetWakeUpTimer_IT(&hrtc, 60, RTC_WAKEUPCLOCK_CK_SPRE_16BITS) != HAL_OK)
   {
     Error_Handler();
   }
@@ -569,7 +664,7 @@ static void MX_TIM2_Init(void)
 
   /* USER CODE END TIM2_Init 1 */
   htim2.Instance = TIM2;
-  htim2.Init.Prescaler = 50;
+  htim2.Init.Prescaler = 50000;
   htim2.Init.CounterMode = TIM_COUNTERMODE_UP;
   htim2.Init.Period = 1000;
   htim2.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
@@ -722,6 +817,11 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 void HAL_RTC_AlarmAEventCallback(RTC_HandleTypeDef *hrtc)
 {
    pAVR->avr_states.flagSaveInfoSD = SET;		// необходимо сохранить всю инфу на флеш
+}
+
+void HAL_RTCEx_WakeUpTimerEventCallback(RTC_HandleTypeDef *hrtc)
+{
+
 }
 
 void set_BKP0R(uint32_t signature)

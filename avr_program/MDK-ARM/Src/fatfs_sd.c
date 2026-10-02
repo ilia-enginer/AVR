@@ -263,6 +263,8 @@ static BYTE SD_SendCmd(BYTE cmd, uint32_t arg)
 
 static uint8_t SD_Card_Test(void)
 {
+	if(pAVR->err.array_flags[ERR_SD_CARD]) return 0;
+	
   do
   {
     //------------------[ Mount The SD Card ]--------------------
@@ -374,6 +376,8 @@ uint8_t SD_Init(void)
 char buff[SD_BUF_LEN] = {0, };
 uint8_t recLog(char* text)
 {
+	if(pAVR->err.array_flags[ERR_SD_CARD]) return 0;
+	
 	HAL_RTC_GetTime(&hrtc, &sTime, RTC_FORMAT_BIN); 				// RTC_FORMAT_BIN , RTC_FORMAT_BCD
 	HAL_RTC_GetDate(&hrtc, &DateToUpdate, RTC_FORMAT_BIN);
 	
@@ -393,6 +397,8 @@ uint8_t recLog(char* text)
 // buf - указатель на буфер, в который запишет для записи
 uint8_t readFileSdCard (char* nameFile, char* buf)
 {
+	if(pAVR->err.array_flags[ERR_SD_CARD]) return 0;
+	
 	do
   {
     //------------------[ Mount The SD Card ]--------------------
@@ -442,6 +448,8 @@ uint8_t readFileSdCard (char* nameFile, char* buf)
 // возвращает 1 если все в порядке, 0 если ошибка
 uint8_t recFileSdCard (char* nameFile, char* text, uint8_t flagOverwrite)
 {
+	if(pAVR->err.array_flags[ERR_SD_CARD]) return 0;
+	
 	do
   {
     //------------------[ Mount The SD Card ]--------------------

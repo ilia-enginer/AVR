@@ -11,6 +11,7 @@
 #include "touch.h"
 
 static uint8_t flagTO = RESET;		// для обновления даты ТО
+static uint8_t flagEngineTimeout = RESET;		// для смены флага непрерывной работы
 // обновлять главное меню не чаще, чем раз в 1с
 static uint32_t time_update = 0;
 
@@ -42,6 +43,33 @@ void secondMain (void)
 		else if(status == NO)
 		{
 			flagTO = RESET;
+			menuChangeState(SECOND_MENU);
+		}
+		return;
+	}
+	// непрерывная работа
+	if(flagEngineTimeout)
+	{
+		if(pAVR->engine.flagTimeout)
+			status = confirmClick("Вкл. работу ДВС без перерывов? (Не желательно)");	
+		else
+			status = confirmClick("Выкл. непрерывную работу ДВС?");
+			
+		if(status == YES)
+		{
+			if(pAVR->engine.flagTimeout){
+				pAVR->engine.flagTimeout = RESET;
+			}
+			else{
+				pAVR->engine.flagTimeout = SET;
+			}
+				
+			flagEngineTimeout = RESET;
+			menuChangeState(SECOND_MENU);
+		}
+		else if(status == NO)
+		{
+			flagEngineTimeout = RESET;
 			menuChangeState(SECOND_MENU);
 		}
 		return;
@@ -96,6 +124,11 @@ void secondMain (void)
 			menuChangeState(GET_V_MENU);	// Напряжения инфо
 			return;
 		}	
+		// если нажатие на непрерывную работу
+		else if(pAVR->touch.x >= x+25 && pAVR->touch.x <= 320 && pAVR->touch.y >= y + (yInc * 8) && pAVR->touch.y <= y + (yInc * 9)) {
+			flagEngineTimeout = SET;
+			return;
+		}	
 	}
 
 	if(HAL_GetTick() - time_update < 1000)	return;
@@ -141,6 +174,14 @@ void secondMain (void)
 	ILI9341_WriteString(x, y, buf, Font_11x18, WHITE, MYFON);
 	y += yInc;
 	
+	//------------ Непрерывная работа -----------------------
+	snprintf(buf, BUF_LEN, "Непрерывная работа двс");
+	ILI9341_WriteString(x+25, y, buf, Font_11x18, WHITE, MYFON);
+	ILI9341_Draw_Hollow_Circle(300, y+10, 9, WHITE);
+	ILI9341_Draw_Hollow_Circle(300, y+10, 10, WHITE);	
+	if(!pAVR->engine.flagTimeout)
+		ILI9341_Draw_Filled_Circle(300, y+10, 5, WHITE);
+	y += yInc;
 	
 	//------------ слева снизу иконка перехода на шаг назад -----------------------
 	ILI9341_Draw_Rectangle(5, 200, 30, 5, WHITE);
@@ -199,7 +240,7 @@ void startEngineGet(void)
 	notification(header, buf, 0, SECOND_MENU);
 }
 
-// меню ручного переключения реле (мотора)
+
 static uint8_t flag_exit = RESET;
 static uint8_t flag_change = RESET;
 
@@ -207,7 +248,7 @@ static uint8_t flag_main_rele = RESET;
 static uint8_t flag_zazhig_rele = RESET;
 static uint8_t flag_starter_rele = RESET;
 static uint8_t flag_podsos_rele = RESET;
-
+// меню ручного переключения реле (мотора)
 void manualRelaySwitchMenu(void)
 {
 	uint16_t y = 5;				// начальные координаты
@@ -314,8 +355,19 @@ void manualRelaySwitchMenu(void)
 				pAVR->engine.starterRotationTime = realToUnix();	// засечь время начала вращения стартером
 				// если включена зарядка - выключить
 				charge_ON_OFF(RESET);
-				RELE_STARTER_ON();
-				recLog("Пользователь - включено реле стартера");
+				
+				// если двигатель заглушен
+				if(pAVR->v_t.v_motor < STOP_DETECT_VOLTAGE)
+				{
+					// включить стартер
+					RELE_STARTER_ON();
+					recLog("Пользователь - включено реле стартера");
+				}
+				else
+				{
+					notification("Ошибка!!!", "Попытка включения стартера при заведенном ДВС", 15, pAVR->avr_states.menu_state);
+					recLog("Попытка включения стартера при заведенном ДВС");
+				}
 			}
 		}
 		else if(status == NO)	{

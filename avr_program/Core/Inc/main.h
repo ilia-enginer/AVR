@@ -72,6 +72,7 @@ void Error_Handler(void);
 void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef* hadc);
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin);
 void HAL_RTC_AlarmAEventCallback(RTC_HandleTypeDef *hrtc);
+void HAL_RTCEx_WakeUpTimerEventCallback(RTC_HandleTypeDef *hrtc);
 void set_BKP0R(uint32_t signature);
 
 void prvGetRegistersFromStack(uint32_t *pulFaultStackAddress);

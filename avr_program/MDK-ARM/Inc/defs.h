@@ -64,7 +64,7 @@
 
 #define LONG_PRESS_RESET				(10000)		// 10c если нажатие на экран дольше этого - перезагрузится проц
 #define LONG_PRESS_MAIN_MENU		(5000)		// 5c если нажатие на экран дольше этого - переход в главное меню
-#define LONG_NO_PRESS_MAIN_MENU	(300000)	// 5мин. если в течение этого времени не было нажатия на экран - перейти в главное меню
+#define LONG_NO_PRESS_MAIN_MENU	(300000)	// 5мин. если в течение этого времени не было нажатия на экран - перейти в главное меню 
 
 
 // ------- двигатель -------
@@ -140,6 +140,7 @@ typedef enum  {
 		WARN_NECESSITY_TECH_INSP,					// необходимо провести тех. осмотр
 		WARN_CHARGE_AKB,									// необходимо зарядить акб
 		WARN_BREAK_ENGINE,								// необходим перерыв двигателя
+		WARN_NO_BREAK_ENGINE,							// непрерывная работа двигателя
 
 }WARN_WARIANTS;
 
@@ -254,6 +255,7 @@ typedef struct {
 	
 	// моточасы				
 	uint32_t engineHoursTotal;						// моточасы всего
+	uint32_t engineMinutesTotal;					// мотоминуты всего
 	uint32_t engineHoursTO;								// моточасы после ТО
 	uint32_t engineMinutesTO;							// мотоминуты после ТО
 	uint32_t hoursBeforeTO;								// моточасы до ТО
@@ -323,6 +325,7 @@ extern SPI_HandleTypeDef hspi1;
 extern SPI_HandleTypeDef hspi2;
 extern TIM_HandleTypeDef htim2;
 extern ADC_HandleTypeDef hadc1;
+extern IWDG_HandleTypeDef hiwdg;
 extern RTC_HandleTypeDef hrtc;
 
 

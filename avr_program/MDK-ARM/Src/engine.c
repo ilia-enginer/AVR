@@ -4,6 +4,8 @@
 
 #include "engine.h"
 #include "main.h"
+#include "popUpWindow.h"
+
 
 
 /*
@@ -290,9 +292,19 @@ void engineWork(void)
 			}
 			//засечь время начала работы стартераpAVR
 			pAVR->engine.starterRotationTime = realToUnix();
-			// включить стартер
-			RELE_STARTER_ON();
-			recLog("Стартер включен");
+			
+			// если двигатель заглушен
+			if(pAVR->v_t.v_motor < STOP_DETECT_VOLTAGE)
+			{
+				// включить стартер
+				RELE_STARTER_ON();
+				recLog("Стартер включен");
+			}
+			else
+			{
+				notification("Ошибка!!!", "Попытка включения стартера при заведенном ДВС", 15, pAVR->avr_states.menu_state);
+				recLog("Попытка включения стартера при заведенном ДВС");
+			}
 			return;
 		}
 		// если крутит больше чем надо
@@ -582,30 +594,59 @@ uint8_t releZajigOnOff(uint8_t status)
 // инкремент моточасов
 void incrementEngineHours(void)
 {
-	// pAVR->engine.workingTime
+	uint32_t minutes = pAVR->engine.workingTime / 60;
+	uint32_t minutesBeforeTO;
 	
-//	uint32_t engineHoursTotal;						// моточасы всего
-
-//	uint32_t engineHoursTO;								// моточасы после ТО
-//	uint32_t engineMinutesTO;							// мотоминуты после ТО
-//	uint32_t hoursBeforeTO;								// моточасы до ТО
-//	uint32_t minutesBeforeTO;							// мотоминуты до ТО
-
-
-
-			//??? // приплюсовать моточасы после ТО
-			// минусовать моточасы до ТО
-			// приплюсовать моточасы всего
+	// моточасы всего
+	pAVR->sdParams.engineMinutesTotal += minutes;
+	while(pAVR->sdParams.engineMinutesTotal >= 60)
+	{
+		if(pAVR->sdParams.engineMinutesTotal >= 60)
+		{
+			pAVR->sdParams.engineHoursTotal++;
+			pAVR->sdParams.engineMinutesTotal -= 60;
+		}
 	
+	}
 	
-	// прибавить к общему счетчику моточасов
-//	volatile uint32_t temp = pAVR->engine.workingTime / 3600;	// вычисляю часы
-//	uint32_t temp1 = 
+	// моточасы после ТО
+	pAVR->sdParams.engineMinutesTO += minutes;
+	while(pAVR->sdParams.engineMinutesTO >= 60)
+	{
+		if(pAVR->sdParams.engineMinutesTO >= 60)
+		{
+			pAVR->sdParams.engineHoursTO++;
+			pAVR->sdParams.engineMinutesTO -= 60;
+		}
+	}
 	
-	
-	
-//	pAVR->sdParams.engineHoursTotal += temp;
-//	pAVR->sdParams.minutesALLWithoutElectric += (uint32_t)powerOutageTime - ((uint32_t)temp * 3600);	// минуты
+	// моточасы после до ТО
+	if(((pAVR->sdParams.engineHoursTO * 60) + pAVR->sdParams.engineMinutesTO) < (INTERVAL_TO_HOURS * 60))
+	{
+		minutesBeforeTO = (INTERVAL_TO_HOURS * 60) - ((pAVR->sdParams.engineHoursTO * 60) + pAVR->sdParams.engineMinutesTO);
+		
+		pAVR->sdParams.hoursBeforeTO = INTERVAL_TO_HOURS;
+		pAVR->sdParams.minutesBeforeTO = 0;
+		
+		while(minutesBeforeTO >= 60)
+		{
+			if(minutesBeforeTO >= 60)
+			{
+				minutesBeforeTO -= 60;
+				pAVR->sdParams.hoursBeforeTO--;
+			}
+		}
+		if((pAVR->sdParams.hoursBeforeTO) && (minutesBeforeTO))
+		{
+			pAVR->sdParams.hoursBeforeTO--;
+			pAVR->sdParams.minutesBeforeTO = minutesBeforeTO;
+		}
+	}
+	else
+	{
+		pAVR->sdParams.hoursBeforeTO = 0;
+		pAVR->sdParams.minutesBeforeTO = 0;
+	}
 }
 
 
