@@ -62,9 +62,9 @@ void checkErr(void)
 	{
 		if((realToUnix() - pAVR->engine.starterRotationTime) >= MAX_STARTER_OPERATING_TIME)
 		{
-			RELE_STARTER_OFF();
+			releStarterOnOff(RESET);
 			recLog("Реле стартера отключено автоматикой");
-			notification("Уведомление", "Реле стартера отключено автоматикой", 15, pAVR->avr_states.menu_state);
+			notification("Уведомление", "Реле стартера отключено автоматикой", 15, MANUAL_RELE_SWITCH);	// перейти в меню переключения реле
 		}
 	}
 	

@@ -10,31 +10,38 @@
 void switchPowerCircuitBreaker(uint32_t status)
 {
 	// отключить питание дома
-	if(status == POWER_IS_OFF)
+	if((status == POWER_IS_OFF) &&
+			(pAVR->avr_states.power_grid_mode != POWER_IS_OFF))
 	{
 		RELE_SOST_1_OFF();
 		RELE_SOST_2_OFF();
 		HAL_Delay(1);
 		RELE_SOST_0_ON();
+		HAL_Delay(3000);
+		RELE_SOST_0_OFF();
 		pAVR->avr_states.power_grid_mode = POWER_IS_OFF;
 		recLog("Переключение силового автомата авр, POWER_IS_OFF");
 	}
 	// питание от внешней сети
-	else if(status == EXTERNAL_POWER)
+	else if((status == EXTERNAL_POWER) &&
+					(pAVR->avr_states.power_grid_mode != EXTERNAL_POWER))
 	{
 		RELE_SOST_0_OFF();
 		RELE_SOST_2_OFF();
 		HAL_Delay(1);
 		RELE_SOST_1_ON();
+		pAVR->avr_states.power_grid_mode = EXTERNAL_POWER;
 		recLog("Переключение силового автомата авр, EXTERNAL_POWER");
 	}
 	// питание от генератора
-	else if(status == POWERED_BY_GENERATOR)
+	else if((status == POWERED_BY_GENERATOR) && 
+					(pAVR->avr_states.power_grid_mode != POWERED_BY_GENERATOR))
 	{
 		RELE_SOST_0_OFF();
 		RELE_SOST_1_OFF();
 		HAL_Delay(1);
 		RELE_SOST_2_ON();
+		pAVR->avr_states.power_grid_mode = POWERED_BY_GENERATOR;
 		recLog("Переключение силового автомата авр, POWERED_BY_GENERATOR");
 	}
 }
@@ -102,8 +109,12 @@ void powerAutomationControl(void)
 			// если автоматический режим
 			if(pAVR->avr_states.powerAutoManual == AVR_AUTO) {
 				// если двигатель еще работает(например после последнего отключения)
-				if(pAVR->engine.status == ENGINE_COOLING) 
+				if(pAVR->engine.status == ENGINE_COOLING){
 					startStopEngine(SET);	// перевести двигатель в рабочий режим
+				}
+				
+				// записать время отключения
+				powerOutageTime = realToUnix();
 			}
 		}
 		// если напряжения нет в течении 30 сек и двигатель не в рабочем режиме 

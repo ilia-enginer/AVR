@@ -63,7 +63,6 @@ RTC_HandleTypeDef hrtc;
 SPI_HandleTypeDef hspi1;
 SPI_HandleTypeDef hspi2;
 
-TIM_HandleTypeDef htim1;
 TIM_HandleTypeDef htim2;
 
 /* USER CODE BEGIN PV */
@@ -85,7 +84,6 @@ static void MX_SPI1_Init(void);
 static void MX_SPI2_Init(void);
 static void MX_TIM2_Init(void);
 static void MX_RTC_Init(void);
-static void MX_TIM1_Init(void);
 static void MX_IWDG_Init(void);
 /* USER CODE BEGIN PFP */
 
@@ -130,7 +128,6 @@ int main(void)
   MX_SPI2_Init();
   MX_TIM2_Init();
   MX_RTC_Init();
-  MX_TIM1_Init();
   MX_FATFS_Init();
   MX_IWDG_Init();
   /* USER CODE BEGIN 2 */
@@ -145,50 +142,74 @@ int main(void)
   {
 		work();
 		
-		// если экран погашен и двигатель заглушен и не включена зарядка - сон на 1 мин
+		// если экран погашен и двигатель заглушен и не включена зарядка - сон на 28 сек
 		if((BRIGHTNESS_GET_TFT == NULL_BRIGHTNESS) &&
-				(pAVR->engine.status == ENGINE_STOPPED) &&
+				((pAVR->engine.status == ENGINE_STOPPED) || (pAVR->engine.status == ENGINE_TIMEOUT)) &&
 				(!pAVR->avr_states.flagCharge))
 		{
-			// настройка WakeUp срабатывание раз в минуту
-			if(HAL_RTCEx_SetWakeUpTimer_IT(&hrtc, 60, RTC_WAKEUPCLOCK_CK_SPRE_16BITS) == HAL_OK)
-			{			
-				// 1 вариант, но часы не работают
-//				// PWR_LOWPOWERREGULATOR_ON — регулятор напряжения работает в режиме пониженного энергопотребления, но возникает дополнительная задержка при выходе из режима.
-//				// PWR_MAINREGULATOR_ON — регулятор напряжения работает в обычном режиме. Потребление энергии увеличивается, но время выхода из режима сокращается.
-//				// PWR_SLEEPENTRY_WFI — (Wait for Interrupt) — выход из режима произойдёт при возникновении прерывания.
-//				// PWR_SLEEPENTRY_WFE — (Wait for Event) — выход из режима произойдёт при возникновении события.
-//				HAL_PWR_EnterSTOPMode(PWR_LOWPOWERREGULATOR_ON, PWR_STOPENTRY_WFI); 
-//				// после wakeup'а программа стартует отсюда
-//				SystemClock_Config(); // рестартуем системный клок
+			// Если система выходит из режима Standby/Sleep по изменению на выводе WKUP (SYS_WKUP), 
+			// перед следующим входом в этот режим необходимо программно сбросить флаг PWR_FLAG_WU в регистре PWR_CSR.
+			__HAL_PWR_CLEAR_FLAG(PWR_FLAG_WU);
+			// Если пробуждение происходит по таймеру RTC, нужно сбросить флаг
+			__HAL_RTC_WAKEUPTIMER_CLEAR_FLAG(&hrtc, RTC_FLAG_WUTF);
+			
+			// настройка WakeUp срабатывание раз в 28сек
+			if(HAL_RTCEx_SetWakeUpTimer_IT(&hrtc, 28, RTC_WAKEUPCLOCK_CK_SPRE_16BITS) == HAL_OK)
+			{	
+				#ifndef ___DEBUG
+					// если низкий разряд акб - выключить светодиоды
+					if(pAVR->v_t.v_bat <= U_AKB_MIN_1)
+					{
+						LED_OFF();
+						LED_ERROR_OFF();
+						
+						// если нет внешнего питания и двигатель заглушен - выключить релюхи силового автомата
+						if(pAVR->avr_states.extPowerSupply == EXT_POWER_OFF)
+						{
+							switchPowerCircuitBreaker(POWER_IS_OFF);
+						}
+					}
+					
+						// перенастройка вачдога на ~32 секунды
+						// Разрешить тактирование
+						IWDG->KR = 0xCCCC;
+						// Открыть доступ к регистрам
+						IWDG->KR = 0x5555;
+						// Установить начальное значение счётчика (RL)
+						IWDG->RLR = 4095;
+						// Закрыть доступ
+						IWDG->KR = 0x0000;
+						// Сразу после запуска «перезагрузить» счётчик
+						IWDG->KR = 0xAAAA;
+					
+					// вход в сон
+					__HAL_RCC_DMA2_CLK_DISABLE();
+					__HAL_RCC_ADC1_CLK_DISABLE();
+					__HAL_RCC_SPI1_CLK_DISABLE();
+					
+					// PWR_LOWPOWERREGULATOR_ON — регулятор напряжения работает в режиме пониженного энергопотребления, но возникает дополнительная задержка при выходе из режима.
+					// PWR_MAINREGULATOR_ON — регулятор напряжения работает в обычном режиме. Потребление энергии увеличивается, но время выхода из режима сокращается.
+					// PWR_SLEEPENTRY_WFI — (Wait for Interrupt) — выход из режима произойдёт при возникновении прерывания.
+					// PWR_SLEEPENTRY_WFE — (Wait for Event) — выход из режима произойдёт при возникновении события.
+					HAL_PWR_EnterSTOPMode(PWR_LOWPOWERREGULATOR_ON, PWR_STOPENTRY_WFI); 
+					// после wakeup'а программа стартует отсюда
+					SystemClock_Config(); // рестартуем системный клок
+					
+						IWDG->KR = 0xAAAA;	
+						// обратная перенастройка вачдога на 2с
+						IWDG->KR = 0xCCCC;
+						IWDG->KR = 0x5555;
+						IWDG->RLR = 250;
+						IWDG->KR = 0x0000;
+						IWDG->KR = 0xAAAA;
+					
+					HAL_RTCEx_DeactivateWakeUpTimer(&hrtc);	// остановить WakeUp
+					
+					__HAL_RCC_DMA2_CLK_ENABLE();
+					__HAL_RCC_ADC1_CLK_ENABLE();
+					__HAL_RCC_SPI1_CLK_ENABLE();
 				
-				// 2 вариант
-				// если установить бит SLEEPONEXIT, то программа будет входить в этот режим только после того, как закончится обработка последнего прерывания. 
-				// Если очистить бит, то вход произойдёт сразу же после вызова HAL_PWR_EnterSLEEPMode()
-				//HAL_PWR_EnableSleepOnExit(); // установить
-				
-				// перенастройка вачдога на 62 секунды
-//				hiwdg.Instance = IWDG;
-//				hiwdg.Init.Prescaler = IWDG_PRESCALER_256;
-//				hiwdg.Init.Reload = 65000;
-//				HAL_IWDG_Init(&hiwdg);
-//				HAL_IWDG_Refresh(&hiwdg);
-				
-				// вход в сон
-				HAL_SuspendTick();	// Перед тем как войти в режим Sleep нужно вызвать функцию HAL_SuspendTick(), которая отключит прерывания от SysTick.
-				HAL_PWR_EnterSLEEPMode(PWR_MAINREGULATOR_ON, PWR_SLEEPENTRY_WFI);
-				
-				// выход из сна
-				HAL_ResumeTick();		// При выходе из режима включаем эти прерывания функцией HAL_ResumeTick()
-				HAL_IWDG_Refresh(&hiwdg);
-				
-//				// обратная перенастройка вачдога на 2с
-//				hiwdg.Instance = IWDG;
-//				hiwdg.Init.Prescaler = IWDG_PRESCALER_128;
-//				hiwdg.Init.Reload = 500;
-//				HAL_IWDG_Init(&hiwdg);
-				
-				HAL_RTCEx_DeactivateWakeUpTimer(&hrtc);	// остановить WakeUp
+				#endif
 			}
 		}
 		
@@ -356,24 +377,25 @@ static void MX_IWDG_Init(void)
   /* USER CODE BEGIN IWDG_Init 0 */
 	
 	// WDG тактируется от LSI RC (32кГц), 
-	// соответственно он досчитает до нуля через 1 секунду. 
-	// 32кГц / 128 = 250 тиков в секунду, 
-	// 500 / 250 = 2 сек. 
+	// 32кГц / 256 = 125 тиков в секунду, 
+	// 250 / 125 = 2 сек. 
 	// Если мы не сбросим счётчик в течении этого времени, то он обресетит МК.
 	// HAL_IWDG_Refresh(&hiwdg); // сброс WatchDog'а
 	
   /* USER CODE END IWDG_Init 0 */
 
   /* USER CODE BEGIN IWDG_Init 1 */
-
+	#ifdef ___DEBUG
+		return;
+	#endif
   /* USER CODE END IWDG_Init 1 */
-//  hiwdg.Instance = IWDG;
-//  hiwdg.Init.Prescaler = IWDG_PRESCALER_128;
-//  hiwdg.Init.Reload = 312;
-//  if (HAL_IWDG_Init(&hiwdg) != HAL_OK)
-//  {
-//    Error_Handler();
-//  }
+  hiwdg.Instance = IWDG;
+  hiwdg.Init.Prescaler = IWDG_PRESCALER_256;
+  hiwdg.Init.Reload = 250;
+  if (HAL_IWDG_Init(&hiwdg) != HAL_OK)
+  {
+    Error_Handler();
+  }
   /* USER CODE BEGIN IWDG_Init 2 */
 
   /* USER CODE END IWDG_Init 2 */
@@ -495,7 +517,7 @@ static void MX_RTC_Init(void)
   }
   /** Enable the WakeUp
   */
-  if (HAL_RTCEx_SetWakeUpTimer_IT(&hrtc, 60, RTC_WAKEUPCLOCK_CK_SPRE_16BITS) != HAL_OK)
+  if (HAL_RTCEx_SetWakeUpTimer_IT(&hrtc, 28, RTC_WAKEUPCLOCK_CK_SPRE_16BITS) != HAL_OK)
   {
     Error_Handler();
   }
@@ -578,70 +600,6 @@ static void MX_SPI2_Init(void)
   /* USER CODE BEGIN SPI2_Init 2 */
 
   /* USER CODE END SPI2_Init 2 */
-
-}
-
-/**
-  * @brief TIM1 Initialization Function
-  * @param None
-  * @retval None
-  */
-static void MX_TIM1_Init(void)
-{
-
-  /* USER CODE BEGIN TIM1_Init 0 */
-
-  /* USER CODE END TIM1_Init 0 */
-
-  TIM_MasterConfigTypeDef sMasterConfig = {0};
-  TIM_OC_InitTypeDef sConfigOC = {0};
-  TIM_BreakDeadTimeConfigTypeDef sBreakDeadTimeConfig = {0};
-
-  /* USER CODE BEGIN TIM1_Init 1 */
-
-  /* USER CODE END TIM1_Init 1 */
-  htim1.Instance = TIM1;
-  htim1.Init.Prescaler = 0;
-  htim1.Init.CounterMode = TIM_COUNTERMODE_UP;
-  htim1.Init.Period = 65535;
-  htim1.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
-  htim1.Init.RepetitionCounter = 0;
-  htim1.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
-  if (HAL_TIM_PWM_Init(&htim1) != HAL_OK)
-  {
-    Error_Handler();
-  }
-  sMasterConfig.MasterOutputTrigger = TIM_TRGO_RESET;
-  sMasterConfig.MasterSlaveMode = TIM_MASTERSLAVEMODE_DISABLE;
-  if (HAL_TIMEx_MasterConfigSynchronization(&htim1, &sMasterConfig) != HAL_OK)
-  {
-    Error_Handler();
-  }
-  sConfigOC.OCMode = TIM_OCMODE_PWM1;
-  sConfigOC.Pulse = 0;
-  sConfigOC.OCPolarity = TIM_OCPOLARITY_HIGH;
-  sConfigOC.OCFastMode = TIM_OCFAST_DISABLE;
-  sConfigOC.OCIdleState = TIM_OCIDLESTATE_RESET;
-  sConfigOC.OCNIdleState = TIM_OCNIDLESTATE_RESET;
-  if (HAL_TIM_PWM_ConfigChannel(&htim1, &sConfigOC, TIM_CHANNEL_4) != HAL_OK)
-  {
-    Error_Handler();
-  }
-  sBreakDeadTimeConfig.OffStateRunMode = TIM_OSSR_DISABLE;
-  sBreakDeadTimeConfig.OffStateIDLEMode = TIM_OSSI_DISABLE;
-  sBreakDeadTimeConfig.LockLevel = TIM_LOCKLEVEL_OFF;
-  sBreakDeadTimeConfig.DeadTime = 0;
-  sBreakDeadTimeConfig.BreakState = TIM_BREAK_DISABLE;
-  sBreakDeadTimeConfig.BreakPolarity = TIM_BREAKPOLARITY_HIGH;
-  sBreakDeadTimeConfig.AutomaticOutput = TIM_AUTOMATICOUTPUT_DISABLE;
-  if (HAL_TIMEx_ConfigBreakDeadTime(&htim1, &sBreakDeadTimeConfig) != HAL_OK)
-  {
-    Error_Handler();
-  }
-  /* USER CODE BEGIN TIM1_Init 2 */
-
-  /* USER CODE END TIM1_Init 2 */
-  HAL_TIM_MspPostInit(&htim1);
 
 }
 

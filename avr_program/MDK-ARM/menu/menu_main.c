@@ -17,6 +17,9 @@
 // смена менюшки
 void menuChangeState (uint32_t state)
 {
+	pAVR->touch.x = 0;
+	pAVR->touch.y = 0;
+	
 	// главное меню
 	if(state == MAIN_MENU)	{
 		ILI9341_Fill_Screen(MYFON);	// залить экран

@@ -76,7 +76,7 @@ uint8_t startStopEngine(uint32_t status)
 		// если статус двигателя	ЗАПУСК или отдых стартера
 		if((pAVR->engine.status == ENGINE_START) ||
 			(pAVR->engine.status == ENGINE_STARTER_REST)){
-			RELE_STARTER_OFF();											// выкл. стартер
+			releStarterOnOff(RESET);								// выкл. стартер
 			RELE_PODSOS_OFF();											// выкл. подсос
 			pAVR->engine.starterRotationTime = 0;		// сбросить счетчик кручения стартером
 			pAVR->engine.launchAttempts = 0;				// сбросить счетчик попыток последнего запуска
@@ -258,9 +258,9 @@ void engineWork(void)
 	{
 		// если двигатель в ошибке
 		if(checkErrEngine()){		
-			RELE_STARTER_OFF();
+			RELE_ZAJIG_OFF();
 			RELE_PODSOS_OFF();
-			releZajigOnOff(RESET);
+			releStarterOnOff(RESET);
 			// статус двигателя - ОСТАНОВЛЕН
 			pAVR->engine.status = ENGINE_STOPPED;
 			recLog("Новый статус двигателя - ОСТАНОВЛЕН");
@@ -270,13 +270,7 @@ void engineWork(void)
 		else if(!HAL_GPIO_ReadPin(RELE_STARTER_GPIO_Port, RELE_STARTER_Pin))
 		{
 			// включить зажигание
-			if(!releZajigOnOff(SET))
-			{
-				// статус двигателя - ОСТАНОВЛЕН
-				pAVR->engine.status = ENGINE_STOPPED;
-				recLog("Новый статус двигателя - ОСТАНОВЛЕН");
-				return;
-			}
+			RELE_ZAJIG_ON();
 			// если необходимо вкл подсос и не включен
 			if((pAVR->v_t.t_cpu < WINTER_MODE_TEMPERATURE) &&
 					(!HAL_GPIO_ReadPin(RELE_PODSOS_GPIO_Port, RELE_PODSOS_Pin)))
@@ -311,9 +305,9 @@ void engineWork(void)
 		else if(HAL_GPIO_ReadPin(RELE_STARTER_GPIO_Port, RELE_STARTER_Pin) &&
 						((realToUnix() - pAVR->engine.starterRotationTime) >= MAX_STARTER_OPERATING_TIME))
 		{
-			RELE_STARTER_OFF();
+			releStarterOnOff(RESET);
 			RELE_PODSOS_OFF();
-			releZajigOnOff(RESET);
+			RELE_ZAJIG_OFF();
 			pAVR->engine.starterRotationTime = 0;		// сбросить счетчик кручения стартером
 			pAVR->engine.starterTimeoutTime = realToUnix();	// засечь время начала отдыха стартера
 			pAVR->engine.launchAttempts++;				// инкрементировать попытку последнего запуска
@@ -339,7 +333,7 @@ void engineWork(void)
 			// если завелся	
 			if(pAVR->v_t.v_motor >= START_DETECT_VOLTAGE)
 			{
-				RELE_STARTER_OFF();
+				releStarterOnOff(RESET);
 				RELE_PODSOS_OFF();
 				pAVR->engine.starterRotationTime = 0;	// сбросить счетчик кручения стартером
 				pAVR->engine.launchAttempts = 0;			// сбросить счетчик попыток последнего запуска
@@ -373,9 +367,9 @@ void engineWork(void)
 		// если двигатель заглох
 		if(pAVR->v_t.v_motor < STOP_DETECT_VOLTAGE)
 		{
-			RELE_STARTER_OFF();
+			releStarterOnOff(RESET);
 			RELE_PODSOS_OFF();
-			releZajigOnOff(RESET);
+			RELE_ZAJIG_OFF();
 			pAVR->engine.warmUpTime = 0;		// сбросить переменную "время прогрева"
 			setErr(ERR_ENGINE_STALLED);			// двигатель в ошибку
 			incrementEngineHours();
@@ -401,9 +395,9 @@ void engineWork(void)
 		// если двигатель заглох
 		if(pAVR->v_t.v_motor < STOP_DETECT_VOLTAGE)
 		{
-			RELE_STARTER_OFF();
+			releStarterOnOff(RESET);
 			RELE_PODSOS_OFF();
-			releZajigOnOff(RESET);
+			RELE_ZAJIG_OFF();
 			setErr(ERR_ENGINE_STALLED);			// двигатель в ошибку
 			incrementEngineHours();
 			pAVR->engine.workingTime = 0;		// обнулить переменную времени работы
@@ -449,9 +443,9 @@ void engineWork(void)
 		if(pAVR->v_t.v_motor < STOP_DETECT_VOLTAGE)
 		{
 			pAVR->engine.collingTime = 0;// сбросить переменную "время охлаждения"
-			RELE_STARTER_OFF();
+			releStarterOnOff(RESET);
 			RELE_PODSOS_OFF();
-			releZajigOnOff(RESET);
+			RELE_ZAJIG_OFF();
 			setErr(ERR_ENGINE_STALLED);			// двигатель в ошибку
 			incrementEngineHours();					// приплюсовать моточасы после ТО
 			pAVR->engine.workingTime = 0;		// обнулить переменную времени работы
@@ -464,9 +458,9 @@ void engineWork(void)
 		if((realToUnix() - pAVR->engine.collingTime) >= COLDING_TIME)
 		{
 			pAVR->engine.collingTime = 0;// сбросить переменную "время охлаждения"
-			RELE_STARTER_OFF();
+			releStarterOnOff(RESET);
 			RELE_PODSOS_OFF();
-			releZajigOnOff(RESET);
+			RELE_ZAJIG_OFF();
 			pAVR->engine.startTimeStop = realToUnix();	//записать время в переменную "начала остановки"
 			// статус - ОСТАНОВКА
 			pAVR->engine.status = ENGINE_STOP;
@@ -538,13 +532,13 @@ uint8_t checkErrEngine(void)
 	return 0;
 }
 
-uint8_t releZajigOnOff(uint8_t status)
+uint8_t releStarterOnOff(uint8_t status)
 {
 	if(status == SET)
 	{
-		if(!HAL_GPIO_ReadPin(RELE_OBSH_GPIO_Port, RELE_ZAJIG_Pin))
+		if(!HAL_GPIO_ReadPin(RELE_STARTER_GPIO_Port, RELE_STARTER_Pin))
 		{
-			RELE_ZAJIG_ON();
+			RELE_STARTER_ON();
 			HAL_Delay(50);
 			// запуск ацп
 			HAL_ADC_Start_DMA(&hadc1, (uint32_t*)&AVR.adc, ADC_CHANELS);	
@@ -552,12 +546,14 @@ uint8_t releZajigOnOff(uint8_t status)
 			float voltage = (pAVR->adc.ravADC[3] / FULL_RANGE_f * OPORA_ADC) / K_REL_STARTER;
 			// если не включилось 
 			if(voltage < 9.0f){
-				RELE_ZAJIG_OFF();
+				RELE_STARTER_OFF();
+				pAVR->engine.status = ENGINE_STOPPED;
+				recLog("Новый статус двигателя - ОСТАНОВЛЕН");
 				setErr(ERR_STARTER_RELE_ACTIVATION);
 				return 0;
 			}
 			else{
-				recLog("Включено зажигание");
+				recLog("Включен стартер");
 				return 1;
 			}
 		}
@@ -566,9 +562,9 @@ uint8_t releZajigOnOff(uint8_t status)
 	}
 	else
 	{
-		if(HAL_GPIO_ReadPin(RELE_OBSH_GPIO_Port, RELE_ZAJIG_Pin))
+		if(HAL_GPIO_ReadPin(RELE_STARTER_GPIO_Port, RELE_STARTER_Pin))
 		{
-			RELE_ZAJIG_OFF();
+			RELE_STARTER_OFF();
 			HAL_Delay(150);
 			// запуск ацп
 			HAL_ADC_Start_DMA(&hadc1, (uint32_t*)&AVR.adc, ADC_CHANELS);	
@@ -576,6 +572,10 @@ uint8_t releZajigOnOff(uint8_t status)
 			float voltage = (pAVR->adc.ravADC[3] / FULL_RANGE_f * OPORA_ADC) / K_REL_STARTER;
 			// если не выключилось 
 			if(voltage > 7.0f){
+				RELE_STARTER_OFF();
+				// статус двигателя - ОСТАНОВЛЕН
+				pAVR->engine.status = ENGINE_STOPPED;
+				recLog("Новый статус двигателя - ОСТАНОВЛЕН");
 				setErr(ERR_STARTER_RELE_SHUTDOWN);
 				return 0;
 			}
@@ -587,10 +587,9 @@ uint8_t releZajigOnOff(uint8_t status)
 		}
 		else
 			return 1;
-	
 	}
 }
-
+		
 // инкремент моточасов
 void incrementEngineHours(void)
 {

@@ -16,7 +16,7 @@ static uint8_t flagEngineTimeout = RESET;		// для смены флага не�
 static uint32_t time_update = 0;
 
 void secondMain (void)
-{	
+{
 	uint8_t status;
 	uint16_t y = 5;			// начальные координаты
 	uint16_t x = 20;		// начальные координаты
@@ -267,7 +267,7 @@ void manualRelaySwitchMenu(void)
 			flag_podsos_rele = RESET;
 			flag_exit = RESET;
 			flag_change = RESET;
-			RELE_STARTER_OFF();
+			releStarterOnOff(RESET);
 			RELE_PODSOS_OFF();
 			menuChangeState(SECOND_MENU);
 		}
@@ -319,11 +319,11 @@ void manualRelaySwitchMenu(void)
 				ILI9341_Fill_Screen(MYFON);	// залить экран
 				
 			if(HAL_GPIO_ReadPin(RELE_OBSH_GPIO_Port, RELE_ZAJIG_Pin)){
-				releZajigOnOff(RESET);
+				RELE_ZAJIG_OFF();
 				recLog("Пользователь - выключено реле зажигания");
 			}
 			else{
-				releZajigOnOff(SET);
+				RELE_ZAJIG_ON();
 				recLog("Пользователь - включено реле зажигания");
 			}
 		}

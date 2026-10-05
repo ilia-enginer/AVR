@@ -47,6 +47,9 @@ extern "C" {
 
 /* Exported types ------------------------------------------------------------*/
 /* USER CODE BEGIN ET */
+#define ___DEBUG
+
+
 
 #define U_CONFIG_HARD_FAULT_SIGNATURE (0x99BA85EE)		// Признак фатальной ошибки
 #define U_CONFIG_WACH_DOG_SIGNATURE 	(0x99BA85DF)		// Признак сброса по вачдогу

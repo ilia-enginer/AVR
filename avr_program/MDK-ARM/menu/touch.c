@@ -79,9 +79,22 @@ uint8_t getTouch (void)
 		pAVR->touch.flag_release = RESET;
 	}
 	
+	// если низкий разряд акб - экран горит не более 30с
+	if((pAVR->v_t.v_bat <= U_AKB_MIN_1) &&
+			((HAL_GetTick() - pAVR->touch.time_press) > LONG_NO_PRESS_LOW_AKB))
+	{
+		if(pAVR->avr_states.menu_state != MAIN_MENU)
+		{
+			menuChangeState(MAIN_MENU);
+		}
+		ledTFT_ON_OFF(RESET);
+	}
 	// если в течение длительного времени не было нажатия на экран - перейти в главное меню, выключить экран
-	if((HAL_GetTick() - pAVR->touch.time_press) > LONG_NO_PRESS_MAIN_MENU){
-		if(pAVR->avr_states.menu_state != MAIN_MENU)	menuChangeState(MAIN_MENU);
+	else if((HAL_GetTick() - pAVR->touch.time_press) > LONG_NO_PRESS_MAIN_MENU){
+		if(pAVR->avr_states.menu_state != MAIN_MENU)
+		{
+			menuChangeState(MAIN_MENU);
+		}
 		ledTFT_ON_OFF(RESET);
 	}
 			

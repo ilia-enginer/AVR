@@ -19,9 +19,10 @@ void work (void)
 	checkErr();								// поиск ошибок
 	
 	if(BRIGHTNESS_GET_TFT != NULL_BRIGHTNESS){
-		if(!pAVR->avr_states.oledWork)
+		if(!pAVR->avr_states.oledWork){
 			ili9341_SleepOff();
-
+		}
+		
 		menuSwich();							// экранное меню
 	}
 	
@@ -83,6 +84,8 @@ void dataCalcADC(void)
 	
 	// запуск ацп
 	HAL_ADC_Start_DMA(&hadc1, (uint32_t*)&AVR.adc, ADC_CHANELS);	
+	
+	HAL_Delay(2);
 }
 
 
