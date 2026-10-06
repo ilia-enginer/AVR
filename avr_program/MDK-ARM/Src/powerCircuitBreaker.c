@@ -137,6 +137,13 @@ void powerAutomationControl(void)
 			if(pAVR->avr_states.powerAutoManual == AVR_AUTO)			// если конечно автоматический режим работы
 				switchPowerCircuitBreaker(POWERED_BY_GENERATOR);
 		}
+		// если так вышло что время все еще не засечено - засечь
+		else if((pAVR->avr_states.extPowerSupply == EXT_POWER_OFF) &&
+						(powerOutageTime == 0))
+		{
+			// записать время отключения
+			powerOutageTime = realToUnix();
+		}
 	}
 	// при наличии питания
 	else

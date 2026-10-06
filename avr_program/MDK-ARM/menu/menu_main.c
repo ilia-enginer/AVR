@@ -9,7 +9,9 @@
 #include "menu_second.h"
 #include "menu_warn_err.h"
 #include "popUpWindow.h"
+
 #include "menu_main.h"
+
 #include "warn_err.h"
 #include "work.h"
 
@@ -19,9 +21,11 @@ void menuChangeState (uint32_t state)
 {
 	pAVR->touch.x = 0;
 	pAVR->touch.y = 0;
+	menuResetFlags();
 	
 	// главное меню
 	if(state == MAIN_MENU)	{
+		menuPopUpResetFlags();
 		ILI9341_Fill_Screen(MYFON);	// залить экран
 		pAVR->avr_states.menu_state = MAIN_MENU;
 	}
@@ -105,7 +109,6 @@ void menuSwich (void)
 	}
 }
 
-
 // главное меню
 // число, время
 // режим работы (питание от сети / питание от генератора / питание сети OFF)
@@ -132,7 +135,6 @@ void menuMain (void)
 	uint16_t y = 5;			// начальные координаты
 	uint16_t x = 20;		// начальные координаты
 	uint8_t yInc = 22;	// на сколько опускать каждую строку
-	
 	
 	// проверка перед переходом в настройки времени
 	if(flagSetTime)
@@ -372,7 +374,7 @@ void menuMain (void)
 	
 	//------------ режим работы авто/ручной -----------------------
 	if(pAVR->avr_states.powerAutoManual == AVR_AUTO)
-		snprintf(buf, BUF_LEN, "Режим управления  Авто");
+		snprintf(buf, BUF_LEN, "Режим управления  Авто  ");
 	else if(pAVR->avr_states.powerAutoManual == AVR_MANUAL)
 		snprintf(buf, BUF_LEN, "Режим управления  Ручной");
 	else
@@ -382,9 +384,9 @@ void menuMain (void)
 	
 	//------------ внешнее питание да / нет -----------------------
 	if(pAVR->avr_states.extPowerSupply == EXT_POWER_OFF)
-		snprintf(buf, BUF_LEN, "Внешнее питание   Нет");
+		snprintf(buf, BUF_LEN, "Внешнее питание   Нет   ");
 	else if(pAVR->avr_states.extPowerSupply == EXT_POWER_ON)
-		snprintf(buf, BUF_LEN, "Внешнее питание   Да");
+		snprintf(buf, BUF_LEN, "Внешнее питание   Да    ");
 	else
 		snprintf(buf, BUF_LEN, "Внешнее питание   Ошибка");
 	ILI9341_WriteString(x, y, buf, Font_11x18, WHITE, MYFON);
@@ -394,21 +396,21 @@ void menuMain (void)
 	if(pAVR->engine.status == ENGINE_STOPPED)
 		snprintf(buf, BUF_LEN, "Двс              Остановлен");
 	else if(pAVR->engine.status == ENGINE_START)
-		snprintf(buf, BUF_LEN, "Двс               Запуск");
+		snprintf(buf, BUF_LEN, "Двс               Запуск   ");
 	else if(pAVR->engine.status == ENGINE_STARTER_REST)
 		snprintf(buf, BUF_LEN, "Двс          Отдых стартера");
 	else if(pAVR->engine.status == ENGINE_WARM_UP)
-		snprintf(buf, BUF_LEN, "Двс               Прогрев");	
+		snprintf(buf, BUF_LEN, "Двс               Прогрев  ");	
 	else if(pAVR->engine.status == ENGINE_WORK)
-		snprintf(buf, BUF_LEN, "Двс               Запущен");	
+		snprintf(buf, BUF_LEN, "Двс               Запущен  ");	
 	else if(pAVR->engine.status == ENGINE_COOLING)
 		snprintf(buf, BUF_LEN, "Двс              Охлаждение");				
 	else if(pAVR->engine.status == ENGINE_STOP)
 		snprintf(buf, BUF_LEN, "Двс               Остановка");	
 	else if(pAVR->engine.status == ENGINE_TIMEOUT)
-		snprintf(buf, BUF_LEN, "Двс               Перерыв");				
+		snprintf(buf, BUF_LEN, "Двс               Перерыв  ");				
 	else 
-		snprintf(buf, BUF_LEN, "Двс               Ошибка");
+		snprintf(buf, BUF_LEN, "Двс               Ошибка   ");
 	ILI9341_WriteString(x, y, buf, Font_11x18, WHITE, MYFON);
 	y += yInc;
 	
@@ -435,18 +437,18 @@ void menuMain (void)
 	//------------ зарядка акб ON / OFF -----------------------
 	switch(pAVR->avr_states.flagCharge)
 	{
-		case RESET: snprintf(buf, BUF_LEN, "Зарядка акб       OFF");	
+		case RESET: snprintf(buf, BUF_LEN, "Зарядка акб       OFF    ");	
 			break;
-		case SET: snprintf(buf, BUF_LEN, "Зарядка акб       ON");	
+		case SET: 	snprintf(buf, BUF_LEN, "Зарядка акб       ON     ");	
 			break;
-		default:	snprintf(buf, BUF_LEN, "Зарядка акб ошибка строки");	
+		default:		snprintf(buf, BUF_LEN, "Зарядка акб ошибка строки");	
 			break;
 	}
 	ILI9341_WriteString(x, y, buf, Font_11x18, WHITE, MYFON);
 	y += yInc;
 	
 	//------------ температура воздуха -----------------------
-	snprintf(buf, BUF_LEN, "Температура возд. %.1f С", pAVR->v_t.t_cpu);
+	snprintf(buf, BUF_LEN, "Температура возд. %.1f С ", pAVR->v_t.t_cpu);
 	ILI9341_WriteString(x, y, buf, Font_11x18, WHITE, MYFON);
 	y += yInc;
 	
@@ -655,5 +657,29 @@ uint8_t switchAvrAutomatic (void)
 		}
 	}
 	return 0;
+}
+
+void menuResetFlags(void)
+{
+	flagSetTime = RESET;					// для перехода в режим настройки времени
+	flagSetData = RESET;					// для перехода в режим настройки даты
+	flagPowerAutoManual = RESET;	// для смены режимы управления ручной / авто
+	flagStatusEngine = RESET;			// для принудительного включения / выключения двс
+	flagCharge = RESET;						// для принудительного включения / выключения зарядки
+	flag_block = RESET;						// чтоб каждый раз не обновлял окно
+	flag_status_block = RESET;
+	time_update = 0;							// для задержки обновления экрана
+	
+	for(uint16_t i = 0; i < BUF_LEN; i++)
+	{
+		buf[i] = 0;
+	}
+
+	menuSecondResetFlags();
+	menuServiseResetFlags();
+	menuDataTimeResetFlags();
+	menuWarnErrResetFlags();
+	//menuPopUpResetFlags();
+	menuTouchResetFlags();
 }
 

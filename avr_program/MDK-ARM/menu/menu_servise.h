@@ -5,6 +5,6 @@
 
 
 void serviseTouch (void);
-
+void menuServiseResetFlags(void);
 
 #endif /* MENU_SERVISE_H_ */

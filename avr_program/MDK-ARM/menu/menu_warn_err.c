@@ -4,7 +4,9 @@
 
 #include "warn_err.h"
 #include "menu_main.h"
+
 #include "menu_warn_err.h"
+
 #include "ILI9341_GFX.h"
 #include "touch.h"
 #include "fatfs.h"
@@ -269,8 +271,10 @@ void menuGetWarnings (void)
 		ILI9341_WriteString(x, y, buf, Font_11x18, WHITE, MYFON);
 		y += yInc;
 	}
-
-
-
 }
 
+void menuWarnErrResetFlags(void)
+{
+	flag_clear = RESET;
+	time_update = 0;
+}

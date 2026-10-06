@@ -53,6 +53,8 @@ void checkWarn(void)
 	}
 }
 
+static time_t timeVLow = 0;			// для контроля времени
+static time_t timeVHight = 0;		// для контроля времени
 
 void checkErr(void)
 {
@@ -76,11 +78,44 @@ void checkErr(void)
 	if((pAVR->v_t.v_bat < U_AKB_MIN_0) &&
 			(pAVR->engine.status != ENGINE_START) &&
 			(pAVR->engine.status != ENGINE_STARTER_REST))	
-		setErr(ERR_LOW_VOLTAGE_AKB);
+	{
+		// если в течение минуты
+		if((timeVLow != 0) && 
+			((realToUnix() - timeVLow) > 64))
+		{
+			timeVLow = 0;
+			setErr(ERR_LOW_VOLTAGE_AKB);
+		}
+		else if(timeVLow == 0)
+		{
+			timeVLow = realToUnix();
+		}
+	}
+	else
+	{
+		timeVLow = 0;
+	}
 		
 	// высокое напряжение акб
 	if(pAVR->v_t.v_bat > U_AKB_MAX)
-		setErr(ERR_HIGHT_VOLTAGE_AKB);
+	{
+		// если в течение минуты
+		if((timeVHight != 0) && 
+			((realToUnix() - timeVHight) > 64))
+		{
+			timeVHight = 0;
+			setErr(ERR_HIGHT_VOLTAGE_AKB);
+		}
+		else if(timeVHight == 0)
+		{
+			timeVHight = realToUnix();
+		}
+	}
+	else
+	{
+		timeVHight = 0;
+	}
+	
 
 	// неисправность цепи зарядки
 	if((pAVR->v_t.v_bat < U_AKB_MIN_0) &&
@@ -164,7 +199,7 @@ void setErr(ERR_WARIANTS err)
 		// ошибка отключения реле стартера
 		case ERR_STARTER_RELE_SHUTDOWN:
 			if(!pAVR->err.array_flags[ERR_STARTER_RELE_SHUTDOWN]) {
-				RELE_OBSH_OFF();
+				RELE_OBSH_OFF();	//???
 				pAVR->err.array_flags[ERR_STARTER_RELE_SHUTDOWN] = SET;
 				pAVR->err.counter++;
 				notification("Ошибка!!!", "Отключения реле стартера", 30, pAVR->avr_states.menu_state);

@@ -1,7 +1,9 @@
 
 #include <stdio.h>
 #include "menu_main.h"
+
 #include "menu_servise.h"
+
 #include "ILI9341_GFX.h"
 #include "touch.h"
 
@@ -61,5 +63,11 @@ void serviseTouch (void)
 		if(pAVR->touch.x >= 10 && pAVR->touch.x <= 40 && pAVR->touch.y >= 10 && pAVR->touch.y <= 35) // если нажатие происходит в области этих координат
 			flagExit = SET;	
 	}
+}
+
+void menuServiseResetFlags(void)
+{
+	flagExit = RESET;
+	flagFirst = RESET;		// первый вход в функцию
 }
 

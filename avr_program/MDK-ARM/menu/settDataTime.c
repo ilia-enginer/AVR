@@ -4,7 +4,9 @@
 #include <string.h>
 
 #include "stm32f4xx.h"
+
 #include "settDataTime.h"
+
 #include "ILI9341_GFX.h"
 #include "menu_main.h"
 #include "touch.h"
@@ -463,3 +465,9 @@ void setData (void)
 	}
 }
 
+void menuDataTimeResetFlags(void)
+{
+	flagFirst = RESET;		// первый вход в функцию
+	flagSave = RESET;			// флаг сохранения
+	flagExit = RESET;			// флаг выходы
+}

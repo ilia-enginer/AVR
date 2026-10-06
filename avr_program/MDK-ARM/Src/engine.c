@@ -47,12 +47,21 @@ uint8_t startStopEngine(uint32_t status)
 	// если надо запустить
 	if(status == SET)
 	{
-		// если статус двигателя	ОСТАНОВЛЕН 
-		if(pAVR->engine.status == ENGINE_STOPPED){
-			// статус - ЗАПУСК
-			pAVR->engine.status = ENGINE_START;
-			recLog("Новый статус двигателя - запуск");
-			return 1;
+		// если статус двигателя	ОСТАНОВЛЕН и не в ошибке
+		if(pAVR->engine.status == ENGINE_STOPPED)
+		{
+			if(!checkErrEngine())
+			{
+				// статус - ЗАПУСК
+				pAVR->engine.status = ENGINE_START;
+				recLog("Новый статус двигателя - запуск");
+				return 1;
+			}
+			else
+			{
+//				notification("Уведомление", "Запуск остановлен. ДВС в ошибке", 15, pAVR->avr_states.menu_state);
+				return 0;
+			}
 		}
 		// если статус двигателя	ОХЛАЖДЕНИЕ
 		else if(pAVR->engine.status == ENGINE_COOLING){
@@ -264,6 +273,7 @@ void engineWork(void)
 			// статус двигателя - ОСТАНОВЛЕН
 			pAVR->engine.status = ENGINE_STOPPED;
 			recLog("Новый статус двигателя - ОСТАНОВЛЕН");
+			notification("Уведомление", "Запуск остановлен. ДВС в ошибке", 15, pAVR->avr_states.menu_state);
 			return;
 		}
 		// если не крутит стартером 
@@ -351,8 +361,8 @@ void engineWork(void)
 	// если статус двигателя	ОТДЫХ СТАРТЕРА	
 	else if(pAVR->engine.status == ENGINE_STARTER_REST)
 	{
-		// если прошло 3с
-		if((realToUnix() - pAVR->engine.starterTimeoutTime) >= MAX_STARTER_BREAK_TIME)
+		// если прошло время отдыха
+		if((realToUnix() - pAVR->engine.starterTimeoutTime) > MAX_STARTER_BREAK_TIME)
 		{
 			pAVR->engine.starterTimeoutTime = 0; // сбросить переменную перерыва
 			// статус ЗАПУСК

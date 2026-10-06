@@ -6,7 +6,9 @@
 #include "menu_main.h"
 #include "init.h"
 #include "warn_err.h"
+
 #include "menu_second.h"
+
 #include "popUpWindow.h"
 #include "touch.h"
 
@@ -14,7 +16,6 @@ static uint8_t flagTO = RESET;		// для обновления даты ТО
 static uint8_t flagEngineTimeout = RESET;		// для смены флага непрерывной работы
 // обновлять главное меню не чаще, чем раз в 1с
 static uint32_t time_update = 0;
-
 void secondMain (void)
 {
 	uint8_t status;
@@ -550,7 +551,24 @@ void get_v_menu(void)
 	snprintf(buf, BUF_LEN, "Место на sd %dкб", FreeSpace); 
 	ILI9341_WriteString(x, y, buf, Font_11x18, WHITE, MYFON);
 	y = y + yInc;
+}
 
+void menuSecondResetFlags(void)
+{
+	 flagTO = RESET;		// для обновления даты ТО
+	 flagEngineTimeout = RESET;		// для смены флага непрерывной работы
+	 time_update = 0;
+	 flag_exit = RESET;
+	 flag_change = RESET;
+	 flag_main_rele = RESET;
+	 flag_zazhig_rele = RESET;
+	 flag_starter_rele = RESET;
+	 flag_podsos_rele = RESET;
+
+		for(uint16_t i = 0; i < BUF_LEN; i++)
+		{
+			header[i] = 0;
+		}
 }
 
 

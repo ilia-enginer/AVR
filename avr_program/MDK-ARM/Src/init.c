@@ -123,15 +123,19 @@ uint8_t initDevice(void)
 	// ------------- ацп ------------
 	//HAL_ADCEx_Calibration_Start(&hadc1);	// почемуто нет такой функции
 	HAL_ADC_Start_DMA(&hadc1, (uint32_t*)&AVR.adc, ADC_CHANELS);	// запуск ацп
+	for(uint8_t i = 0; i < 50; i++){
+		HAL_Delay(10);
+		dataCalcADC();
+	}
 		
-	HAL_Delay(2);			// ожидание преобразования
-	dataCalcADC();		// пересчет значений ацп
 	// определить какое питание и выставить флаг
 	if(pAVR->v_t.v_out > U_V_OUT_MIN)
 		pAVR->avr_states.extPowerSupply = EXT_POWER_ON;
 	else
 		pAVR->avr_states.extPowerSupply = EXT_POWER_OFF;
 		
+	if(pAVR->v_t.v_bat < U_AKB_MIN_0)
+		setErr(ERR_LOW_VOLTAGE_AKB);
 	
 //	// для проверки ошибок и предупреждений	
 //	for(uint8_t i = 0; i < MAX_ERR_AND_WARN; i++)	{
@@ -647,16 +651,16 @@ uint8_t initTFT(void)
   ILI9341_Fill_Screen(MYFON); // заливка всего экрана цветом (цвета в файле ILI9341_GFX.h)
 	
 	// заставка загрузки
-	uint32_t size_img = sizeof(img_logo); // размер картинки в байтах (картинка лежит в файле img.h)
-	ILI9341_Draw_Image(img_logo, 60, 7, IMG_WIDTH, IMG_HEIGHT, size_img); // вывести в центре
+//	uint32_t size_img = sizeof(img_logo); // размер картинки в байтах (картинка лежит в файле img.h)
+//	ILI9341_Draw_Image(img_logo, 60, 7, IMG_WIDTH, IMG_HEIGHT, size_img); // вывести в центре
 	
-	// полоса загрузки
-  for(uint16_t i = 0; i < ILI9341_SCREEN_HEIGHT * 0.8; i++)
-  {
-		HAL_IWDG_Refresh(&hiwdg);
-		ILI9341_Draw_Rectangle(32, 220, i, 8, OLIVE);
-		HAL_Delay(20);
-  }
+//???	// полоса загрузки
+//  for(uint16_t i = 0; i < ILI9341_SCREEN_HEIGHT * 0.8; i++)
+//  {
+//		HAL_IWDG_Refresh(&hiwdg);
+//		ILI9341_Draw_Rectangle(32, 220, i, 8, OLIVE);
+//		HAL_Delay(20);
+//  }
 	
 	return 1;
 }

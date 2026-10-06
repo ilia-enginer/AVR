@@ -15,7 +15,7 @@ enum TUCH_WARIANTS {
 
 
 uint8_t getTouch (void);
-
+void menuTouchResetFlags(void);
 
 
 #endif /* TOUCH_H_ */

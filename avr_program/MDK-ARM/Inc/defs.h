@@ -28,7 +28,7 @@
 #define R2_EXT_V						(910.0f)					// Om
 #define	K_EXT_V	(R2_EXT_V/(R1_EXT_V + R2_EXT_V))		// Коэфициент делителя напряжения
 
-#define R1_AKB							(3300.0f)					// Om
+#define R1_AKB							(3325.0f)					// Om
 #define R2_AKB							(910.0f)					// Om
 #define	K_AKB	(R2_AKB/(R1_AKB + R2_AKB))			// Коэфициент делителя напряжения
 

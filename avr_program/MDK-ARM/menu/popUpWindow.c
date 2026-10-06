@@ -3,6 +3,7 @@
 #include <string.h>
 
 #include "popUpWindow.h"
+
 #include "ILI9341_GFX.h"
 #include "menu_main.h"
 #include "touch.h"
@@ -184,3 +185,17 @@ uint16_t lineAlignment(const char* text, char *buf, uint16_t lenLine)
 	}
 	return lenBuf;
 }
+
+
+void menuPopUpResetFlags(void)
+{
+	flag_block = RESET;		// чтоб каждый раз не обновлял окно
+	menuReturn = MAIN_MENU;
+//	timeDelay = 0;
+	
+	for(uint16_t i = 0; i < POP_UP_BUF_LEN; i++)
+	{
+		popUpWinBuf[i] = 0;
+	}
+}
+

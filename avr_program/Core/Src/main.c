@@ -142,6 +142,7 @@ int main(void)
   {
 		work();
 		
+		HAL_IWDG_Refresh(&hiwdg);	// отмена ресета
 		// если экран погашен и двигатель заглушен и не включена зарядка - сон на 28 сек
 		if((BRIGHTNESS_GET_TFT == NULL_BRIGHTNESS) &&
 				((pAVR->engine.status == ENGINE_STOPPED) || (pAVR->engine.status == ENGINE_TIMEOUT)) &&
@@ -151,11 +152,11 @@ int main(void)
 			// перед следующим входом в этот режим необходимо программно сбросить флаг PWR_FLAG_WU в регистре PWR_CSR.
 			__HAL_PWR_CLEAR_FLAG(PWR_FLAG_WU);
 			// Если пробуждение происходит по таймеру RTC, нужно сбросить флаг
-			__HAL_RTC_WAKEUPTIMER_CLEAR_FLAG(&hrtc, RTC_FLAG_WUTF);
+			//__HAL_RTC_WAKEUPTIMER_CLEAR_FLAG(&hrtc, RTC_FLAG_WUTF);
 			
 			// настройка WakeUp срабатывание раз в 28сек
 			if(HAL_RTCEx_SetWakeUpTimer_IT(&hrtc, 28, RTC_WAKEUPCLOCK_CK_SPRE_16BITS) == HAL_OK)
-			{	
+			{
 				#ifndef ___DEBUG
 					// если низкий разряд акб - выключить светодиоды
 					if(pAVR->v_t.v_bat <= U_AKB_MIN_1)
@@ -170,17 +171,18 @@ int main(void)
 						}
 					}
 					
-						// перенастройка вачдога на ~32 секунды
-						// Разрешить тактирование
-						IWDG->KR = 0xCCCC;
-						// Открыть доступ к регистрам
-						IWDG->KR = 0x5555;
-						// Установить начальное значение счётчика (RL)
-						IWDG->RLR = 4095;
-						// Закрыть доступ
-						IWDG->KR = 0x0000;
-						// Сразу после запуска «перезагрузить» счётчик
-						IWDG->KR = 0xAAAA;
+					// перенастройка вачдога на ~32 секунды
+					// Разрешить тактирование
+					IWDG->KR = 0xCCCC;
+					// Открыть доступ к регистрам
+					IWDG->KR = 0x5555;
+					IWDG->PR = IWDG_PRESCALER_256;
+					// Установить начальное значение счётчика (RL)
+					IWDG->RLR = 4095;
+					// Закрыть доступ
+					IWDG->KR = 0x0000;
+					// Сразу после запуска «перезагрузить» счётчик
+					IWDG->KR = 0xAAAA;
 					
 					// вход в сон
 					__HAL_RCC_DMA2_CLK_DISABLE();
@@ -195,13 +197,14 @@ int main(void)
 					// после wakeup'а программа стартует отсюда
 					SystemClock_Config(); // рестартуем системный клок
 					
-						IWDG->KR = 0xAAAA;	
-						// обратная перенастройка вачдога на 2с
-						IWDG->KR = 0xCCCC;
-						IWDG->KR = 0x5555;
-						IWDG->RLR = 250;
-						IWDG->KR = 0x0000;
-						IWDG->KR = 0xAAAA;
+					IWDG->KR = 0xAAAA;	
+					// обратная перенастройка вачдога на 2с
+					IWDG->KR = 0xCCCC;
+					IWDG->KR = 0x5555;
+					IWDG->PR = IWDG_PRESCALER_256;
+					IWDG->RLR = 250;
+					IWDG->KR = 0x0000;
+					IWDG->KR = 0xAAAA;
 					
 					HAL_RTCEx_DeactivateWakeUpTimer(&hrtc);	// остановить WakeUp
 					

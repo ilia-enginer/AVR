@@ -21,6 +21,7 @@ void work (void)
 	if(BRIGHTNESS_GET_TFT != NULL_BRIGHTNESS){
 		if(!pAVR->avr_states.oledWork){
 			ili9341_SleepOff();
+			menuChangeState(MAIN_MENU);
 		}
 		
 		menuSwich();							// экранное меню
@@ -80,6 +81,7 @@ void dataCalcADC(void)
 //  uint16_t adc_cal2 = *(volatile uint16_t *)TEMPSENSOR_CAL2_ADDR; // Калибровочное значение t2
 //	voltage = TEMPSENSOR_CAL1_TEMP + (TEMPSENSOR_CAL2_TEMP - TEMPSENSOR_CAL1_TEMP) * (pAVR->adc.ravADC[4] - adc_cal1) / (adc_cal2 - adc_cal1);
 	voltage = __LL_ADC_CALC_TEMPERATURE(pAVR->v_t.v_cpu, pAVR->adc.ravADC[4], LL_ADC_RESOLUTION_12B);
+	voltage -= 3.0f;	// привирает на 3 градуса вверх
 	pAVR->v_t.t_cpu = exponentialRunningAverage(pAVR->v_t.t_cpu, voltage, KOFF_FILTR);
 	
 	// запуск ацп

@@ -83,16 +83,14 @@ uint8_t getTouch (void)
 	if((pAVR->v_t.v_bat <= U_AKB_MIN_1) &&
 			((HAL_GetTick() - pAVR->touch.time_press) > LONG_NO_PRESS_LOW_AKB))
 	{
-		if(pAVR->avr_states.menu_state != MAIN_MENU)
-		{
+		if(pAVR->avr_states.menu_state != MAIN_MENU){
 			menuChangeState(MAIN_MENU);
 		}
 		ledTFT_ON_OFF(RESET);
 	}
 	// если в течение длительного времени не было нажатия на экран - перейти в главное меню, выключить экран
 	else if((HAL_GetTick() - pAVR->touch.time_press) > LONG_NO_PRESS_MAIN_MENU){
-		if(pAVR->avr_states.menu_state != MAIN_MENU)
-		{
+		if(pAVR->avr_states.menu_state != MAIN_MENU){
 			menuChangeState(MAIN_MENU);
 		}
 		ledTFT_ON_OFF(RESET);
@@ -101,3 +99,11 @@ uint8_t getTouch (void)
 	return NONE;
 }
 
+void menuTouchResetFlags(void)
+{
+	time_press = 0;
+	pAVR->touch.flag_press = RESET;
+	pAVR->touch.flag_release = RESET;
+	pAVR->touch.x = 0;
+	pAVR->touch.y = 0;
+}

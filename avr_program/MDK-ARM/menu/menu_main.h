@@ -19,7 +19,7 @@ void menuSwich (void);
 void menuMain (void);
 uint8_t switchAvrAutomatic (void);
 uint8_t confirmClick (const char* text);
-
+void menuResetFlags(void);
 
 
 #endif /* MENU_MAIN_H_ */

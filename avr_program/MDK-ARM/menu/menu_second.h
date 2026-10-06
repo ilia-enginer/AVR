@@ -11,7 +11,7 @@ void powerOutageGet(void);
 void startEngineGet(void);
 void manualRelaySwitchMenu(void);
 void get_v_menu(void);
-
+void menuSecondResetFlags(void);
 
 
 #endif /* MENU_SECOND_H_ */
