@@ -48,7 +48,7 @@ extern "C" {
 /* Exported types ------------------------------------------------------------*/
 /* USER CODE BEGIN ET */
 
-//#define ___DEBUG
+//#define ___DEBUG	
 
 #define U_CONFIG_HARD_FAULT_SIGNATURE (0x99BA85EE)		// Признак фатальной ошибки
 #define U_CONFIG_WACH_DOG_SIGNATURE 	(0x99BA85DF)		// Признак сброса по вачдогу
@@ -76,6 +76,7 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin);
 void HAL_RTC_AlarmAEventCallback(RTC_HandleTypeDef *hrtc);
 void HAL_RTCEx_WakeUpTimerEventCallback(RTC_HandleTypeDef *hrtc);
 void set_BKP0R(uint32_t signature);
+uint8_t IWDG_Reconfigure(uint8_t prescaler, uint16_t reload);
 
 void prvGetRegistersFromStack(uint32_t *pulFaultStackAddress);
 void _Error_Handler(char *, int);

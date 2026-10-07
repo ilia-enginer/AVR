@@ -12,7 +12,8 @@
 
 void work (void)
 {
-	HAL_IWDG_Refresh(&hiwdg);	// отмена ресета
+//	HAL_IWDG_Refresh(&hiwdg);	// отмена ресета
+	IWDG->KR = 0xAAAA;
 	
 	dataCalcADC();						// пересчет значений ацп
 	checkWarn();							// поиск предупреждений
@@ -35,7 +36,8 @@ void work (void)
 	// если необходимо сохранить всю инфу на флеш
 	if(pAVR->avr_states.flagSaveInfoSD == SET)
 	{
-		HAL_IWDG_Refresh(&hiwdg);
+		//HAL_IWDG_Refresh(&hiwdg);
+		IWDG->KR = 0xAAAA;
 		checkInfoTO();
 		notification("SAVE SD", "Сохранение данных", 15, pAVR->avr_states.menu_state);
 		// записать на sd
@@ -142,7 +144,8 @@ void chargeAkb(void)
 	if((pAVR->v_t.v_bat < U_AKB_MIN_1) &&
 		((pAVR->engine.status == ENGINE_STOPPED) || (pAVR->engine.status == ENGINE_TIMEOUT)) &&
 		(pAVR->avr_states.extPowerSupply == EXT_POWER_ON) &&
-		(!pAVR->avr_states.flagCharge))
+		(!pAVR->avr_states.flagCharge) &&
+		(pAVR->v_t.v_out >= U_V_OUT_NORM))
 	{
 		charge_ON_OFF(SET);
 		// засечь время

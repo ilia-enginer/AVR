@@ -133,7 +133,16 @@ int main(void)
   /* USER CODE BEGIN 2 */
 	
 	initDevice();
-
+	
+	// небольшая пауза на случай показа ошибки
+	IWDG->KR = 0xAAAA;
+	HAL_Delay(1000);
+	IWDG->KR = 0xAAAA;
+	HAL_Delay(1000);
+	IWDG->KR = 0xAAAA;
+	HAL_Delay(500);
+	IWDG->KR = 0xAAAA;
+	
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -142,7 +151,9 @@ int main(void)
   {
 		work();
 		
-		HAL_IWDG_Refresh(&hiwdg);	// отмена ресета
+		//HAL_IWDG_Refresh(&hiwdg);	// отмена ресета
+		IWDG->KR = 0xAAAA;					// отмена ресета
+		
 		// если экран погашен и двигатель заглушен и не включена зарядка - сон на 28 сек
 		if((BRIGHTNESS_GET_TFT == NULL_BRIGHTNESS) &&
 				((pAVR->engine.status == ENGINE_STOPPED) || (pAVR->engine.status == ENGINE_TIMEOUT)) &&
@@ -151,12 +162,14 @@ int main(void)
 			// Если система выходит из режима Standby/Sleep по изменению на выводе WKUP (SYS_WKUP), 
 			// перед следующим входом в этот режим необходимо программно сбросить флаг PWR_FLAG_WU в регистре PWR_CSR.
 			__HAL_PWR_CLEAR_FLAG(PWR_FLAG_WU);
+
 			// Если пробуждение происходит по таймеру RTC, нужно сбросить флаг
-			//__HAL_RTC_WAKEUPTIMER_CLEAR_FLAG(&hrtc, RTC_FLAG_WUTF);
+			__HAL_RTC_WAKEUPTIMER_CLEAR_FLAG(&hrtc, RTC_FLAG_WUTF);
 			
 			// настройка WakeUp срабатывание раз в 28сек
 			if(HAL_RTCEx_SetWakeUpTimer_IT(&hrtc, 28, RTC_WAKEUPCLOCK_CK_SPRE_16BITS) == HAL_OK)
 			{
+				IWDG->KR = 0xAAAA;
 				#ifndef ___DEBUG
 					// если низкий разряд акб - выключить светодиоды
 					if(pAVR->v_t.v_bat <= U_AKB_MIN_1)
@@ -172,17 +185,7 @@ int main(void)
 					}
 					
 					// перенастройка вачдога на ~32 секунды
-					// Разрешить тактирование
-					IWDG->KR = 0xCCCC;
-					// Открыть доступ к регистрам
-					IWDG->KR = 0x5555;
-					IWDG->PR = IWDG_PRESCALER_256;
-					// Установить начальное значение счётчика (RL)
-					IWDG->RLR = 4095;
-					// Закрыть доступ
-					IWDG->KR = 0x0000;
-					// Сразу после запуска «перезагрузить» счётчик
-					IWDG->KR = 0xAAAA;
+					IWDG_Reconfigure(6, 4095);
 					
 					// вход в сон
 					__HAL_RCC_DMA2_CLK_DISABLE();
@@ -196,15 +199,9 @@ int main(void)
 					HAL_PWR_EnterSTOPMode(PWR_LOWPOWERREGULATOR_ON, PWR_STOPENTRY_WFI); 
 					// после wakeup'а программа стартует отсюда
 					SystemClock_Config(); // рестартуем системный клок
-					
-					IWDG->KR = 0xAAAA;	
+						
 					// обратная перенастройка вачдога на 2с
-					IWDG->KR = 0xCCCC;
-					IWDG->KR = 0x5555;
-					IWDG->PR = IWDG_PRESCALER_256;
-					IWDG->RLR = 250;
-					IWDG->KR = 0x0000;
-					IWDG->KR = 0xAAAA;
+					IWDG_Reconfigure(6, 250);
 					
 					HAL_RTCEx_DeactivateWakeUpTimer(&hrtc);	// остановить WakeUp
 					
@@ -388,6 +385,7 @@ static void MX_IWDG_Init(void)
   /* USER CODE END IWDG_Init 0 */
 
   /* USER CODE BEGIN IWDG_Init 1 */
+
 	#ifdef ___DEBUG
 		return;
 	#endif
@@ -795,6 +793,42 @@ void set_BKP0R(uint32_t signature)
 //	RCC->CFGR &= ~RCC_CFGR_SW;
 //	RCC->CR &= ~RCC_CR_PLLON;
 //	RCC->CR &= ~RCC_CR_HSEON;
+}
+
+// перенастройка IWDG (изменение времени до сброса)
+// prescaler (0..7)
+// reload (0..4095)
+uint8_t IWDG_Reconfigure(uint8_t prescaler, uint16_t reload)
+{
+	// Разрешить тактирование
+	IWDG->KR = 0xCCCC;
+	// Открыть доступ к регистрам
+	IWDG->KR = 0x5555;
+	// дождаться готовности регистров
+	// жду сброса RVU для RLR и PVU для PR
+	while((IWDG->SR & (IWDG_SR_RVU | IWDG_SR_PVU)) != 0)
+	{
+		// ожидание аппаратной синхронизации обычно занимает несколько LSI циклов
+		// по хорошему надо проверить тактирование LSI 
+	}
+	
+	// новое значение предделителя
+	IWDG->PR = prescaler;
+	// Установить начальное значение счётчика (RL)
+	IWDG->RLR = reload;
+	
+	// дождаться завершения обновления (сброс RVU/PVU)
+	while((IWDG->SR & (IWDG_SR_RVU | IWDG_SR_PVU)) != 0)
+	{
+	}
+	
+	// Закрыть доступ
+	IWDG->KR = 0x0000;
+	
+	// Сразу после запуска «перезагрузить» счётчик
+	IWDG->KR = 0xAAAA;
+	
+	return 1;
 }
 
 void _Error_Handler(char * s, int i)

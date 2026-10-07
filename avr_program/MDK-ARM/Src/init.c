@@ -37,16 +37,19 @@ uint8_t initDevice(void)
 	pAVR->engine.launchAttempts = 0;
 	pAVR->engine.flagTimeout = RESET;
 
-	HAL_IWDG_Refresh(&hiwdg);
+	//HAL_IWDG_Refresh(&hiwdg);
+	IWDG->KR = 0xAAAA;
 	
 	// ------------- переферия ------------
 	outputInit();	// выхода (светодиоды, реле и.т.д.)
-	HAL_IWDG_Refresh(&hiwdg);
+	//HAL_IWDG_Refresh(&hiwdg);
+	IWDG->KR = 0xAAAA;
 	
 	// ------------- дисплей ------------
 	initTFT();
 	menuChangeState(MAIN_MENU);
-	HAL_IWDG_Refresh(&hiwdg);
+	//HAL_IWDG_Refresh(&hiwdg);
+	IWDG->KR = 0xAAAA;
 	
 	// ------------- sd card ------------
 	SD_Init();
@@ -58,7 +61,8 @@ uint8_t initDevice(void)
 		setErr(ERR_HARD_RESET);	
 		
 	set_BKP0R(U_CONFIG_WACH_DOG_SIGNATURE);
-	HAL_IWDG_Refresh(&hiwdg);
+	//HAL_IWDG_Refresh(&hiwdg);
+	IWDG->KR = 0xAAAA;
 	
 	// ------------- инициализация данных с sd card ------------
 	if(getFillStructureStoryParameters()) 
@@ -118,7 +122,8 @@ uint8_t initDevice(void)
 			checkInfoTO();
 		}
 	}
-	HAL_IWDG_Refresh(&hiwdg);
+	//HAL_IWDG_Refresh(&hiwdg);
+	IWDG->KR = 0xAAAA;
 	
 	// ------------- ацп ------------
 	//HAL_ADCEx_Calibration_Start(&hadc1);	// почемуто нет такой функции
@@ -285,7 +290,8 @@ uint8_t setFillStructureStoryParameters(void)
 		setErr(ERR_SD_CARD);
 		return 0;
 	}
-	HAL_IWDG_Refresh(&hiwdg);
+	//HAL_IWDG_Refresh(&hiwdg);
+	IWDG->KR = 0xAAAA;
 	
 	// ---------- запись той же структуры, но для пользовательского чтения-------
 	// заголовок
@@ -295,7 +301,8 @@ uint8_t setFillStructureStoryParameters(void)
 		setErr(ERR_SD_CARD);
 		return 0;
 	}
-	HAL_IWDG_Refresh(&hiwdg);
+	//HAL_IWDG_Refresh(&hiwdg);
+	IWDG->KR = 0xAAAA;
 	
 	// моточасы
 	memset(historyParamBuf,'\0',sizeof(historyParamBuf)); 
@@ -304,7 +311,8 @@ uint8_t setFillStructureStoryParameters(void)
 		setErr(ERR_SD_CARD);
 		return 0;
 	}
-	HAL_IWDG_Refresh(&hiwdg);
+	//HAL_IWDG_Refresh(&hiwdg);
+	IWDG->KR = 0xAAAA;
 	
 	memset(historyParamBuf,'\0',sizeof(historyParamBuf)); 
 	sprintf(historyParamBuf + strlen(historyParamBuf), "%d - моточасы всего\n", pAVR->sdParams.engineHoursTotal);
@@ -312,7 +320,8 @@ uint8_t setFillStructureStoryParameters(void)
 		setErr(ERR_SD_CARD);
 		return 0;
 	}
-	HAL_IWDG_Refresh(&hiwdg);
+	//HAL_IWDG_Refresh(&hiwdg);
+	IWDG->KR = 0xAAAA;
 	
 	memset(historyParamBuf,'\0',sizeof(historyParamBuf)); 
 	sprintf(historyParamBuf + strlen(historyParamBuf), "%d - моточасы после ТО\n", pAVR->sdParams.engineHoursTO);
@@ -320,7 +329,8 @@ uint8_t setFillStructureStoryParameters(void)
 		setErr(ERR_SD_CARD);
 		return 0;
 	}
-	HAL_IWDG_Refresh(&hiwdg);
+	//HAL_IWDG_Refresh(&hiwdg);
+	IWDG->KR = 0xAAAA;
 	
 	memset(historyParamBuf,'\0',sizeof(historyParamBuf)); 
 	sprintf(historyParamBuf + strlen(historyParamBuf), "%d - моточасы до ТО\n", pAVR->sdParams.hoursBeforeTO);
@@ -328,7 +338,8 @@ uint8_t setFillStructureStoryParameters(void)
 		setErr(ERR_SD_CARD);
 		return 0;
 	}
-	HAL_IWDG_Refresh(&hiwdg);
+	//HAL_IWDG_Refresh(&hiwdg);
+	IWDG->KR = 0xAAAA;
 	
 	// ТО
 	memset(historyParamBuf,'\0',sizeof(historyParamBuf)); 
@@ -337,7 +348,8 @@ uint8_t setFillStructureStoryParameters(void)
 		setErr(ERR_SD_CARD);
 		return 0;
 	}
-	HAL_IWDG_Refresh(&hiwdg);
+	//HAL_IWDG_Refresh(&hiwdg);
+	IWDG->KR = 0xAAAA;
 	
 	memset(historyParamBuf,'\0',sizeof(historyParamBuf)); 
 	sprintf(historyParamBuf + strlen(historyParamBuf), "%02d - час последнего ТО\n", pAVR->sdParams.hoursLastTO);
@@ -345,7 +357,8 @@ uint8_t setFillStructureStoryParameters(void)
 		setErr(ERR_SD_CARD);
 		return 0;
 	}
-	HAL_IWDG_Refresh(&hiwdg);
+	//HAL_IWDG_Refresh(&hiwdg);
+	IWDG->KR = 0xAAAA;
 	
 	memset(historyParamBuf,'\0',sizeof(historyParamBuf)); 
 	sprintf(historyParamBuf + strlen(historyParamBuf), "%02d - минуты последнего ТО\n", pAVR->sdParams.minutesLastTO);
@@ -353,7 +366,8 @@ uint8_t setFillStructureStoryParameters(void)
 		setErr(ERR_SD_CARD);
 		return 0;
 	}
-	HAL_IWDG_Refresh(&hiwdg);
+	//HAL_IWDG_Refresh(&hiwdg);
+	IWDG->KR = 0xAAAA;
 	
 	memset(historyParamBuf,'\0',sizeof(historyParamBuf)); 
 	sprintf(historyParamBuf + strlen(historyParamBuf), "%02d - секунды последнего ТО\n\n", pAVR->sdParams.secondsLastTO);
@@ -361,7 +375,8 @@ uint8_t setFillStructureStoryParameters(void)
 		setErr(ERR_SD_CARD);
 		return 0;
 	}
-	HAL_IWDG_Refresh(&hiwdg);
+	//HAL_IWDG_Refresh(&hiwdg);
+	IWDG->KR = 0xAAAA;
 	
 	memset(historyParamBuf,'\0',sizeof(historyParamBuf)); 
 	sprintf(historyParamBuf + strlen(historyParamBuf), "%02d - дата последнего ТО\n", pAVR->sdParams.dateLastTO);
@@ -369,7 +384,8 @@ uint8_t setFillStructureStoryParameters(void)
 		setErr(ERR_SD_CARD);
 		return 0;
 	}
-	HAL_IWDG_Refresh(&hiwdg);
+	//HAL_IWDG_Refresh(&hiwdg);
+	IWDG->KR = 0xAAAA;
 	
 	memset(historyParamBuf,'\0',sizeof(historyParamBuf)); 
 	sprintf(historyParamBuf + strlen(historyParamBuf), "%02d - месяц последнего ТО\n", pAVR->sdParams.monthLastTO);
@@ -377,7 +393,8 @@ uint8_t setFillStructureStoryParameters(void)
 		setErr(ERR_SD_CARD);
 		return 0;
 	}
-	HAL_IWDG_Refresh(&hiwdg);
+	//HAL_IWDG_Refresh(&hiwdg);
+	IWDG->KR = 0xAAAA;
 	
 	memset(historyParamBuf,'\0',sizeof(historyParamBuf)); 
 	sprintf(historyParamBuf + strlen(historyParamBuf), "%02d - год последнего ТО\n\n", pAVR->sdParams.yearLastTO);
@@ -385,7 +402,8 @@ uint8_t setFillStructureStoryParameters(void)
 		setErr(ERR_SD_CARD);
 		return 0;
 	}
-	HAL_IWDG_Refresh(&hiwdg);
+	//HAL_IWDG_Refresh(&hiwdg);
+	IWDG->KR = 0xAAAA;
 	
 	memset(historyParamBuf,'\0',sizeof(historyParamBuf)); 
 	sprintf(historyParamBuf + strlen(historyParamBuf), "%02d - час следующего ТО\n", pAVR->sdParams.hoursNextTO);
@@ -393,7 +411,8 @@ uint8_t setFillStructureStoryParameters(void)
 		setErr(ERR_SD_CARD);
 		return 0;
 	}
-	HAL_IWDG_Refresh(&hiwdg);
+	//HAL_IWDG_Refresh(&hiwdg);
+	IWDG->KR = 0xAAAA;
 	
 	memset(historyParamBuf,'\0',sizeof(historyParamBuf)); 
 	sprintf(historyParamBuf + strlen(historyParamBuf), "%02d - минуты следующего ТО\n", pAVR->sdParams.minutesNextTO);
@@ -401,7 +420,8 @@ uint8_t setFillStructureStoryParameters(void)
 		setErr(ERR_SD_CARD);
 		return 0;
 	}
-	HAL_IWDG_Refresh(&hiwdg);
+	//HAL_IWDG_Refresh(&hiwdg);
+	IWDG->KR = 0xAAAA;
 	
 	memset(historyParamBuf,'\0',sizeof(historyParamBuf)); 
 	sprintf(historyParamBuf + strlen(historyParamBuf), "%02d - секунды следующего ТО\n\n", pAVR->sdParams.secondsNextTO);
@@ -409,7 +429,8 @@ uint8_t setFillStructureStoryParameters(void)
 		setErr(ERR_SD_CARD);
 		return 0;
 	}
-	HAL_IWDG_Refresh(&hiwdg);
+	//HAL_IWDG_Refresh(&hiwdg);
+	IWDG->KR = 0xAAAA;
 	
 	memset(historyParamBuf,'\0',sizeof(historyParamBuf)); 
 	sprintf(historyParamBuf + strlen(historyParamBuf), "%02d - дата следующего ТО\n", pAVR->sdParams.dateNextTO);
@@ -417,7 +438,8 @@ uint8_t setFillStructureStoryParameters(void)
 		setErr(ERR_SD_CARD);
 		return 0;
 	}
-	HAL_IWDG_Refresh(&hiwdg);
+	//HAL_IWDG_Refresh(&hiwdg);
+	IWDG->KR = 0xAAAA;
 	
 	memset(historyParamBuf,'\0',sizeof(historyParamBuf)); 
 	sprintf(historyParamBuf + strlen(historyParamBuf), "%02d - месяц следующего ТО\n", pAVR->sdParams.monthNextTO);
@@ -425,7 +447,8 @@ uint8_t setFillStructureStoryParameters(void)
 		setErr(ERR_SD_CARD);
 		return 0;
 	}
-	HAL_IWDG_Refresh(&hiwdg);
+	//HAL_IWDG_Refresh(&hiwdg);
+	IWDG->KR = 0xAAAA;
 	
 	memset(historyParamBuf,'\0',sizeof(historyParamBuf)); 
 	sprintf(historyParamBuf + strlen(historyParamBuf), "%02d - год следующего ТО\n", pAVR->sdParams.yearNextTO);
@@ -433,7 +456,8 @@ uint8_t setFillStructureStoryParameters(void)
 		setErr(ERR_SD_CARD);
 		return 0;
 	}
-	HAL_IWDG_Refresh(&hiwdg);
+	//HAL_IWDG_Refresh(&hiwdg);
+	IWDG->KR = 0xAAAA;
 	
 	// отключение эл-ва
 	memset(historyParamBuf,'\0',sizeof(historyParamBuf)); 
@@ -442,7 +466,8 @@ uint8_t setFillStructureStoryParameters(void)
 		setErr(ERR_SD_CARD);
 		return 0;
 	}
-	HAL_IWDG_Refresh(&hiwdg);
+	//HAL_IWDG_Refresh(&hiwdg);
+	IWDG->KR = 0xAAAA;
 	
 	memset(historyParamBuf,'\0',sizeof(historyParamBuf)); 
 	sprintf(historyParamBuf + strlen(historyParamBuf), "%02d - час последнего отключения\n", pAVR->sdParams.hoursWithoutElectric);
@@ -450,7 +475,8 @@ uint8_t setFillStructureStoryParameters(void)
 		setErr(ERR_SD_CARD);
 		return 0;
 	}
-	HAL_IWDG_Refresh(&hiwdg);
+	//HAL_IWDG_Refresh(&hiwdg);
+	IWDG->KR = 0xAAAA;
 	
 	memset(historyParamBuf,'\0',sizeof(historyParamBuf)); 
 	sprintf(historyParamBuf + strlen(historyParamBuf), "%02d - минуты последнего отключения\n", pAVR->sdParams.minutesWithoutElectric);
@@ -458,7 +484,8 @@ uint8_t setFillStructureStoryParameters(void)
 		setErr(ERR_SD_CARD);
 		return 0;
 	}
-	HAL_IWDG_Refresh(&hiwdg);
+	//HAL_IWDG_Refresh(&hiwdg);
+	IWDG->KR = 0xAAAA;
 	
 	memset(historyParamBuf,'\0',sizeof(historyParamBuf)); 
 	sprintf(historyParamBuf + strlen(historyParamBuf), "%02d - секунды последнего отключения\n\n", pAVR->sdParams.secondsWithoutElectric);
@@ -466,7 +493,8 @@ uint8_t setFillStructureStoryParameters(void)
 		setErr(ERR_SD_CARD);
 		return 0;
 	}
-	HAL_IWDG_Refresh(&hiwdg);
+	//HAL_IWDG_Refresh(&hiwdg);
+	IWDG->KR = 0xAAAA;
 	
 	memset(historyParamBuf,'\0',sizeof(historyParamBuf)); 
 	sprintf(historyParamBuf + strlen(historyParamBuf), "%02d - дата последнего отключения\n", pAVR->sdParams.dateWithoutElectric);
@@ -474,7 +502,8 @@ uint8_t setFillStructureStoryParameters(void)
 		setErr(ERR_SD_CARD);
 		return 0;
 	}
-	HAL_IWDG_Refresh(&hiwdg);
+	//HAL_IWDG_Refresh(&hiwdg);
+	IWDG->KR = 0xAAAA;
 	
 	memset(historyParamBuf,'\0',sizeof(historyParamBuf)); 
 	sprintf(historyParamBuf + strlen(historyParamBuf), "%02d - месяц последнего отключения\n", pAVR->sdParams.monthWithoutElectric);
@@ -482,7 +511,8 @@ uint8_t setFillStructureStoryParameters(void)
 		setErr(ERR_SD_CARD);
 		return 0;
 	}
-	HAL_IWDG_Refresh(&hiwdg);
+	//HAL_IWDG_Refresh(&hiwdg);
+	IWDG->KR = 0xAAAA;
 	
 	memset(historyParamBuf,'\0',sizeof(historyParamBuf)); 
 	sprintf(historyParamBuf + strlen(historyParamBuf), "%02d - год последнего отключения\n\n", pAVR->sdParams.yearWithoutElectric);
@@ -490,7 +520,8 @@ uint8_t setFillStructureStoryParameters(void)
 		setErr(ERR_SD_CARD);
 		return 0;
 	}
-	HAL_IWDG_Refresh(&hiwdg);
+	//HAL_IWDG_Refresh(&hiwdg);
+	IWDG->KR = 0xAAAA;
 	
 	memset(historyParamBuf,'\0',sizeof(historyParamBuf)); 
 	sprintf(historyParamBuf + strlen(historyParamBuf), "%d - минуты без эл-ва за последний раз\n", pAVR->sdParams.minutesLastWithoutElectric);
@@ -498,7 +529,8 @@ uint8_t setFillStructureStoryParameters(void)
 		setErr(ERR_SD_CARD);
 		return 0;
 	}
-	HAL_IWDG_Refresh(&hiwdg);
+	//HAL_IWDG_Refresh(&hiwdg);
+	IWDG->KR = 0xAAAA;
 	
 	memset(historyParamBuf,'\0',sizeof(historyParamBuf)); 
 	sprintf(historyParamBuf + strlen(historyParamBuf), "%d - общее кол-во часов без эл-ва\n", pAVR->sdParams.hoursALLWithoutElectric);
@@ -506,7 +538,8 @@ uint8_t setFillStructureStoryParameters(void)
 		setErr(ERR_SD_CARD);
 		return 0;
 	}
-	HAL_IWDG_Refresh(&hiwdg);
+	//HAL_IWDG_Refresh(&hiwdg);
+	IWDG->KR = 0xAAAA;
 	
 	memset(historyParamBuf,'\0',sizeof(historyParamBuf)); 
 	sprintf(historyParamBuf + strlen(historyParamBuf), "%d - общее кол-во минут без эл-ва\n", pAVR->sdParams.minutesALLWithoutElectric);
@@ -514,7 +547,8 @@ uint8_t setFillStructureStoryParameters(void)
 		setErr(ERR_SD_CARD);
 		return 0;
 	}
-	HAL_IWDG_Refresh(&hiwdg);
+	//HAL_IWDG_Refresh(&hiwdg);
+	IWDG->KR = 0xAAAA;
 	
 	// запуск ДВС инфо
 	memset(historyParamBuf,'\0',sizeof(historyParamBuf)); 
@@ -523,7 +557,8 @@ uint8_t setFillStructureStoryParameters(void)
 		setErr(ERR_SD_CARD);
 		return 0;
 	}
-	HAL_IWDG_Refresh(&hiwdg);
+	//HAL_IWDG_Refresh(&hiwdg);
+	IWDG->KR = 0xAAAA;
 	
 	memset(historyParamBuf,'\0',sizeof(historyParamBuf)); 
 	sprintf(historyParamBuf + strlen(historyParamBuf), "%d - кол-во удачных запусков\n", pAVR->sdParams.numSuccessLaunch);
@@ -531,7 +566,8 @@ uint8_t setFillStructureStoryParameters(void)
 		setErr(ERR_SD_CARD);
 		return 0;
 	}
-	HAL_IWDG_Refresh(&hiwdg);
+	//HAL_IWDG_Refresh(&hiwdg);
+	IWDG->KR = 0xAAAA;
 	
 	memset(historyParamBuf,'\0',sizeof(historyParamBuf)); 
 	sprintf(historyParamBuf + strlen(historyParamBuf), "%d - кол-во попыток запуска\n", pAVR->sdParams.numLaunchAttempt);
@@ -539,7 +575,8 @@ uint8_t setFillStructureStoryParameters(void)
 		setErr(ERR_SD_CARD);
 		return 0;
 	}
-	HAL_IWDG_Refresh(&hiwdg);
+	//HAL_IWDG_Refresh(&hiwdg);
+	IWDG->KR = 0xAAAA;
 	
 	recLog("Структура истории на sd карте обновлена");
 	return 1;
@@ -651,16 +688,16 @@ uint8_t initTFT(void)
   ILI9341_Fill_Screen(MYFON); // заливка всего экрана цветом (цвета в файле ILI9341_GFX.h)
 	
 	// заставка загрузки
-//	uint32_t size_img = sizeof(img_logo); // размер картинки в байтах (картинка лежит в файле img.h)
-//	ILI9341_Draw_Image(img_logo, 60, 7, IMG_WIDTH, IMG_HEIGHT, size_img); // вывести в центре
+	uint32_t size_img = sizeof(img_logo); // размер картинки в байтах (картинка лежит в файле img.h)
+	ILI9341_Draw_Image(img_logo, 60, 7, IMG_WIDTH, IMG_HEIGHT, size_img); // вывести в центре
 	
-//???	// полоса загрузки
-//  for(uint16_t i = 0; i < ILI9341_SCREEN_HEIGHT * 0.8; i++)
-//  {
-//		HAL_IWDG_Refresh(&hiwdg);
-//		ILI9341_Draw_Rectangle(32, 220, i, 8, OLIVE);
-//		HAL_Delay(20);
-//  }
+	// полоса загрузки
+  for(uint16_t i = 0; i < ILI9341_SCREEN_HEIGHT * 0.8; i++)
+  {
+		HAL_IWDG_Refresh(&hiwdg);
+		ILI9341_Draw_Rectangle(32, 220, i, 8, OLIVE);
+		HAL_Delay(20);
+  }
 	
 	return 1;
 }

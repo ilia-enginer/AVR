@@ -17,7 +17,12 @@ void switchPowerCircuitBreaker(uint32_t status)
 		RELE_SOST_2_OFF();
 		HAL_Delay(1);
 		RELE_SOST_0_ON();
-		HAL_Delay(3000);
+		IWDG->KR = 0xAAAA;
+		HAL_Delay(1000);
+		IWDG->KR = 0xAAAA;
+		HAL_Delay(1000);
+		IWDG->KR = 0xAAAA;
+		HAL_Delay(1000);
 		RELE_SOST_0_OFF();
 		pAVR->avr_states.power_grid_mode = POWER_IS_OFF;
 		recLog("Переключение силового автомата авр, POWER_IS_OFF");
@@ -79,7 +84,7 @@ time_t powersupply = 0;			// время включения эл-ва
 void powerAutomationControl(void)
 {
 	// определить какое питание и выставить флаг
-	if((pAVR->v_t.v_out <= U_V_OUT_MIN) || (pAVR->avr_states.extPowerSupply == EXT_POWER_OFF))
+	if(pAVR->v_t.v_out <= U_V_OUT_MIN)
 	{
 		// если нет напряжения, но поднят флаг что есть - значит только что отключили
 		if((pAVR->v_t.v_out <= U_V_OUT_MIN) && (pAVR->avr_states.extPowerSupply != EXT_POWER_OFF))
