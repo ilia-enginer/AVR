@@ -84,12 +84,12 @@ uint8_t initDevice(void)
 			pAVR->sdParams.minutesBeforeTO					= 0;	// мотоминуты до ТО
 
 			// ТО		
-			pAVR->sdParams.hoursLastTO							= sTime.Hours;				// час последнего ТО
-			pAVR->sdParams.minutesLastTO						= sTime.Minutes;			// минуты последнего ТО
-			pAVR->sdParams.secondsLastTO						= sTime.Seconds;			// секунды последнего ТО
-			pAVR->sdParams.dateLastTO								= DateToUpdate.Date;	// дата последнего ТО
-			pAVR->sdParams.monthLastTO							= DateToUpdate.Month;	// месяц последнего ТО
-			pAVR->sdParams.yearLastTO								= DateToUpdate.Year;	// год последнего ТО
+			pAVR->sdParams.hoursLastTO							= 0;	// час последнего ТО
+			pAVR->sdParams.minutesLastTO						= 0;	// минуты последнего ТО
+			pAVR->sdParams.secondsLastTO						= 0;	// секунды последнего ТО
+			pAVR->sdParams.dateLastTO								= 0;	// дата последнего ТО
+			pAVR->sdParams.monthLastTO							= 0;	// месяц последнего ТО
+			pAVR->sdParams.yearLastTO								= 0;	// год последнего ТО
 
 			//
 			pAVR->sdParams.hoursNextTO							= 0;	// час следующего ТО
@@ -194,10 +194,10 @@ uint8_t getFillStructureStoryParameters(void)
 	pAVR->sdParams.checkNum									= numbers[i++];
 	pAVR->sdParams.engineHoursTotal					= numbers[i++];
 	pAVR->sdParams.engineMinutesTotal				= numbers[i++];
-	pAVR->sdParams.engineMinutesTO					= numbers[i++];
 	pAVR->sdParams.engineHoursTO						= numbers[i++];
-	pAVR->sdParams.minutesBeforeTO					= numbers[i++];
+	pAVR->sdParams.engineMinutesTO					= numbers[i++];
 	pAVR->sdParams.hoursBeforeTO						= numbers[i++];
+	pAVR->sdParams.minutesBeforeTO					= numbers[i++];
 	pAVR->sdParams.hoursLastTO							= numbers[i++];
 	pAVR->sdParams.minutesLastTO						= numbers[i++];
 	pAVR->sdParams.secondsLastTO						= numbers[i++];

@@ -48,7 +48,7 @@
 
 
 // ------- для хранения истории настроек на sd карте -------
-#define NUM_VARIABLES_HISTORI		(26)						// кол-во переменных в структуре истории
+#define NUM_VARIABLES_HISTORI		(30)						// кол-во переменных в структуре истории
 #define BUF_LEN_SD_PARAM				((NUM_VARIABLES_HISTORI*4) + NUM_VARIABLES_HISTORI)						// объем буфера для хранения параметров, считанных из флеш
 #define INIT_HISTORY_FILE_SIGNATURE (2092942078)			// признак инициализации файла истории параметров на sd карте
 
