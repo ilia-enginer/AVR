@@ -17,19 +17,19 @@ void checkWarn(void)
 			setWarn(WARN_MANUAL_CONTROL_EN);
 	}
 
-	// необходимо зарядить акб и не включена зарядка - выставить предупреждение
-	if((pAVR->v_t.v_bat <= U_AKB_MIN_1) && 
-			(!pAVR->avr_states.flagCharge) &&
-			(!pAVR->warn.array_flags[WARN_CHARGE_AKB]))
-	{
-			setWarn(WARN_CHARGE_AKB);
-	}
-	// удалить предупреждение
-	if((pAVR->v_t.v_bat > U_AKB_MIN_1) && 
-			(pAVR->warn.array_flags[WARN_CHARGE_AKB]))
-	{
-			delWarn(WARN_CHARGE_AKB);
-	}
+//	// необходимо зарядить акб и не включена зарядка - выставить предупреждение
+//	if(((pAVR->v_t.v_bat - U_GYST) <= U_AKB_MIN_1) && 
+//			(!pAVR->avr_states.flagCharge) &&
+//			(!pAVR->warn.array_flags[WARN_CHARGE_AKB]))
+//	{
+//			setWarn(WARN_CHARGE_AKB);
+//	}
+//	// удалить предупреждение
+//	if(((pAVR->v_t.v_bat + U_GYST) > U_AKB_MIN_1) && 
+//			(pAVR->warn.array_flags[WARN_CHARGE_AKB]))
+//	{
+//			delWarn(WARN_CHARGE_AKB);
+//	}
 	
 	// необходим перерыв двигателя
 	// удалить предупреждение
@@ -60,7 +60,8 @@ void checkErr(void)
 {
 	// проверка не долго ли вращается стартер
 	if((pAVR->avr_states.powerAutoManual == AVR_MANUAL) &&
-			(HAL_GPIO_ReadPin(RELE_STARTER_GPIO_Port, RELE_STARTER_Pin)))
+			(HAL_GPIO_ReadPin(RELE_STARTER_GPIO_Port, RELE_STARTER_Pin)) && 
+			(pAVR->engine.status != ENGINE_START))
 	{
 		if((realToUnix() - pAVR->engine.starterRotationTime) >= MAX_STARTER_OPERATING_TIME)
 		{
@@ -199,7 +200,7 @@ void setErr(ERR_WARIANTS err)
 		// ошибка отключения реле стартера
 		case ERR_STARTER_RELE_SHUTDOWN:
 			if(!pAVR->err.array_flags[ERR_STARTER_RELE_SHUTDOWN]) {
-				RELE_OBSH_OFF();	//???
+				RELE_OBSH_OFF();	
 				pAVR->err.array_flags[ERR_STARTER_RELE_SHUTDOWN] = SET;
 				pAVR->err.counter++;
 				notification("Ошибка!!!", "Отключения реле стартера", 30, pAVR->avr_states.menu_state);

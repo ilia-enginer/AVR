@@ -293,10 +293,12 @@ void manualRelaySwitchMenu(void)
 				
 			if(HAL_GPIO_ReadPin(RELE_OBSH_GPIO_Port, RELE_OBSH_Pin)){
 				RELE_OBSH_ON();
+				if(flag_change)	ILI9341_Fill_Screen(MYFON);
 				recLog("Пользователь - включено главное реле");
 			}
 			else{
 				RELE_OBSH_OFF();
+				if(flag_change)	ILI9341_Fill_Screen(MYFON);
 				recLog("Пользователь - отключено главное реле");
 			}
 		}
@@ -321,10 +323,12 @@ void manualRelaySwitchMenu(void)
 				
 			if(HAL_GPIO_ReadPin(RELE_OBSH_GPIO_Port, RELE_ZAJIG_Pin)){
 				RELE_ZAJIG_OFF();
+				if(flag_change)	ILI9341_Fill_Screen(MYFON);
 				recLog("Пользователь - выключено реле зажигания");
 			}
 			else{
 				RELE_ZAJIG_ON();
+				if(flag_change)	ILI9341_Fill_Screen(MYFON);
 				recLog("Пользователь - включено реле зажигания");
 			}
 		}
@@ -349,6 +353,7 @@ void manualRelaySwitchMenu(void)
 				
 			if(HAL_GPIO_ReadPin(RELE_STARTER_GPIO_Port, RELE_STARTER_Pin)){
 				RELE_STARTER_OFF();
+				if(flag_change)	ILI9341_Fill_Screen(MYFON);
 				pAVR->engine.starterRotationTime = 0;
 				recLog("Пользователь - выключено реле стартера");
 			}
@@ -362,6 +367,7 @@ void manualRelaySwitchMenu(void)
 				{
 					// включить стартер
 					RELE_STARTER_ON();
+					if(flag_change)	ILI9341_Fill_Screen(MYFON);
 					recLog("Пользователь - включено реле стартера");
 				}
 				else
@@ -392,10 +398,12 @@ void manualRelaySwitchMenu(void)
 				
 			if(HAL_GPIO_ReadPin(RELE_PODSOS_GPIO_Port, RELE_PODSOS_Pin)){
 				RELE_PODSOS_OFF();
+				if(flag_change)	ILI9341_Fill_Screen(MYFON);
 				recLog("Пользователь - выключено реле подсоса");
 			}
 			else{
 				RELE_PODSOS_ON();
+				if(flag_change)	ILI9341_Fill_Screen(MYFON);
 				recLog("Пользователь - включено реле подсоса");
 			}
 		}

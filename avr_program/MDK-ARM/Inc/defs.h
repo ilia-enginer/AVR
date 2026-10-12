@@ -76,9 +76,9 @@
 #define MAX_LAUNCH_ATTEMPTS					(3)				// макс. кол-во попыток запуска
 #define WINTER_MODE_TEMPERATURE			(13.0f)		// температура ниже которой переходит на зимний режим
 #define MAX_STARTER_BREAK_TIME			(10)			// макс. время перерыва стартера (в сек)
-#define START_DETECT_VOLTAGE				(30.0f) 	// напряжение определения запуска
-#define STOP_DETECT_VOLTAGE 				(2.0f)		// напряжение определения остановки
-#define WARM_UP_TIME								(3 * 60) 	// время прогрева (в мин)
+#define START_DETECT_VOLTAGE				(3.0f)	 	// напряжение определения запуска
+#define STOP_DETECT_VOLTAGE 				(0.5f)		// напряжение определения остановки
+#define WARM_UP_TIME								(1 * 60) 	// время прогрева (в мин)
 #define COLDING_TIME								(3 * 60)	// время охлаждения генератора в мин
 
 

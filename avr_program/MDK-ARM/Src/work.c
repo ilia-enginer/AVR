@@ -145,7 +145,8 @@ void chargeAkb(void)
 		((pAVR->engine.status == ENGINE_STOPPED) || (pAVR->engine.status == ENGINE_TIMEOUT)) &&
 		(pAVR->avr_states.extPowerSupply == EXT_POWER_ON) &&
 		(!pAVR->avr_states.flagCharge) &&
-		(pAVR->v_t.v_out >= U_V_OUT_NORM))
+		(pAVR->v_t.v_out >= U_V_OUT_NORM) &&
+		(pAVR->avr_states.powerAutoManual == AVR_AUTO))	// и автоматический реежим работы
 	{
 		charge_ON_OFF(SET);
 		// засечь время
@@ -162,6 +163,13 @@ void chargeAkb(void)
 	// если напряжение высокое - отключить зарядку
 	if((pAVR->avr_states.flagCharge) && 
 			(pAVR->v_t.v_bat > U_AKB_MAX))
+	{
+		charge_ON_OFF(RESET);
+	}
+	
+	// если нет внешнего питания и включена зарядка - выключить
+	if((pAVR->avr_states.extPowerSupply != EXT_POWER_ON) &&
+			(pAVR->avr_states.flagCharge == SET))
 	{
 		charge_ON_OFF(RESET);
 	}

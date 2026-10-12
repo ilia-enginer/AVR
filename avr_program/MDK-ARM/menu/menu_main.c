@@ -192,6 +192,17 @@ void menuMain (void)
 				setWarn(WARN_MANUAL_CONTROL_EN);
 			}
 			else if(pAVR->avr_states.powerAutoManual == AVR_MANUAL)	{
+				// если нет внешней сети и силовое реле настроено не на генератор
+				if((pAVR->v_t.v_out <= U_V_OUT_MIN) && (pAVR->avr_states.power_grid_mode != POWERED_BY_GENERATOR))
+				{	
+					switchPowerCircuitBreaker(POWERED_BY_GENERATOR);		// переключить на генератор
+				}
+				// тоже самое с внешней сетью
+				else if((pAVR->v_t.v_out > U_V_OUT_MIN) && (pAVR->avr_states.power_grid_mode != EXTERNAL_POWER))
+				{
+					switchPowerCircuitBreaker(EXTERNAL_POWER);		// переключить на генератор
+				}
+				
 				pAVR->avr_states.powerAutoManual = AVR_AUTO;
 				delWarn(WARN_MANUAL_CONTROL_EN);
 				menuChangeState(MAIN_MENU);	
