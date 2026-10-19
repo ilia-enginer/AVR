@@ -247,11 +247,15 @@ void menuMain (void)
 					notification("Ошибка", "Запуск невозможен. Ошибка ДВС.", 15, MAIN_MENU);
 					recLog("Система запретила запуск двигателя для пользователя");
 				}
-				if(startStopEngine(SET))
-					recLog("Пользователь - запуск двигателя");
-				else{
-					recLog("Пользователь - запуск двигателя невозможен");
-					notification("Уведомление", "Временно недоступно", 15, MAIN_MENU);
+				else
+				{
+					if(startStopEngine(SET)){
+						recLog("Пользователь - запуск двигателя");
+					}
+					else{
+						recLog("Пользователь - запуск двигателя невозможен");
+						notification("Уведомление", "Временно недоступно", 15, MAIN_MENU);
+					}
 				}
 			}
 			else if((pAVR->engine.status == ENGINE_START) ||
@@ -259,8 +263,9 @@ void menuMain (void)
 						(pAVR->engine.status == ENGINE_WARM_UP) ||
 						(pAVR->engine.status == ENGINE_WORK))
 			{
-				if(startStopEngine(RESET))
+				if(startStopEngine(RESET)) {
 					recLog("Пользователь - остановка двигателя");
+				}
 				else{
 					recLog("Пользователь - остановка двигателя невозможна");
 					notification("Уведомление", "Временно недоступно", 15, MAIN_MENU);

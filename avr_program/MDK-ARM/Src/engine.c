@@ -96,9 +96,14 @@ uint8_t startStopEngine(uint32_t status)
 		}
 		// если статус двигателя	ПРОГРЕВ
 		else if(pAVR->engine.status == ENGINE_WARM_UP){
-			pAVR->engine.warmUpTime = 0;												// сбросить переменную "время прогрева"
-			pAVR->engine.collingTime = (uint32_t)realToUnix();	// записать время в переменную "начала остановки"
-			pAVR->engine.status = ENGINE_STOP;									// статус - ОСТАНОВКА
+			pAVR->engine.warmUpTime = 0;			// сбросить переменную "время прогрева"
+			pAVR->engine.collingTime = 0;			// сбросить переменную "время охлаждения"
+			releStarterOnOff(RESET);
+			RELE_PODSOS_OFF();
+			RELE_ZAJIG_OFF();
+			pAVR->engine.startTimeStop = realToUnix();	//записать время в переменную "начала остановки"
+			// статус - ОСТАНОВКА
+			pAVR->engine.status = ENGINE_STOP;
 			recLog("Новый статус двигателя - остановка");
 			return 1;
 		}
@@ -494,8 +499,8 @@ void engineWork(void)
 				// засечь переменную "начала перерыва"
 				pAVR->engine.engineTimeoutTime = realToUnix();
 				// статус - ПЕРЕРЫВ
-			pAVR->engine.status = ENGINE_TIMEOUT;
-			recLog("Новый статус двигателя - ПЕРЕРЫВ");
+				pAVR->engine.status = ENGINE_TIMEOUT;
+				recLog("Новый статус двигателя - ПЕРЕРЫВ");
 			}
 			else
 			{
@@ -505,9 +510,13 @@ void engineWork(void)
 			}
 			pAVR->engine.workingTime = 0;		// обнулить переменную времени работы
 			
-//			// если не остановился - двигатель в ошибку
-//			if(pAVR->v_t.v_motor > STOP_DETECT_VOLTAGE)
-//				setErr(хз);
+			// если не остановился - двигатель в ошибку
+			if(pAVR->v_t.v_motor > STOP_DETECT_VOLTAGE)
+			{
+				setErr(ERR_ENGINE_STALLED);
+				setErr(ERR_STARTER_RELE_SHUTDOWN);
+				recLog("Правка. ДВС не хотел останавливаться");
+			}
 				
 			return;
 		}

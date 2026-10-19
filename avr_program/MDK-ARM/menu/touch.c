@@ -6,7 +6,7 @@
 // работа с тачем
 static uint32_t time_press = 0;
 uint8_t getTouch (void)
-{
+{	
 //    NONE = 0,				// ничего
 //		PRESS,					// нажат
 //		NO_PRESS,				// отпущен
@@ -45,7 +45,7 @@ uint8_t getTouch (void)
 			ILI9341_TouchGetCoordinates(&pAVR->touch.x, &pAVR->touch.y);			
 			
 			HAL_SPI_DeInit(DISP_SPI_PTR);
-			hspi1.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_2;
+			hspi1.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_4;
 			HAL_SPI_Init(DISP_SPI_PTR);
 
 			__HAL_SPI_ENABLE(DISP_SPI_PTR);

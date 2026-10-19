@@ -110,6 +110,7 @@ void charge_ON_OFF(uint8_t status)
 		{
 			CHARGE_ON();
 			pAVR->avr_states.flagCharge = SET;
+			// засечь время включения
 			pAVR->avr_states.timeChargeStart = realToUnix();
 			delWarn(WARN_CHARGE_AKB);
 			recLog("Зарядка включена");
@@ -149,8 +150,6 @@ void chargeAkb(void)
 		(pAVR->avr_states.powerAutoManual == AVR_AUTO))	// и автоматический реежим работы
 	{
 		charge_ON_OFF(SET);
-		// засечь время
-		pAVR->avr_states.timeChargeStart = realToUnix();
 	}
 	
 	// если прошло Х часов - отключить зарядку

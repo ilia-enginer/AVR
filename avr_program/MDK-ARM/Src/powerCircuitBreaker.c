@@ -122,10 +122,10 @@ void powerAutomationControl(void)
 				powerOutageTime = realToUnix();
 			}
 		}
-		// если напряжения нет в течении 30 сек и двигатель не в рабочем режиме 
+		// если напряжения нет в течении 10 сек и двигатель не в рабочем режиме 
 		else if((pAVR->avr_states.extPowerSupply == EXT_POWER_OFF) &&
 			(powerOutageTime != 0) &&
-			((realToUnix() - powerOutageTime) > 30) &&
+			((realToUnix() - powerOutageTime) > TIME_NO_EXT_POWER_ENGINE_OFF) &&
 			(pAVR->engine.status != ENGINE_WORK))
 		{
 			// перевести двигатель в рабочий режим
@@ -135,7 +135,7 @@ void powerAutomationControl(void)
 		// если напряжения нет в течении 30 сек и двигатель в рабочем режиме
 		else if((pAVR->avr_states.extPowerSupply == EXT_POWER_OFF) &&
 			(powerOutageTime != 0) &&
-			((realToUnix() - powerOutageTime) > 30) &&
+			((realToUnix() - powerOutageTime) > TIME_NO_EXT_POWER_ENGINE_OFF) &&
 			(pAVR->engine.status == ENGINE_WORK))
 		{
 			// переключить силовой рубильник на питание от генератора
@@ -172,7 +172,7 @@ void powerAutomationControl(void)
 		// если есть напряжение и есть флаг что оно есть и прошла 1 мин
 		else if((pAVR->avr_states.extPowerSupply == EXT_POWER_ON) &&
 						(powersupply != 0) &&
-						((realToUnix() - powersupply) > 60))
+						((realToUnix() - powersupply) > TIME_EXT_POWER_ENGINE_ON))
 		{
 			// если автоматический режим работы
 			if(pAVR->avr_states.powerAutoManual == AVR_AUTO)

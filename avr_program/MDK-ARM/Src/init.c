@@ -151,6 +151,7 @@ uint8_t initDevice(void)
 //	}
 
 	recLog("Start CPU");
+	
 	return 1;
 }
 

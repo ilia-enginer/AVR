@@ -3,7 +3,7 @@
 <title>Static Call Graph - [avr_program\avr_program.axf]</title></head>
 <body><HR>
 <H1>Static Call Graph for image avr_program\avr_program.axf</H1><HR>
-<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 6100100: Last Updated: Mon Oct 12 15:28:27 2026
+<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 6100100: Last Updated: Mon Oct 19 10:19:12 2026
 <BR><P>
 <H3>Maximum Stack Usage =        784 bytes + Unknown(Cycles, Untraceable Function Pointers)</H3><H3>
 Call chain for Maximum Stack Depth:</H3>
@@ -48,9 +48,9 @@ Function Pointers
  <LI><a href="#[41]">DMA2_Stream7_IRQHandler</a> from startup_stm32f411xe.o(.text) referenced from startup_stm32f411xe.o(RESET)
  <LI><a href="#[c]">DebugMon_Handler</a> from stm32f4xx_it.o(.text.DebugMon_Handler) referenced from startup_stm32f411xe.o(RESET)
  <LI><a href="#[15]">EXTI0_IRQHandler</a> from startup_stm32f411xe.o(.text) referenced from startup_stm32f411xe.o(RESET)
- <LI><a href="#[32]">EXTI15_10_IRQHandler</a> from startup_stm32f411xe.o(.text) referenced from startup_stm32f411xe.o(RESET)
+ <LI><a href="#[32]">EXTI15_10_IRQHandler</a> from stm32f4xx_it.o(.text.EXTI15_10_IRQHandler) referenced from startup_stm32f411xe.o(RESET)
  <LI><a href="#[16]">EXTI1_IRQHandler</a> from startup_stm32f411xe.o(.text) referenced from startup_stm32f411xe.o(RESET)
- <LI><a href="#[17]">EXTI2_IRQHandler</a> from stm32f4xx_it.o(.text.EXTI2_IRQHandler) referenced from startup_stm32f411xe.o(RESET)
+ <LI><a href="#[17]">EXTI2_IRQHandler</a> from startup_stm32f411xe.o(.text) referenced from startup_stm32f411xe.o(RESET)
  <LI><a href="#[18]">EXTI3_IRQHandler</a> from startup_stm32f411xe.o(.text) referenced from startup_stm32f411xe.o(RESET)
  <LI><a href="#[19]">EXTI4_IRQHandler</a> from startup_stm32f411xe.o(.text) referenced from startup_stm32f411xe.o(RESET)
  <LI><a href="#[22]">EXTI9_5_IRQHandler</a> from startup_stm32f411xe.o(.text) referenced from startup_stm32f411xe.o(RESET)
@@ -230,10 +230,10 @@ Global Symbols
 <P><STRONG><a name="[15]"></a>EXTI0_IRQHandler</STRONG> (Thumb, 0 bytes, Stack size 0 bytes, startup_stm32f411xe.o(.text))
 <BR>[Address Reference Count : 1]<UL><LI> startup_stm32f411xe.o(RESET)
 </UL>
-<P><STRONG><a name="[32]"></a>EXTI15_10_IRQHandler</STRONG> (Thumb, 0 bytes, Stack size 0 bytes, startup_stm32f411xe.o(.text))
+<P><STRONG><a name="[16]"></a>EXTI1_IRQHandler</STRONG> (Thumb, 0 bytes, Stack size 0 bytes, startup_stm32f411xe.o(.text))
 <BR>[Address Reference Count : 1]<UL><LI> startup_stm32f411xe.o(RESET)
 </UL>
-<P><STRONG><a name="[16]"></a>EXTI1_IRQHandler</STRONG> (Thumb, 0 bytes, Stack size 0 bytes, startup_stm32f411xe.o(.text))
+<P><STRONG><a name="[17]"></a>EXTI2_IRQHandler</STRONG> (Thumb, 0 bytes, Stack size 0 bytes, startup_stm32f411xe.o(.text))
 <BR>[Address Reference Count : 1]<UL><LI> startup_stm32f411xe.o(RESET)
 </UL>
 <P><STRONG><a name="[18]"></a>EXTI3_IRQHandler</STRONG> (Thumb, 0 bytes, Stack size 0 bytes, startup_stm32f411xe.o(.text))
@@ -641,8 +641,8 @@ Global Symbols
 <P><STRONG><a name="[c]"></a>DebugMon_Handler</STRONG> (Thumb, 2 bytes, Stack size 0 bytes, stm32f4xx_it.o(.text.DebugMon_Handler))
 <BR>[Address Reference Count : 1]<UL><LI> startup_stm32f411xe.o(RESET)
 </UL>
-<P><STRONG><a name="[17]"></a>EXTI2_IRQHandler</STRONG> (Thumb, 6 bytes, Stack size 0 bytes, stm32f4xx_it.o(.text.EXTI2_IRQHandler))
-<BR><BR>[Stack]<UL><LI>Max Depth = 40<LI>Call Chain = EXTI2_IRQHandler &rArr; HAL_GPIO_EXTI_IRQHandler &rArr; HAL_GPIO_EXTI_Callback &rArr; ledTFT_ON_OFF &rArr; ili9341_SleepOn &rArr; HAL_Delay
+<P><STRONG><a name="[32]"></a>EXTI15_10_IRQHandler</STRONG> (Thumb, 8 bytes, Stack size 0 bytes, stm32f4xx_it.o(.text.EXTI15_10_IRQHandler))
+<BR><BR>[Stack]<UL><LI>Max Depth = 40<LI>Call Chain = EXTI15_10_IRQHandler &rArr; HAL_GPIO_EXTI_IRQHandler &rArr; HAL_GPIO_EXTI_Callback &rArr; ledTFT_ON_OFF &rArr; ili9341_SleepOn &rArr; HAL_Delay
 </UL>
 <BR>[Calls]<UL><LI><a href="#[83]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_GPIO_EXTI_IRQHandler
 </UL>
@@ -799,7 +799,7 @@ Global Symbols
 <LI><a href="#[b0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_SPI_MspDeInit
 </UL>
 
-<P><STRONG><a name="[94]"></a>HAL_GPIO_EXTI_Callback</STRONG> (Thumb, 96 bytes, Stack size 8 bytes, main.o(.text.HAL_GPIO_EXTI_Callback))
+<P><STRONG><a name="[94]"></a>HAL_GPIO_EXTI_Callback</STRONG> (Thumb, 100 bytes, Stack size 8 bytes, main.o(.text.HAL_GPIO_EXTI_Callback))
 <BR><BR>[Stack]<UL><LI>Max Depth = 40<LI>Call Chain = HAL_GPIO_EXTI_Callback &rArr; ledTFT_ON_OFF &rArr; ili9341_SleepOn &rArr; HAL_Delay
 </UL>
 <BR>[Calls]<UL><LI><a href="#[95]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ledTFT_ON_OFF
@@ -813,7 +813,7 @@ Global Symbols
 </UL>
 <BR>[Calls]<UL><LI><a href="#[94]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_GPIO_EXTI_Callback
 </UL>
-<BR>[Called By]<UL><LI><a href="#[17]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;EXTI2_IRQHandler
+<BR>[Called By]<UL><LI><a href="#[32]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;EXTI15_10_IRQHandler
 </UL>
 
 <P><STRONG><a name="[58]"></a>HAL_GPIO_Init</STRONG> (Thumb, 416 bytes, Stack size 44 bytes, stm32f4xx_hal_gpio.o(.text.HAL_GPIO_Init))
@@ -1420,7 +1420,7 @@ Global Symbols
 <LI><a href="#[cb]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ILI9341_Init
 </UL>
 
-<P><STRONG><a name="[ce]"></a>ILI9341_TouchGetCoordinates</STRONG> (Thumb, 264 bytes, Stack size 48 bytes, xpt2046_touch.o(.text.ILI9341_TouchGetCoordinates))
+<P><STRONG><a name="[ce]"></a>ILI9341_TouchGetCoordinates</STRONG> (Thumb, 268 bytes, Stack size 48 bytes, xpt2046_touch.o(.text.ILI9341_TouchGetCoordinates))
 <BR><BR>[Stack]<UL><LI>Max Depth = 128<LI>Call Chain = ILI9341_TouchGetCoordinates &rArr; HAL_SPI_TransmitReceive &rArr; SPI_EndRxTxTransaction &rArr; SPI_WaitFlagStateUntilTimeout
 </UL>
 <BR>[Calls]<UL><LI><a href="#[53]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_GPIO_WritePin
@@ -1718,7 +1718,7 @@ Global Symbols
 </UL>
 <BR>[Address Reference Count : 1]<UL><LI> startup_stm32f411xe.o(RESET)
 </UL>
-<P><STRONG><a name="[f3]"></a>chargeAkb</STRONG> (Thumb, 176 bytes, Stack size 8 bytes, work.o(.text.chargeAkb))
+<P><STRONG><a name="[f3]"></a>chargeAkb</STRONG> (Thumb, 168 bytes, Stack size 8 bytes, work.o(.text.chargeAkb))
 <BR><BR>[Stack]<UL><LI>Max Depth = 424<LI>Call Chain = chargeAkb &rArr; charge_ON_OFF &rArr;  recLog (Cycle)
 </UL>
 <BR>[Calls]<UL><LI><a href="#[f4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;charge_ON_OFF
@@ -1877,7 +1877,7 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[15a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;secondMain
 </UL>
 
-<P><STRONG><a name="[112]"></a>engineWork</STRONG> (Thumb, 1212 bytes, Stack size 16 bytes, engine.o(.text.engineWork))
+<P><STRONG><a name="[112]"></a>engineWork</STRONG> (Thumb, 1252 bytes, Stack size 16 bytes, engine.o(.text.engineWork))
 <BR><BR>[Stack]<UL><LI>Max Depth = 568<LI>Call Chain = engineWork &rArr; switchPowerCircuitBreaker &rArr; recLog &rArr; recFileSdCard &rArr; setErr &rArr;  recLog (Cycle)
 </UL>
 <BR>[Calls]<UL><LI><a href="#[115]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;switchPowerCircuitBreaker
@@ -2069,7 +2069,7 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[138]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;initDevice
 </UL>
 
-<P><STRONG><a name="[104]"></a>getTouch</STRONG> (Thumb, 388 bytes, Stack size 24 bytes, touch.o(.text.getTouch))
+<P><STRONG><a name="[104]"></a>getTouch</STRONG> (Thumb, 392 bytes, Stack size 24 bytes, touch.o(.text.getTouch))
 <BR><BR>[Stack]<UL><LI>Max Depth = 152<LI>Call Chain = getTouch &rArr; ILI9341_TouchGetCoordinates &rArr; HAL_SPI_TransmitReceive &rArr; SPI_EndRxTxTransaction &rArr; SPI_WaitFlagStateUntilTimeout
 </UL>
 <BR>[Calls]<UL><LI><a href="#[133]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;set_BKP0R
@@ -2214,7 +2214,7 @@ Global Symbols
 <LI><a href="#[102]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;confirmClick
 </UL>
 
-<P><STRONG><a name="[48]"></a>main</STRONG> (Thumb, 1352 bytes, Stack size 120 bytes, main.o(.text.main))
+<P><STRONG><a name="[48]"></a>main</STRONG> (Thumb, 1360 bytes, Stack size 120 bytes, main.o(.text.main))
 <BR><BR>[Stack]<UL><LI>Max Depth = 784<LI>Call Chain = main &rArr; work &rArr; menuSwich &rArr; secondMain &rArr; powerOutageGet &rArr; notification &rArr; ILI9341_WriteStringLen &rArr; ILI9341_WriteString &rArr; ILI9341_Draw_Char &rArr; ILI9341_Set_Address
 </UL>
 <BR>[Calls]<UL><LI><a href="#[145]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;work
@@ -2335,7 +2335,7 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[155]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;menuSwich
 </UL>
 
-<P><STRONG><a name="[14e]"></a>menuMain</STRONG> (Thumb, 1972 bytes, Stack size 64 bytes, menu_main.o(.text.menuMain))
+<P><STRONG><a name="[14e]"></a>menuMain</STRONG> (Thumb, 1976 bytes, Stack size 64 bytes, menu_main.o(.text.menuMain))
 <BR><BR>[Stack]<UL><LI>Max Depth = 616<LI>Call Chain = menuMain &rArr; switchPowerCircuitBreaker &rArr; recLog &rArr; recFileSdCard &rArr; setErr &rArr;  recLog (Cycle)
 </UL>
 <BR>[Calls]<UL><LI><a href="#[115]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;switchPowerCircuitBreaker
@@ -2747,7 +2747,7 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[15a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;secondMain
 </UL>
 
-<P><STRONG><a name="[14f]"></a>startStopEngine</STRONG> (Thumb, 320 bytes, Stack size 16 bytes, engine.o(.text.startStopEngine))
+<P><STRONG><a name="[14f]"></a>startStopEngine</STRONG> (Thumb, 364 bytes, Stack size 16 bytes, engine.o(.text.startStopEngine))
 <BR><BR>[Stack]<UL><LI>Max Depth = 552<LI>Call Chain = startStopEngine &rArr; releStarterOnOff &rArr; recLog &rArr; recFileSdCard &rArr; setErr &rArr;  recLog (Cycle)
 </UL>
 <BR>[Calls]<UL><LI><a href="#[53]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_GPIO_WritePin
