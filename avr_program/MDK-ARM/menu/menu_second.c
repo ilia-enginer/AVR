@@ -205,7 +205,7 @@ void engineHoursGet (void)
 void serviseWorkGet(void)
 {
 	snprintf(header, BUF_LEN, "ТО инфо"); 
-	snprintf(buf, BUF_LEN, "Последнее ТО    %d.%d.%d\nСлед. ТО        %d.%d.%d\nМот. час. до ТО %d", pAVR->sdParams.dateLastTO, 
+	snprintf(buf, BUF_LEN, "Последнее ТО    %02d.%02d.%02d\nСлед. ТО        %02d.%02d.%02d\nМот. час. до ТО %d", pAVR->sdParams.dateLastTO, 
 																																																	pAVR->sdParams.monthLastTO, 
 																																																	pAVR->sdParams.yearLastTO, 
 																																																	pAVR->sdParams.dateNextTO, 
@@ -220,7 +220,7 @@ void powerOutageGet(void)
 {
 	char buf[160] = {0,};
 	snprintf(header, BUF_LEN, "Откл эл-ва инфо"); 
-	snprintf(buf, 160, "Последнее отключение\nВремя          %d.%d.%d\nДата           %d.%d.%d\nБез эл-ва (мин)  %d\nВсего без эл-ва  %d", 
+	snprintf(buf, 160, "Последнее отключение\nВремя          %02d.%02d.%02d\nДата           %02d.%02d.%02d\nБез эл-ва (мин)  %d\nВсего без эл-ва  %d", 
 																																																																				pAVR->sdParams.hoursWithoutElectric, 
 																																																																				pAVR->sdParams.minutesWithoutElectric, 
 																																																																				pAVR->sdParams.secondsWithoutElectric, 

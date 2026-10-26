@@ -55,7 +55,7 @@ void dataCalcADC(void)
 	
 	// внешнее напряжение
 	voltage = (pAVR->adc.ravADC[0] / FULL_RANGE_f * OPORA_ADC) / K_EXT_V;
-	pAVR->v_t.v_out = exponentialRunningAverage(pAVR->v_t.v_out, voltage, KOFF_FILTR);
+	pAVR->v_t.v_out = exponentialRunningAverage(pAVR->v_t.v_out, voltage, 1.0f);
 
 	// напряжение акума
 	voltage = (pAVR->adc.ravADC[1] / FULL_RANGE_f * OPORA_ADC) / K_AKB;

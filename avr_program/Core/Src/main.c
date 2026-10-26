@@ -147,6 +147,7 @@ int main(void)
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
+	extern time_t powerOutageTime;	// время отключения эл-ва
   while (1)
   {
 		work();
@@ -155,9 +156,11 @@ int main(void)
 		IWDG->KR = 0xAAAA;					// отмена ресета
 		
 		// если экран погашен и двигатель заглушен и не включена зарядка - сон на 28 сек
+		// в ближайшее время после отключения не уснет
 		if((BRIGHTNESS_GET_TFT == NULL_BRIGHTNESS) &&
 				((pAVR->engine.status == ENGINE_STOPPED) || (pAVR->engine.status == ENGINE_TIMEOUT)) &&
-				(!pAVR->avr_states.flagCharge))
+				(!pAVR->avr_states.flagCharge) &&
+				((realToUnix() - powerOutageTime) > (TIME_NO_EXT_POWER_ENGINE_OFF+2)))
 		{
 			// Если система выходит из режима Standby/Sleep по изменению на выводе WKUP (SYS_WKUP), 
 			// перед следующим входом в этот режим необходимо программно сбросить флаг PWR_FLAG_WU в регистре PWR_CSR.

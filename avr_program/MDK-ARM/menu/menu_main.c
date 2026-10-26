@@ -273,7 +273,12 @@ void menuMain (void)
 			}
 			
 			flagStatusEngine = RESET;	
-			setWarn(WARN_MANUAL_CONTROL_EN);
+			if(!pAVR->warn.array_flags[WARN_MANUAL_CONTROL_EN]){
+				setWarn(WARN_MANUAL_CONTROL_EN);
+			}
+			else{
+				menuChangeState(MAIN_MENU);	
+			}
 		}
 		else if(status == NO)
 		{

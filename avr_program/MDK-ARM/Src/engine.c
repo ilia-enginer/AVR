@@ -109,6 +109,7 @@ uint8_t startStopEngine(uint32_t status)
 		}
 		// если статус двигателя	ЗАПУЩЕН
 		else if(pAVR->engine.status == ENGINE_WORK){
+			pAVR->engine.collingTime = realToUnix();// засечь время начала охлаждения
 			pAVR->engine.status = ENGINE_COOLING;		// статус - ОХЛАЖДЕНИЕ
 			recLog("Новый статус двигателя - охлаждение");
 			return 1;
@@ -486,8 +487,8 @@ void engineWork(void)
 	// если статус двигателя	ОСТАНОВКА
 	else if(pAVR->engine.status == ENGINE_STOP)
 	{
-		// если останавливается больше 3 секунд
-		if((realToUnix() - pAVR->engine.startTimeStop) >= 3)
+		// если останавливается больше 5 секунд
+		if((realToUnix() - pAVR->engine.startTimeStop) >= 5)
 		{
 			pAVR->engine.startTimeStop = 0; // сбросить переменную "начала остановки"
 			incrementEngineHours();					// приплюсовать моточасы после ТО
@@ -612,7 +613,7 @@ uint8_t releStarterOnOff(uint8_t status)
 // инкремент моточасов
 void incrementEngineHours(void)
 {
-	uint32_t minutes = pAVR->engine.workingTime / 60;
+	uint32_t minutes = (realToUnix() - pAVR->engine.workingTime) / 60;
 	uint32_t minutesBeforeTO;
 	
 	// моточасы всего

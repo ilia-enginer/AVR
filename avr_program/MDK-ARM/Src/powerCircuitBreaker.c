@@ -86,8 +86,10 @@ void powerAutomationControl(void)
 	// определить какое питание и выставить флаг
 	if(pAVR->v_t.v_out <= U_V_OUT_MIN)
 	{
+		// если нет запуска(во время запуска двс появляются ложные отключения)
 		// если нет напряжения, но поднят флаг что есть - значит только что отключили
-		if((pAVR->v_t.v_out <= U_V_OUT_MIN) && (pAVR->avr_states.extPowerSupply != EXT_POWER_OFF))
+		if((pAVR->engine.status != ENGINE_START) && (pAVR->engine.status != ENGINE_STARTER_REST) &&
+			(pAVR->v_t.v_out <= U_V_OUT_MIN) && (pAVR->avr_states.extPowerSupply != EXT_POWER_OFF))
 		{
 			// прочитать дату, время
 			HAL_RTC_GetTime(&hrtc, &sTime, RTC_FORMAT_BIN); 				
@@ -112,14 +114,11 @@ void powerAutomationControl(void)
 			pAVR->avr_states.extPowerSupply = EXT_POWER_OFF;
 			
 			// если автоматический режим
-			if(pAVR->avr_states.powerAutoManual == AVR_AUTO) {
-				// если двигатель еще работает(например после последнего отключения)
-				if(pAVR->engine.status == ENGINE_COOLING){
-					startStopEngine(SET);	// перевести двигатель в рабочий режим
-				}
-				
-				// записать время отключения
-				powerOutageTime = realToUnix();
+			// если двигатель еще работает(например после последнего отключения)
+			if((pAVR->avr_states.powerAutoManual == AVR_AUTO) &&
+				(pAVR->engine.status == ENGINE_COOLING))
+			{
+				startStopEngine(SET);	// перевести двигатель в рабочий режим
 			}
 		}
 		// если напряжения нет в течении 10 сек и двигатель не в рабочем режиме 
@@ -132,7 +131,7 @@ void powerAutomationControl(void)
 			if(pAVR->avr_states.powerAutoManual == AVR_AUTO)			// если конечно автоматический режим работы
 				startStopEngine(SET);
 		}
-		// если напряжения нет в течении 30 сек и двигатель в рабочем режиме
+		// если напряжения нет в течении 10 сек и двигатель в рабочем режиме
 		else if((pAVR->avr_states.extPowerSupply == EXT_POWER_OFF) &&
 			(powerOutageTime != 0) &&
 			((realToUnix() - powerOutageTime) > TIME_NO_EXT_POWER_ENGINE_OFF) &&
@@ -160,9 +159,15 @@ void powerAutomationControl(void)
 			powersupply = realToUnix();
 			
 			// прибавить к общему счетчику время без эл-ва	
-			volatile uint32_t temp = powerOutageTime / 3600;	// вычисляю часы
+			volatile uint32_t temp = (realToUnix() - powerOutageTime) / 3600;	// вычисляю часы
 			pAVR->sdParams.hoursALLWithoutElectric += temp;
-			pAVR->sdParams.minutesALLWithoutElectric += (uint32_t)powerOutageTime - ((uint32_t)temp * 3600);	// минуты
+			pAVR->sdParams.minutesLastWithoutElectric = (uint32_t)((realToUnix() - powerOutageTime) - ((uint32_t)temp * 3600) / 60); // минуты без эл-ва последний раз
+			pAVR->sdParams.minutesALLWithoutElectric += pAVR->sdParams.minutesLastWithoutElectric;	// минуты
+			while(pAVR->sdParams.minutesALLWithoutElectric >= 60)
+			{
+				pAVR->sdParams.minutesALLWithoutElectric -= 60;
+				pAVR->sdParams.hoursALLWithoutElectric++;
+			}
 			
 			powerOutageTime = 0;
 			
